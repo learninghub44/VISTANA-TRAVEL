@@ -6,6 +6,37 @@ import ReviewForm from "@/components/tours/ReviewForm";
 import { notFound } from "next/navigation";
 import { Clock, MapPin, Star, Shield, HelpCircle, Check, X, User } from "lucide-react";
 import Link from "next/link";
+import { getSession } from "@/services/auth/session";
+import FavoriteButton from "@/components/ui/FavoriteButton";
+import type { Metadata } from "next";
+
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const tour = await db.getTourBySlug(params.slug);
+  if (!tour) return {};
+
+  const description = tour.description.length > 155 ? `${tour.description.slice(0, 152)}...` : tour.description;
+  const image = tour.images[0];
+
+  return {
+    title: tour.title,
+    description,
+    alternates: { canonical: `/tours/${tour.slug}` },
+    openGraph: {
+      title: tour.title,
+      description,
+      url: `/tours/${tour.slug}`,
+      images: image ? [{ url: image, width: 1200, height: 630, alt: tour.title }] : undefined,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: tour.title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
 export default async function TourDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -20,13 +51,48 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
   const guide = tour.guide_id ? guides.find((g) => g.id === tour.guide_id) : null;
   const approvedReviews = await db.getReviews(tour.id, true);
 
+  const session = await getSession();
+  const profile = session ? await db.getProfileById(session.sub) : null;
+  const isFavorited = !!profile?.favorite_tour_ids?.includes(tour.id);
+
   // Calculate average rating
   const avgRating = approvedReviews.length > 0
     ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / approvedReviews.length
     : 4.8; // default fallback
 
+  const tourJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name: tour.title,
+    description: tour.description,
+    image: tour.images,
+    touristType: tour.category,
+    itinerary: tour.itinerary.map((day) => ({
+      "@type": "TouristAttraction",
+      name: day.title,
+      description: day.description,
+    })),
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: tour.price_usd,
+      availability: "https://schema.org/InStock",
+    },
+    ...(approvedReviews.length > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating.toFixed(1),
+        reviewCount: approvedReviews.length,
+      },
+    }),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(tourJsonLd) }}
+      />
       <Navbar />
 
       {/* Hero Banner */}
@@ -41,12 +107,22 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-white w-full">
-          <span className="bg-emerald-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
-            {tour.category}
-          </span>
-          <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight max-w-4xl mb-4 leading-tight">
-            {tour.title}
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <span className="bg-emerald-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+                {tour.category}
+              </span>
+              <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight max-w-4xl mb-4 leading-tight">
+                {tour.title}
+              </h1>
+            </div>
+            <FavoriteButton
+              tourId={tour.id}
+              initialFavorited={isFavorited}
+              isLoggedIn={!!session}
+              className="h-11 w-11 bg-slate-900/60 hover:bg-slate-900/80 border border-white/10 shrink-0 mt-1"
+            />
+          </div>
 
           <div className="flex flex-wrap gap-y-2 gap-x-6 items-center text-xs text-slate-300">
             <span className="flex items-center space-x-1">

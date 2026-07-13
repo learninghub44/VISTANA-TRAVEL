@@ -2,6 +2,13 @@ import { db } from "@/services/db";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BlogCard from "@/components/ui/BlogCard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Travel Blog",
+  description: "Safari guides, travel tips, and stories from Vistana Tours & Travel's journal covering Kenya, Tanzania, and East Africa.",
+  alternates: { canonical: "/blog" },
+};
 
 export default async function BlogListPage() {
   const blogs = await db.getBlogs();

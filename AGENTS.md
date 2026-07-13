@@ -114,11 +114,16 @@ app throws on first session read.
 
 Phase 1 (auth security) is done — see git log. Also done since: homepage
 testimonials/partners are wired to the DB with admin CRUD, all admin
-modules (hotels, vehicles, guides, customers, reviews, blog) now exist, and
-the homepage FAQ accordion, newsletter signup, and photo gallery sections
-are wired to the DB (`db.getFaqs()`, `POST /api/newsletter` → `db.
-addSubscriber()`, `db.getGalleryImages()`) with admin CRUD at `/admin/faqs`
-and `/admin/gallery`. Still outstanding, roughly in priority order:
+modules (hotels, vehicles, guides, customers, reviews, blog) now exist, the
+homepage FAQ accordion, newsletter signup, and photo gallery sections are
+wired to the DB with admin CRUD at `/admin/faqs` and `/admin/gallery`,
+customers can now save favorite tours (heart icon on `TourCard`, wired via
+`toggleFavoriteTourAction` to `Profile.favorite_tour_ids`, surfaced on
+`/portal`), and core SEO is in place — per-page `generateMetadata`/`metadata`
+with Open Graph, Twitter cards, and canonical URLs on all public pages,
+JSON-LD structured data (`TravelAgency` sitewide, `TouristTrip` on tour
+pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
+`src/app/robots.ts`. Still outstanding, roughly in priority order:
 
 - [ ] Instagram feed on the homepage — no real API integration exists yet;
   needs a live Instagram Graph API token before it can be built (no

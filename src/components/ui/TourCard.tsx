@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { Clock, Tag, MapPin, Star } from "lucide-react";
 import { Tour } from "@/services/db/types";
+import FavoriteButton from "@/components/ui/FavoriteButton";
 
 interface TourCardProps {
   tour: Tour;
   destinationName: string;
   rating?: number;
   reviewCount?: number;
+  isFavorited?: boolean;
+  isLoggedIn?: boolean;
 }
 
-export default function TourCard({ tour, destinationName, rating = 4.8, reviewCount = 12 }: TourCardProps) {
+export default function TourCard({ tour, destinationName, rating = 4.8, reviewCount = 12, isFavorited = false, isLoggedIn = false }: TourCardProps) {
   return (
     <div className="group relative bg-white dark:bg-slate-900/60 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 border border-slate-100 dark:border-slate-800/80 flex flex-col h-full">
       {/* Tour Image */}
@@ -22,16 +25,24 @@ export default function TourCard({ tour, destinationName, rating = 4.8, reviewCo
         />
         {/* Gradients and Tags */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-        
+
         {/* Category Tag */}
         <span className="absolute top-4 left-4 bg-emerald-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm shadow-md">
           {tour.category}
         </span>
-        
+
         {/* Difficulty Badge */}
         <span className="absolute top-4 right-4 bg-slate-900/70 text-slate-100 text-[10px] font-medium px-2 py-0.5 rounded-md uppercase tracking-wider backdrop-blur-sm border border-slate-700">
           {tour.difficulty}
         </span>
+
+        {/* Favorite Button */}
+        <FavoriteButton
+          tourId={tour.id}
+          initialFavorited={isFavorited}
+          isLoggedIn={isLoggedIn}
+          className="absolute bottom-4 right-4 h-9 w-9 bg-slate-900/60 hover:bg-slate-900/80 border border-white/10"
+        />
       </div>
 
       {/* Tour Body */}

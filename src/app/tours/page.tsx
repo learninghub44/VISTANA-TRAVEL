@@ -4,6 +4,14 @@ import Footer from "@/components/layout/Footer";
 import TourCard from "@/components/ui/TourCard";
 import Link from "next/link";
 import { Compass, Filter, RefreshCw } from "lucide-react";
+import { getSession } from "@/services/auth/session";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tour Packages",
+  description: "Browse our curated collection of luxury safaris, beach getaways, and adventure tours across Kenya and Tanzania.",
+  alternates: { canonical: "/tours" },
+};
 
 interface SearchParams {
   destination?: string;
@@ -16,6 +24,10 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
   const searchParams = await props.searchParams;
   const destinations = await db.getDestinations();
   const allTours = await db.getTours();
+
+  const session = await getSession();
+  const profile = session ? await db.getProfileById(session.sub) : null;
+  const favoriteIds = profile?.favorite_tour_ids || [];
 
   // Extract query filters
   const fDest = searchParams.destination || "";
@@ -216,6 +228,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                         key={tour.id}
                         tour={tour}
                         destinationName={dest ? dest.name : "East Africa"}
+                        isFavorited={favoriteIds.includes(tour.id)}
+                        isLoggedIn={!!session}
                       />
                     );
                   })}

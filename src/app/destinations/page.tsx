@@ -2,6 +2,13 @@ import { db } from "@/services/db";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import DestinationCard from "@/components/ui/DestinationCard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Destinations",
+  description: "Explore our East African destinations across Kenya and Tanzania, from the Maasai Mara to the beaches of Zanzibar.",
+  alternates: { canonical: "/destinations" },
+};
 
 export default async function DestinationsPage() {
   const destinations = await db.getDestinations();

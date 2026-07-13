@@ -5,6 +5,35 @@ import TourCard from "@/components/ui/TourCard";
 import { notFound } from "next/navigation";
 import { Compass, CloudSun, MapPin, Compass as CompassIcon, Info, HelpCircle } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const destination = await db.getDestinationBySlug(params.slug);
+  if (!destination) return {};
+
+  const description = destination.overview.length > 155 ? `${destination.overview.slice(0, 152)}...` : destination.overview;
+  const image = destination.images[0];
+
+  return {
+    title: destination.name,
+    description,
+    alternates: { canonical: `/destinations/${destination.slug}` },
+    openGraph: {
+      title: destination.name,
+      description,
+      url: `/destinations/${destination.slug}`,
+      images: image ? [{ url: image, width: 1200, height: 630, alt: destination.name }] : undefined,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: destination.name,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
 export default async function DestinationDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;

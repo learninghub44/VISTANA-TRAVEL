@@ -4,7 +4,8 @@ import { getSession } from "@/services/auth/session";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BookingsList from "@/components/portal/BookingsList";
-import { User, Mail, Phone, Compass, MapPin, ClipboardList } from "lucide-react";
+import TourCard from "@/components/ui/TourCard";
+import { User, Mail, Phone, Compass, MapPin, ClipboardList, Heart } from "lucide-react";
 
 export default async function CustomerPortalPage() {
   const session = await getSession();
@@ -24,6 +25,10 @@ export default async function CustomerPortalPage() {
   const tours = await db.getTours();
   const guides = await db.getGuides();
   const vehicles = await db.getVehicles();
+  const destinations = await db.getDestinations();
+
+  const favoriteIds = profile.favorite_tour_ids || [];
+  const favoriteTours = tours.filter((t) => favoriteIds.includes(t.id));
 
   // Metrics
   const activeCount = bookings.filter((b) => b.status === "Confirmed" || b.status === "Paid" || b.status === "Pending").length;
@@ -117,14 +122,47 @@ export default async function CustomerPortalPage() {
             </aside>
 
             {/* Main Bookings Grid */}
-            <main className="lg:col-span-3">
-              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6">Your Safari Bookings</h2>
-              <BookingsList
-                bookings={bookings}
-                tours={tours}
-                guides={guides}
-                vehicles={vehicles}
-              />
+            <main className="lg:col-span-3 space-y-12">
+              <div>
+                <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6">Your Safari Bookings</h2>
+                <BookingsList
+                  bookings={bookings}
+                  tours={tours}
+                  guides={guides}
+                  vehicles={vehicles}
+                />
+              </div>
+
+              {/* Favorite Tours */}
+              <div>
+                <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center space-x-2">
+                  <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+                  <span>Your Favorite Tours</span>
+                </h2>
+                {favoriteTours.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    {favoriteTours.map((tour) => {
+                      const dest = destinations.find((d) => d.id === tour.destination_id);
+                      return (
+                        <TourCard
+                          key={tour.id}
+                          tour={tour}
+                          destinationName={dest ? dest.name : "East Africa"}
+                          isFavorited={true}
+                          isLoggedIn={true}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-white dark:bg-slate-900/40 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl px-6">
+                    <Heart className="h-8 w-8 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
+                    <p className="text-xs text-slate-450 dark:text-slate-500">
+                      You haven&apos;t saved any favorite tours yet. Tap the heart icon on any tour to save it here.
+                    </p>
+                  </div>
+                )}
+              </div>
             </main>
           </div>
 

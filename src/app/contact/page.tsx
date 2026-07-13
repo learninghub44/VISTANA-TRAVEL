@@ -2,6 +2,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ContactForm from "@/components/contact/ContactForm";
 import { Mail, Phone, MapPin, Compass, MessageSquare } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Get in touch with Vistana Tours & Travel to plan your bespoke East African safari or beach holiday.",
+  alternates: { canonical: "/contact" },
+};
 
 export default function ContactPage() {
   return (

@@ -9,6 +9,7 @@ import BlogCard from "@/components/ui/BlogCard";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import NewsletterSignup from "@/components/ui/NewsletterSignup";
 import { ShieldCheck, Compass, Users, Heart, Star, ArrowRight, Camera } from "lucide-react";
+import { getSession } from "@/services/auth/session";
 
 export default async function HomePage() {
   // Fetch data directly in server component
@@ -19,6 +20,10 @@ export default async function HomePage() {
   const testimonials = await db.getTestimonials(true);
   const faqs = await db.getFaqs();
   const galleryImages = await db.getGalleryImages();
+
+  const session = await getSession();
+  const profile = session ? await db.getProfileById(session.sub) : null;
+  const favoriteIds = profile?.favorite_tour_ids || [];
 
   return (
     <>
@@ -113,6 +118,8 @@ export default async function HomePage() {
                   key={tour.id}
                   tour={tour}
                   destinationName={dest ? dest.name : "East Africa"}
+                  isFavorited={favoriteIds.includes(tour.id)}
+                  isLoggedIn={!!session}
                 />
               );
             })}

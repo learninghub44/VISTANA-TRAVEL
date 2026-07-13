@@ -492,6 +492,29 @@ export async function deleteGalleryImageAction(id: string): Promise<{ success: b
   }
 }
 
+// ----------------------------------------------------
+// Favorite Tours Actions
+// ----------------------------------------------------
+export async function toggleFavoriteTourAction(tourId: string): Promise<{ success: boolean; favorited?: boolean; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) return { success: false, error: "Please log in to save favorite tours." };
+
+    const current = customer.favorite_tour_ids || [];
+    const isFavorited = current.includes(tourId);
+    const updated = isFavorited
+      ? current.filter((id) => id !== tourId)
+      : [...current, tourId];
+
+    await db.saveProfile({ ...customer, favorite_tour_ids: updated });
+    revalidatePath("/portal");
+    revalidatePath("/tours", "layout");
+    return { success: true, favorited: !isFavorited };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to update favorites." };
+  }
+}
+
 export async function cancelBookingAction(bookingId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const customer = await getCustomerSession();

@@ -4,6 +4,37 @@ import Footer from "@/components/layout/Footer";
 import { notFound } from "next/navigation";
 import { Calendar, User, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const blog = await db.getBlogBySlug(params.slug);
+  if (!blog) return {};
+
+  const plainText = blog.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const description = plainText.length > 155 ? `${plainText.slice(0, 152)}...` : plainText;
+
+  return {
+    title: blog.title,
+    description,
+    alternates: { canonical: `/blog/${blog.slug}` },
+    openGraph: {
+      title: blog.title,
+      description,
+      url: `/blog/${blog.slug}`,
+      images: blog.image_url ? [{ url: blog.image_url, width: 1200, height: 630, alt: blog.title }] : undefined,
+      type: "article",
+      publishedTime: blog.created_at,
+      authors: [blog.author],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: blog.title,
+      description,
+      images: blog.image_url ? [blog.image_url] : undefined,
+    },
+  };
+}
 
 export default async function BlogDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -19,8 +50,21 @@ export default async function BlogDetailPage(props: { params: Promise<{ slug: st
     year: "numeric",
   });
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    image: blog.image_url ? [blog.image_url] : undefined,
+    datePublished: blog.created_at,
+    author: { "@type": "Person", name: blog.author },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <Navbar />
 
       <article className="bg-slate-50 dark:bg-[#070a12] min-h-screen pt-32 pb-24 transition-colors">
