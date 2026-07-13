@@ -13,30 +13,8 @@ export default async function HomePage() {
   const destinations = await db.getDestinations();
   const tours = await db.getTours();
   const blogs = await db.getBlogs();
-
-  // Partner logos mapping
-  const partners = [
-    { name: "Kenya Tourism Board", icon: "Magical Kenya" },
-    { name: "Tanzania National Parks", icon: "TANAPA" },
-    { name: "Zanzibar Tourism Council", icon: "Visit Zanzibar" },
-    { name: "East African Wildlife Society", icon: "EAWLS" },
-  ];
-
-  // Testimonials seed
-  const testimonials = [
-    {
-      name: "Arthur & Elena Rostova",
-      country: "Switzerland",
-      quote: "Our Maasai Mara migration safari was simply out of this world. The lodging at Mara Serena was spectacular, and our guide David had an uncanny ability to find the leopards. Absolutely premium experience!",
-      rating: 5,
-    },
-    {
-      name: "Dr. Marcus Vance",
-      country: "United States",
-      quote: "Vistana managed our entire corporate group retreat to Diani Beach and Zanzibar. From VIP airport transfers to private sunset dhow cruises, every detail was executed flawlessly. Highly recommended.",
-      rating: 5,
-    },
-  ];
+  const partners = await db.getPartners();
+  const testimonials = await db.getTestimonials(true);
 
   return (
     <>
@@ -211,22 +189,30 @@ export default async function HomePage() {
               <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-8">What Our Discerning Guests Say</h2>
               
               <div className="space-y-6">
-                {testimonials.map((t, idx) => (
-                  <div key={idx} className="bg-slate-800/50 border border-slate-700/40 p-6 sm:p-8 rounded-2xl backdrop-blur-sm">
-                    <div className="flex space-x-1 mb-4 text-amber-400">
-                      {[...Array(t.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-current" />
-                      ))}
+                {testimonials.length > 0 ? (
+                  testimonials.slice(0, 2).map((t) => (
+                    <div key={t.id} className="bg-slate-800/50 border border-slate-700/40 p-6 sm:p-8 rounded-2xl backdrop-blur-sm">
+                      <div className="flex space-x-1 mb-4 text-amber-400">
+                        {[...Array(t.rating)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-current" />
+                        ))}
+                      </div>
+                      <p className="text-sm text-slate-300 italic leading-relaxed mb-4">
+                        "{t.content}"
+                      </p>
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-white">{t.customer_name}</span>
+                        {t.customer_location && (
+                          <span className="text-emerald-400">{t.customer_location}</span>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-slate-300 italic leading-relaxed mb-4">
-                      "{t.quote}"
-                    </p>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-white">{t.name}</span>
-                      <span className="text-emerald-400">{t.country}</span>
-                    </div>
+                  ))
+                ) : (
+                  <div className="bg-slate-800/50 border border-slate-700/40 p-6 sm:p-8 rounded-2xl backdrop-blur-sm text-sm text-slate-400">
+                    No testimonials available yet.
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -287,13 +273,27 @@ export default async function HomePage() {
             In Partnership & Compliance With
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center justify-center">
-            {partners.map((p, idx) => (
-              <div key={idx} className="flex justify-center items-center py-4 bg-white dark:bg-slate-900/35 border border-slate-100 dark:border-slate-800/60 rounded-xl px-4">
-                <span className="font-serif font-bold text-xs sm:text-sm tracking-widest text-slate-400 dark:text-slate-500 uppercase">
-                  {p.icon}
-                </span>
-              </div>
-            ))}
+            {partners.length > 0 ? (
+              partners.map((p) => (
+                <div key={p.id} className="flex justify-center items-center py-4 bg-white dark:bg-slate-900/35 border border-slate-100 dark:border-slate-800/60 rounded-xl px-4">
+                  {p.logo_url ? (
+                    <img
+                      src={p.logo_url}
+                      alt={p.name}
+                      className="h-6 sm:h-8 object-contain grayscale opacity-70"
+                    />
+                  ) : (
+                    <span className="font-serif font-bold text-xs sm:text-sm tracking-widest text-slate-400 dark:text-slate-500 uppercase">
+                      {p.name}
+                    </span>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="col-span-2 md:col-span-4 text-center text-xs text-slate-400">
+                No partners listed yet.
+              </p>
+            )}
           </div>
         </div>
       </section>

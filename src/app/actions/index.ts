@@ -4,7 +4,7 @@ import { db } from "@/services/db";
 import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
-import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile } from "@/services/db/types";
+import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner } from "@/services/db/types";
 import { getSession } from "@/services/auth/session";
 import { revalidatePath } from "next/cache";
 
@@ -365,6 +365,68 @@ export async function deleteBlogAction(id: string): Promise<{ success: boolean; 
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message || "Failed to delete blog post." };
+  }
+}
+
+// ----------------------------------------------------
+// Testimonial Actions
+// ----------------------------------------------------
+export async function saveTestimonialAction(testimonial: Omit<Testimonial, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; testimonial?: Testimonial; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveTestimonial(testimonial);
+    revalidatePath("/");
+    revalidatePath("/admin/testimonials");
+    return { success: true, testimonial: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save testimonial." };
+  }
+}
+
+export async function deleteTestimonialAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteTestimonial(id);
+    revalidatePath("/");
+    revalidatePath("/admin/testimonials");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete testimonial." };
+  }
+}
+
+// ----------------------------------------------------
+// Partner Actions
+// ----------------------------------------------------
+export async function savePartnerAction(partner: Omit<Partner, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; partner?: Partner; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.savePartner(partner);
+    revalidatePath("/");
+    revalidatePath("/admin/partners");
+    return { success: true, partner: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save partner." };
+  }
+}
+
+export async function deletePartnerAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deletePartner(id);
+    revalidatePath("/");
+    revalidatePath("/admin/partners");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete partner." };
   }
 }
 

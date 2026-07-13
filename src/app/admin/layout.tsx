@@ -15,7 +15,9 @@ import {
   Star,
   FileText,
   Eye,
-  LogOut
+  LogOut,
+  Quote,
+  Handshake
 } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -44,6 +46,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { name: "Customers", href: "/admin/customers", icon: Users },
     { name: "Reviews", href: "/admin/reviews", icon: Star },
     { name: "Blog Posts", href: "/admin/blog", icon: FileText },
+    { name: "Testimonials", href: "/admin/testimonials", icon: Quote },
+    { name: "Partners", href: "/admin/partners", icon: Handshake },
   ];
 
   return (
