@@ -1,20 +1,19 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/services/db";
+import { getSession } from "@/services/auth/session";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BookingsList from "@/components/portal/BookingsList";
 import { User, Mail, Phone, Compass, MapPin, ClipboardList } from "lucide-react";
 
 export default async function CustomerPortalPage() {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("vistana_session")?.value;
+  const session = await getSession();
 
-  if (!sessionId) {
+  if (!session) {
     redirect("/portal/login");
   }
 
-  const profile = await db.getProfileById(sessionId);
+  const profile = await db.getProfileById(session.sub);
 
   if (!profile) {
     redirect("/portal/login");

@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog } from "./types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -291,6 +291,102 @@ class SupabaseDbAdapter implements DatabaseAdapter {
   }
   async saveProfile(profile: Profile): Promise<Profile> {
     const { data, error } = await this.client.from("profiles").upsert(profile).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  // Testimonials
+  async getTestimonials(featuredOnly?: boolean): Promise<Testimonial[]> {
+    let q = this.client.from("testimonials").select("*").order("created_at", { ascending: false });
+    if (featuredOnly) q = q.eq("featured", true);
+    const { data, error } = await q;
+    if (error) throw error;
+    return data || [];
+  }
+  async saveTestimonial(t: Omit<Testimonial, "id" | "created_at"> & { id?: string }): Promise<Testimonial> {
+    const { data, error } = await this.client.from("testimonials").upsert({ ...t, id: t.id || undefined }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async deleteTestimonial(id: string): Promise<boolean> {
+    const { error } = await this.client.from("testimonials").delete().eq("id", id);
+    if (error) throw error;
+    return true;
+  }
+
+  // Partners
+  async getPartners(): Promise<Partner[]> {
+    const { data, error } = await this.client.from("partners").select("*").order("created_at");
+    if (error) throw error;
+    return data || [];
+  }
+  async savePartner(p: Omit<Partner, "id" | "created_at"> & { id?: string }): Promise<Partner> {
+    const { data, error } = await this.client.from("partners").upsert({ ...p, id: p.id || undefined }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async deletePartner(id: string): Promise<boolean> {
+    const { error } = await this.client.from("partners").delete().eq("id", id);
+    if (error) throw error;
+    return true;
+  }
+
+  // FAQs
+  async getFaqs(): Promise<Faq[]> {
+    const { data, error } = await this.client.from("faqs").select("*").order("order", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }
+  async saveFaq(f: Omit<Faq, "id" | "created_at"> & { id?: string }): Promise<Faq> {
+    const { data, error } = await this.client.from("faqs").upsert({ ...f, id: f.id || undefined }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async deleteFaq(id: string): Promise<boolean> {
+    const { error } = await this.client.from("faqs").delete().eq("id", id);
+    if (error) throw error;
+    return true;
+  }
+
+  // Newsletter
+  async getSubscribers(): Promise<NewsletterSubscriber[]> {
+    const { data, error } = await this.client.from("newsletter_subscribers").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+  async addSubscriber(email: string): Promise<NewsletterSubscriber> {
+    const { data: existing } = await this.client.from("newsletter_subscribers").select("*").eq("email", email).maybeSingle();
+    if (existing) return existing;
+    const { data, error } = await this.client.from("newsletter_subscribers").insert({ email }).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  // Gallery
+  async getGalleryImages(): Promise<GalleryImage[]> {
+    const { data, error } = await this.client.from("gallery_images").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+  async saveGalleryImage(g: Omit<GalleryImage, "id" | "created_at"> & { id?: string }): Promise<GalleryImage> {
+    const { data, error } = await this.client.from("gallery_images").insert(g).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async deleteGalleryImage(id: string): Promise<boolean> {
+    const { error } = await this.client.from("gallery_images").delete().eq("id", id);
+    if (error) throw error;
+    return true;
+  }
+
+  // Audit Logs
+  async getAuditLogs(limit = 100): Promise<AuditLog[]> {
+    const { data, error } = await this.client.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data || [];
+  }
+  async addAuditLog(log: Omit<AuditLog, "id" | "created_at">): Promise<AuditLog> {
+    const { data, error } = await this.client.from("audit_logs").insert(log).select().single();
     if (error) throw error;
     return data;
   }

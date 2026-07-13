@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Mail, Phone, MapPin, Send, Facebook, Instagram, Twitter } from "lucide-react";
+import { Compass, Mail, Phone, MapPin, Send, Globe, Camera, AtSign } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -19,14 +19,14 @@ export default function Footer() {
               Crafting premium, tailored safaris and travel experiences across Kenya, Tanzania, Zanzibar, and East Africa. Let us guide you on your next unforgettable journey.
             </p>
             <div className="flex space-x-4 pt-2">
-              <Link href="#" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <Facebook className="h-4 w-4" />
+              <Link href="#" aria-label="Facebook" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
+                <Globe className="h-4 w-4" />
               </Link>
-              <Link href="#" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <Instagram className="h-4 w-4" />
+              <Link href="#" aria-label="Instagram" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
+                <Camera className="h-4 w-4" />
               </Link>
-              <Link href="#" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <Twitter className="h-4 w-4" />
+              <Link href="#" aria-label="Twitter / X" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
+                <AtSign className="h-4 w-4" />
               </Link>
             </div>
           </div>

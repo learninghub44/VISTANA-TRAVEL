@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Compass, Mail, Lock, ShieldAlert, ArrowRight } from "lucide-react";
+import { Compass, Mail, Lock, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,20 +55,6 @@ export default function LoginPage() {
           <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Welcome Back</h2>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             Access your customer portal to manage bookings and itineraries.
-          </p>
-        </div>
-
-        {/* Demo Warning Box */}
-        <div className="mb-6 bg-slate-50 dark:bg-slate-950/20 border border-slate-200/50 dark:border-slate-800 p-4 rounded-2xl text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
-          <p className="font-bold flex items-center text-slate-700 dark:text-slate-350">
-            <ShieldAlert className="h-3.5 w-3.5 text-emerald-600 shrink-0 mr-1.5" />
-            <span>Developer Review Access</span>
-          </p>
-          <p>
-            - To access <strong>Admin Dashboard</strong>: Use <strong>admin@vistana.com</strong> with password <strong>admin</strong>.
-          </p>
-          <p>
-            - To access <strong>Customer Portal</strong>: Use any registered customer email (or <strong>john@example.com</strong> with any password).
           </p>
         </div>
 

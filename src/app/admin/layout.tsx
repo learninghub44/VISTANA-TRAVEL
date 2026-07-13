@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/services/db";
+import { getSession } from "@/services/auth/session";
 import Link from "next/link";
 import {
   Compass,
@@ -19,17 +19,17 @@ import {
 } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("vistana_session")?.value;
+  const session = await getSession();
 
-  if (!sessionId) {
+  if (!session || session.role !== "admin") {
     redirect("/portal/login");
   }
 
-  const profile = await db.getProfileById(sessionId);
+  const profile = await db.getProfileById(session.sub);
 
   if (!profile || profile.role !== "admin") {
-    // If not logged in as admin, redirect to login page
+    // Defense in depth: re-check against the DB in case the account's role changed
+    // or the account was deleted after the session token was issued.
     redirect("/portal/login");
   }
 

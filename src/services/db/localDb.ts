@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -15,6 +15,12 @@ interface LocalDbSchema {
   reviews: Review[];
   blogs: Blog[];
   profiles: Profile[];
+  testimonials: Testimonial[];
+  partners: Partner[];
+  faqs: Faq[];
+  subscribers: NewsletterSubscriber[];
+  gallery: GalleryImage[];
+  audit_logs: AuditLog[];
 }
 
 // Helper to generate UUIDs locally
@@ -430,7 +436,13 @@ const initialData: LocalDbSchema = {
       phone: "+254 700 000 000",
       created_at: new Date().toISOString()
     }
-  ]
+  ],
+  testimonials: [],
+  partners: [],
+  faqs: [],
+  subscribers: [],
+  gallery: [],
+  audit_logs: []
 };
 
 class LocalDbAdapter implements DatabaseAdapter {
@@ -444,7 +456,18 @@ class LocalDbAdapter implements DatabaseAdapter {
     }
     try {
       const dataStr = fs.readFileSync(DB_FILE, "utf-8");
-      return JSON.parse(dataStr);
+      const parsed = JSON.parse(dataStr);
+      // Backfill any collections added in later versions of the schema
+      return {
+        ...initialData,
+        ...parsed,
+        testimonials: parsed.testimonials || [],
+        partners: parsed.partners || [],
+        faqs: parsed.faqs || [],
+        subscribers: parsed.subscribers || [],
+        gallery: parsed.gallery || [],
+        audit_logs: parsed.audit_logs || [],
+      };
     } catch (e) {
       console.error("Failed to read local DB file, returning seed data", e);
       return initialData;
@@ -858,11 +881,147 @@ class LocalDbAdapter implements DatabaseAdapter {
     const index = db.profiles.findIndex((p) => p.id === profile.id || p.email.toLowerCase() === profile.email.toLowerCase());
     if (index > -1) {
       db.profiles[index] = { ...db.profiles[index], ...profile };
+      this.writeDb(db);
+      return db.profiles[index];
     } else {
       db.profiles.push(profile);
+      this.writeDb(db);
+      return profile;
     }
+  }
+
+  // Testimonials
+  async getTestimonials(featuredOnly?: boolean): Promise<Testimonial[]> {
+    const list = this.readDb().testimonials || [];
+    return featuredOnly ? list.filter((t) => t.featured) : list;
+  }
+  async saveTestimonial(t: Omit<Testimonial, "id" | "created_at"> & { id?: string }): Promise<Testimonial> {
+    const db = this.readDb();
+    if (!db.testimonials) db.testimonials = [];
+    if (t.id) {
+      const idx = db.testimonials.findIndex((x) => x.id === t.id);
+      if (idx > -1) {
+        db.testimonials[idx] = { ...db.testimonials[idx], ...t, id: t.id };
+        this.writeDb(db);
+        return db.testimonials[idx];
+      }
+    }
+    const newItem: Testimonial = { ...t, id: generateId(), created_at: new Date().toISOString() };
+    db.testimonials.push(newItem);
     this.writeDb(db);
-    return profile;
+    return newItem;
+  }
+  async deleteTestimonial(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = db.testimonials.length;
+    db.testimonials = db.testimonials.filter((t) => t.id !== id);
+    this.writeDb(db);
+    return db.testimonials.length < len;
+  }
+
+  // Partners
+  async getPartners(): Promise<Partner[]> {
+    return this.readDb().partners || [];
+  }
+  async savePartner(p: Omit<Partner, "id" | "created_at"> & { id?: string }): Promise<Partner> {
+    const db = this.readDb();
+    if (!db.partners) db.partners = [];
+    if (p.id) {
+      const idx = db.partners.findIndex((x) => x.id === p.id);
+      if (idx > -1) {
+        db.partners[idx] = { ...db.partners[idx], ...p, id: p.id };
+        this.writeDb(db);
+        return db.partners[idx];
+      }
+    }
+    const newItem: Partner = { ...p, id: generateId(), created_at: new Date().toISOString() };
+    db.partners.push(newItem);
+    this.writeDb(db);
+    return newItem;
+  }
+  async deletePartner(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = db.partners.length;
+    db.partners = db.partners.filter((p) => p.id !== id);
+    this.writeDb(db);
+    return db.partners.length < len;
+  }
+
+  // FAQs
+  async getFaqs(): Promise<Faq[]> {
+    return (this.readDb().faqs || []).sort((a, b) => a.order - b.order);
+  }
+  async saveFaq(f: Omit<Faq, "id" | "created_at"> & { id?: string }): Promise<Faq> {
+    const db = this.readDb();
+    if (!db.faqs) db.faqs = [];
+    if (f.id) {
+      const idx = db.faqs.findIndex((x) => x.id === f.id);
+      if (idx > -1) {
+        db.faqs[idx] = { ...db.faqs[idx], ...f, id: f.id };
+        this.writeDb(db);
+        return db.faqs[idx];
+      }
+    }
+    const newItem: Faq = { ...f, id: generateId(), created_at: new Date().toISOString() };
+    db.faqs.push(newItem);
+    this.writeDb(db);
+    return newItem;
+  }
+  async deleteFaq(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = db.faqs.length;
+    db.faqs = db.faqs.filter((f) => f.id !== id);
+    this.writeDb(db);
+    return db.faqs.length < len;
+  }
+
+  // Newsletter
+  async getSubscribers(): Promise<NewsletterSubscriber[]> {
+    return this.readDb().subscribers || [];
+  }
+  async addSubscriber(email: string): Promise<NewsletterSubscriber> {
+    const db = this.readDb();
+    if (!db.subscribers) db.subscribers = [];
+    const existing = db.subscribers.find((s) => s.email.toLowerCase() === email.toLowerCase());
+    if (existing) return existing;
+    const newItem: NewsletterSubscriber = { id: generateId(), email, created_at: new Date().toISOString() };
+    db.subscribers.push(newItem);
+    this.writeDb(db);
+    return newItem;
+  }
+
+  // Gallery
+  async getGalleryImages(): Promise<GalleryImage[]> {
+    return this.readDb().gallery || [];
+  }
+  async saveGalleryImage(g: Omit<GalleryImage, "id" | "created_at"> & { id?: string }): Promise<GalleryImage> {
+    const db = this.readDb();
+    if (!db.gallery) db.gallery = [];
+    const newItem: GalleryImage = { ...g, id: g.id || generateId(), created_at: new Date().toISOString() };
+    db.gallery.push(newItem);
+    this.writeDb(db);
+    return newItem;
+  }
+  async deleteGalleryImage(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = db.gallery.length;
+    db.gallery = db.gallery.filter((g) => g.id !== id);
+    this.writeDb(db);
+    return db.gallery.length < len;
+  }
+
+  // Audit Logs
+  async getAuditLogs(limit = 100): Promise<AuditLog[]> {
+    const logs = this.readDb().audit_logs || [];
+    return logs.slice(-limit).reverse();
+  }
+  async addAuditLog(log: Omit<AuditLog, "id" | "created_at">): Promise<AuditLog> {
+    const db = this.readDb();
+    if (!db.audit_logs) db.audit_logs = [];
+    const newItem: AuditLog = { ...log, id: generateId(), created_at: new Date().toISOString() };
+    db.audit_logs.push(newItem);
+    this.writeDb(db);
+    return newItem;
   }
 }
 

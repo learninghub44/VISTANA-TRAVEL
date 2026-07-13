@@ -5,26 +5,24 @@ import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
 import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile } from "@/services/db/types";
-import { cookies } from "next/headers";
+import { getSession } from "@/services/auth/session";
 import { revalidatePath } from "next/cache";
 
 // Auth helper for server actions
 async function getAdminSession(): Promise<Profile | null> {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("vistana_session")?.value;
-  if (!sessionId) return null;
-  
-  const profile = await db.getProfileById(sessionId);
+  const session = await getSession();
+  if (!session || session.role !== "admin") return null;
+
+  const profile = await db.getProfileById(session.sub);
   if (!profile || profile.role !== "admin") return null;
   return profile;
 }
 
 async function getCustomerSession(): Promise<Profile | null> {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get("vistana_session")?.value;
-  if (!sessionId) return null;
-  
-  const profile = await db.getProfileById(sessionId);
+  const session = await getSession();
+  if (!session) return null;
+
+  const profile = await db.getProfileById(session.sub);
   return profile || null;
 }
 

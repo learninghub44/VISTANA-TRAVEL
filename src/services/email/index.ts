@@ -110,6 +110,44 @@ export async function sendBookingConfirmationEmail(booking: any, tour: any, cust
   return email.sendEmail({ to: customerEmail, subject, html });
 }
 
+export async function sendVerificationEmail(customerEmail: string, customerName: string, token: string) {
+  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/api/auth/verify-email?token=${token}`;
+  const subject = "Verify your email - Vistana Tours & Travel";
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
+      <p>Dear <strong>${customerName}</strong>,</p>
+      <p>Thanks for creating an account with Vistana. Please confirm your email address to activate your account.</p>
+      <p style="margin: 24px 0;">
+        <a href="${verifyUrl}" style="background-color: #064e3b; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Verify Email Address</a>
+      </p>
+      <p style="font-size: 12px; color: #999;">If the button doesn't work, copy this link into your browser: ${verifyUrl}</p>
+      <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} Vistana Tours & Travel. All rights reserved.</p>
+    </div>
+  `;
+  return email.sendEmail({ to: customerEmail, subject, html });
+}
+
+export async function sendPasswordResetEmail(customerEmail: string, customerName: string, token: string) {
+  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/portal/reset-password?token=${token}`;
+  const subject = "Reset your password - Vistana Tours & Travel";
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
+      <p>Dear <strong>${customerName}</strong>,</p>
+      <p>We received a request to reset your password. This link expires in 1 hour.</p>
+      <p style="margin: 24px 0;">
+        <a href="${resetUrl}" style="background-color: #064e3b; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Reset Password</a>
+      </p>
+      <p style="font-size: 12px; color: #999;">If you didn't request this, you can safely ignore this email. If the button doesn't work, copy this link into your browser: ${resetUrl}</p>
+      <hr style="border: 0; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #999; text-align: center;">&copy; ${new Date().getFullYear()} Vistana Tours & Travel. All rights reserved.</p>
+    </div>
+  `;
+  return email.sendEmail({ to: customerEmail, subject, html });
+}
+
 export async function sendBookingStatusUpdateEmail(booking: any, tour: any, customerEmail: string, customerName: string) {
   const subject = `Booking Update - Vistana Tours & Travel (${booking.id})`;
   const statusColors: Record<string, string> = {

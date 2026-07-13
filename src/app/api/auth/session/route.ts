@@ -1,25 +1,22 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 import { db } from "@/services/db";
+import { getSession, clearSessionCookie } from "@/services/auth/session";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const sessionId = cookieStore.get("vistana_session")?.value;
-
-    if (!sessionId) {
+    const session = await getSession();
+    if (!session) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    const profile = await db.getProfileById(sessionId);
+    const profile = await db.getProfileById(session.sub);
     if (!profile) {
-      // Clear invalid cookie
-      const response = NextResponse.json({ authenticated: false }, { status: 401 });
-      response.cookies.delete("vistana_session");
-      return response;
+      await clearSessionCookie();
+      return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    return NextResponse.json({ authenticated: true, user: profile });
+    const { password_hash, reset_token, verification_token, ...safeProfile } = profile;
+    return NextResponse.json({ authenticated: true, user: safeProfile });
   } catch (e) {
     console.error("Auth session API error:", e);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

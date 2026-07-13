@@ -1,36 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { z } from "zod";
 import { db } from "@/services/db";
+import { verifyPassword } from "@/services/auth/password";
+import { setSessionCookie } from "@/services/auth/session";
+import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { ensureAdminSeeded } from "@/services/auth/bootstrap";
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    const ip = getClientIp(req);
+    const { ok } = rateLimit(`login:${ip}`, 10, 15 * 60 * 1000); // 10 attempts / 15 min per IP
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again in a few minutes." },
+        { status: 429 }
+      );
     }
+
+    const body = await req.json();
+    const parsed = loginSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "A valid email and password are required" }, { status: 400 });
+    }
+    const { email, password } = parsed.data;
+
+    await ensureAdminSeeded();
 
     const profile = await db.getProfileByEmail(email);
 
-    if (!profile) {
-      return NextResponse.json({ error: "Account not found. Please register." }, { status: 404 });
+    // Generic error message regardless of whether the account exists — avoids
+    // leaking which emails are registered (user enumeration).
+    const genericError = () =>
+      NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+
+    if (!profile || !profile.password_hash) {
+      return genericError();
     }
 
-    // Special check for admin credentials
-    if (profile.email.toLowerCase() === "admin@vistana.com" && password !== "admin") {
-      return NextResponse.json({ error: "Invalid admin password. Use 'admin'" }, { status: 401 });
+    const validPassword = await verifyPassword(password, profile.password_hash);
+    if (!validPassword) {
+      return genericError();
     }
 
-    // Set cookie session (lasts for 7 days)
-    const cookieStore = await cookies();
-    cookieStore.set("vistana_session", profile.id, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
+    await setSessionCookie({ sub: profile.id, role: profile.role, email: profile.email });
 
-    return NextResponse.json({ success: true, user: profile });
+    const { password_hash, reset_token, verification_token, ...safeProfile } = profile;
+
+    return NextResponse.json({ success: true, user: safeProfile });
   } catch (e) {
     console.error("Login API error:", e);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

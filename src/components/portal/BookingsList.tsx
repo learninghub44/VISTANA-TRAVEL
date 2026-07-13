@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { cancelBookingAction } from "@/app/actions";
 import { Calendar, Users, MapPin, DollarSign, Compass, XCircle, Info, RefreshCw, Star, ShieldAlert } from "lucide-react";
 import { Booking, Tour, Guide, Vehicle } from "@/services/db/types";

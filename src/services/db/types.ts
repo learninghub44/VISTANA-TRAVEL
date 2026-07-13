@@ -116,6 +116,66 @@ export interface Profile {
   name: string;
   phone?: string;
   avatar_url?: string;
+  password_hash?: string;
+  email_verified?: boolean;
+  verification_token?: string | null;
+  reset_token?: string | null;
+  reset_token_expires?: string | null;
+  favorite_tour_ids?: string[];
+  created_at: string;
+}
+
+export interface Testimonial {
+  id: string;
+  customer_name: string;
+  customer_location?: string;
+  avatar_url?: string;
+  content: string;
+  rating: number;
+  featured: boolean;
+  created_at: string;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  logo_url: string;
+  website_url?: string;
+  created_at: string;
+}
+
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order: number;
+  created_at: string;
+}
+
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+export interface GalleryImage {
+  id: string;
+  image_url: string;
+  caption?: string;
+  category?: string;
+  destination_id?: string;
+  created_at: string;
+}
+
+export interface AuditLog {
+  id: string;
+  actor_id: string;
+  actor_name: string;
+  action: string;
+  entity_type: string;
+  entity_id?: string;
+  details?: string;
   created_at: string;
 }
 
@@ -172,4 +232,32 @@ export interface DatabaseAdapter {
   getProfileById(id: string): Promise<Profile | null>;
   getProfileByEmail(email: string): Promise<Profile | null>;
   saveProfile(profile: Profile): Promise<Profile>;
+
+  // Testimonials
+  getTestimonials(featuredOnly?: boolean): Promise<Testimonial[]>;
+  saveTestimonial(t: Omit<Testimonial, "id" | "created_at"> & { id?: string }): Promise<Testimonial>;
+  deleteTestimonial(id: string): Promise<boolean>;
+
+  // Partners
+  getPartners(): Promise<Partner[]>;
+  savePartner(p: Omit<Partner, "id" | "created_at"> & { id?: string }): Promise<Partner>;
+  deletePartner(id: string): Promise<boolean>;
+
+  // FAQs
+  getFaqs(): Promise<Faq[]>;
+  saveFaq(f: Omit<Faq, "id" | "created_at"> & { id?: string }): Promise<Faq>;
+  deleteFaq(id: string): Promise<boolean>;
+
+  // Newsletter
+  getSubscribers(): Promise<NewsletterSubscriber[]>;
+  addSubscriber(email: string): Promise<NewsletterSubscriber>;
+
+  // Gallery
+  getGalleryImages(): Promise<GalleryImage[]>;
+  saveGalleryImage(g: Omit<GalleryImage, "id" | "created_at"> & { id?: string }): Promise<GalleryImage>;
+  deleteGalleryImage(id: string): Promise<boolean>;
+
+  // Audit Logs
+  getAuditLogs(limit?: number): Promise<AuditLog[]>;
+  addAuditLog(log: Omit<AuditLog, "id" | "created_at">): Promise<AuditLog>;
 }
