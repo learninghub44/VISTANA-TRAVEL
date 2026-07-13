@@ -7,6 +7,7 @@ import { whatsapp } from "@/services/whatsapp";
 import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage } from "@/services/db/types";
 import { getSession } from "@/services/auth/session";
 import { revalidatePath } from "next/cache";
+import { rateLimit } from "@/services/auth/rateLimit";
 
 // Auth helper for server actions
 async function getAdminSession(): Promise<Profile | null> {
@@ -62,6 +63,42 @@ export async function uploadImageAction(formData: FormData): Promise<{ url: stri
   return { url };
 }
 
+// Documents customers attach to a booking (passport scans, visa letters, etc.)
+// for tours that require them. Separate from uploadImageAction so we can
+// enforce customer-only auth, a stricter mime allowlist, and a size cap.
+const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024; // 8MB
+
+export async function uploadBookingDocumentAction(
+  formData: FormData
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) return { success: false, error: "Please log in to upload documents." };
+
+    const limited = rateLimit(`upload-doc:${customer.id}`, 20, 60 * 60 * 1000);
+    if (!limited.ok) {
+      return { success: false, error: "Too many uploads. Please try again later." };
+    }
+
+    const file = formData.get("file") as File | null;
+    if (!file) return { success: false, error: "No file provided." };
+    if (!ALLOWED_DOCUMENT_TYPES.has(file.type)) {
+      return { success: false, error: "Unsupported file type. Please upload a PDF, JPG, PNG, or WEBP." };
+    }
+    if (file.size > MAX_DOCUMENT_BYTES) {
+      return { success: false, error: "File is too large. Maximum size is 8MB." };
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const url = await storage.uploadImage(buffer, file.name, file.type);
+    return { success: true, url };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to upload document." };
+  }
+}
+
 // ----------------------------------------------------
 // Booking Actions
 // ----------------------------------------------------
@@ -72,6 +109,7 @@ export async function createBookingAction(data: {
   adults: number;
   children: number;
   specialRequests?: string;
+  documentUrls?: string[];
 }): Promise<{ success: boolean; bookingId?: string; error?: string }> {
   try {
     const customer = await getCustomerSession();
@@ -100,6 +138,7 @@ export async function createBookingAction(data: {
       special_requests: data.specialRequests,
       status: "Pending",
       total_price: totalPrice,
+      document_urls: data.documentUrls && data.documentUrls.length > 0 ? data.documentUrls : undefined,
     };
 
     const saved = await db.saveBooking(newBooking);

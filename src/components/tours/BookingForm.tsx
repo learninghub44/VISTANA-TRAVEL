@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBookingAction } from "@/app/actions";
-import { Calendar, Users, Info, Sparkles } from "lucide-react";
+import { createBookingAction, uploadBookingDocumentAction } from "@/app/actions";
+import { Calendar, Users, Info, Sparkles, FileUp, FileCheck2, X as XIcon } from "lucide-react";
 import { Tour } from "@/services/db/types";
 
 interface BookingFormProps {
@@ -16,9 +16,20 @@ export default function BookingForm({ tour }: BookingFormProps) {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [specialRequests, setSpecialRequests] = useState("");
+  const [documents, setDocuments] = useState<File[]>([]);
+  const [uploadingDocs, setUploadingDocs] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const handleAddDocuments = (files: FileList | null) => {
+    if (!files) return;
+    setDocuments((prev) => [...prev, ...Array.from(files)]);
+  };
+
+  const handleRemoveDocument = (index: number) => {
+    setDocuments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Pricing calculations
   const pricePerAdult = tour.price_usd;
@@ -46,13 +57,37 @@ export default function BookingForm({ tour }: BookingFormProps) {
 
     const endDate = getEndDate(startDate);
 
+    // Upload any attached documents (passport scans, visa letters, etc.)
+    // before creating the booking, so we have URLs to attach to it.
+    const documentUrls: string[] = [];
+    if (documents.length > 0) {
+      setUploadingDocs(true);
+      try {
+        for (const file of documents) {
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await uploadBookingDocumentAction(fd);
+          if (!res.success || !res.url) {
+            setError(res.error || `Failed to upload "${file.name}".`);
+            setUploadingDocs(false);
+            setLoading(false);
+            return;
+          }
+          documentUrls.push(res.url);
+        }
+      } finally {
+        setUploadingDocs(false);
+      }
+    }
+
     const res = await createBookingAction({
       tourId: tour.id,
       startDate,
       endDate,
       adults,
       children,
-      specialRequests
+      specialRequests,
+      documentUrls
     });
 
     setLoading(false);
@@ -151,6 +186,50 @@ export default function BookingForm({ tour }: BookingFormProps) {
           />
         </div>
 
+        {/* Document Upload */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 pl-1">
+            Supporting Documents <span className="normal-case font-medium text-slate-400">(optional — passport scan, visa letter, etc.)</span>
+          </label>
+          <label className="flex items-center justify-center space-x-2 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl py-3 px-4 text-xs text-slate-500 dark:text-slate-400 cursor-pointer hover:border-emerald-500 hover:text-emerald-600 transition-colors">
+            <FileUp className="h-4 w-4" />
+            <span>Click to attach PDF, JPG, or PNG (max 8MB each)</span>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                handleAddDocuments(e.target.files);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          {documents.length > 0 && (
+            <ul className="space-y-1 pt-1">
+              {documents.map((file, i) => (
+                <li
+                  key={`${file.name}-${i}`}
+                  className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-850 rounded-lg py-2 px-3 text-slate-600 dark:text-slate-300"
+                >
+                  <span className="flex items-center space-x-1.5 truncate">
+                    <FileCheck2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                    <span className="truncate">{file.name}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveDocument(i)}
+                    className="text-slate-400 hover:text-red-500 shrink-0 ml-2"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    <XIcon className="h-3.5 w-3.5" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
         {/* Summary pricing list */}
         <div className="bg-slate-50 dark:bg-slate-800/35 rounded-2xl p-4 space-y-2 text-xs">
           <div className="flex justify-between">
@@ -182,7 +261,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
           disabled={loading}
           className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center"
         >
-          {loading ? "Processing..." : "Submit Booking Request"}
+          {uploadingDocs ? "Uploading documents..." : loading ? "Processing..." : "Submit Booking Request"}
         </button>
 
         <p className="text-[10px] text-slate-400 text-center leading-relaxed">

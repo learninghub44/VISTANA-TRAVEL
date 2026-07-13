@@ -396,6 +396,27 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
               Review allocations and update approval states.
             </p>
 
+            {editBooking.document_urls && editBooking.document_urls.length > 0 && (
+              <div className="mb-4 flex flex-col space-y-1">
+                <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                  Customer Documents
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {editBooking.document_urls.map((url, i) => (
+                    <a
+                      key={url}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs bg-slate-50 dark:bg-slate-950 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 rounded-lg py-1.5 px-3 border border-slate-150 dark:border-slate-850 transition-colors"
+                    >
+                      Document {i + 1}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSaveUpdates} className="space-y-4">
               
               {/* Status Selector */}

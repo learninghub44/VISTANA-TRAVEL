@@ -128,26 +128,40 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
 - [ ] Instagram feed on the homepage — no real API integration exists yet;
   needs a live Instagram Graph API token before it can be built (no
   mock/placeholder data allowed per Hard Rule 1).
-- [ ] Customer portal: no "save favorite tours" feature yet (`Profile.
-  favorite_tour_ids` field exists on the type, not wired to UI/actions).
-- [ ] SEO: only a single static title/description in root `layout.tsx`. No
-  per-page metadata, no `sitemap.ts`/`robots.ts`, no Open Graph tags, no
-  JSON-LD structured data, no canonical URLs.
+- [x] Customer portal "save favorite tours" — done (heart icon on
+  `TourCard`, wired via `toggleFavoriteTourAction` to
+  `Profile.favorite_tour_ids`, surfaced on `/portal`).
+- [x] SEO — done (per-page `generateMetadata`, Open Graph/Twitter cards,
+  canonical URLs, JSON-LD, `sitemap.ts`/`robots.ts`).
 - [x] Custom `not-found.tsx`, `error.tsx`, and `loading.tsx` added at
   `src/app/`.
-- [ ] No reports/analytics export (PDF/Excel/CSV) for bookings/revenue/etc.
+- [x] Bookings CSV export exists (`BookingsManager` → "Export Report").
+  Still no PDF/Excel export, and no export for other admin lists
+  (customers, reviews, etc.) — open if needed.
 - [x] CSRF: raw API routes under `src/app/api/auth/*` and `/api/newsletter`
   now verify Origin/Referer against Host via `src/services/auth/csrf.ts`
   (Server Actions already get Next.js's built-in Origin/Host check for
-  free). Still no audit-log writes on admin mutations (the `AuditLog`
-  model/adapter methods exist but nothing calls `db.addAuditLog()` yet),
-  no automated backups.
-- [ ] Booking flow has no document upload step (spec: "upload required
-  documents if necessary").
+  free).
+- [x] Audit-log writes on admin mutations — done. `logAudit()` in
+  `src/app/actions/index.ts` is called from every admin create/update/delete
+  action (tours, destinations, guides, vehicles, hotels, reviews, blog,
+  testimonials, partners, faqs, gallery, site settings, booking status).
+  Still no automated backups.
+- [x] Booking flow document upload step — done. `Booking.document_urls`
+  (see `src/services/db/types.ts`) is populated via the new
+  `uploadBookingDocumentAction` (customer-session-gated, PDF/JPG/PNG/WEBP
+  only, 8MB cap, rate-limited per customer) called from `BookingForm.tsx`
+  before `createBookingAction`. Uploaded docs are visible to admins in
+  `BookingsManager`'s edit modal. Supabase: run
+  `alter table bookings add column document_urls jsonb;`.
 - [ ] No Prisma/migrations — Supabase tables must be created manually to
   match `src/services/db/types.ts`. If you add a new entity, document the
   SQL needed.
-- [ ] No automated tests anywhere in the repo.
+- [~] Automated tests: started. Vitest configured (`vitest.config.ts`,
+  `npm test`) with unit tests for `src/services/auth/password.ts` and
+  `src/services/auth/rateLimit.ts`. Still no coverage for session/JWT
+  logic, zod-validated API routes, server actions, or any component/UI
+  tests.
 
 ## Local dev
 

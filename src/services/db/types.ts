@@ -85,6 +85,11 @@ export interface Booking {
   vehicle_id?: string;
   total_price: number;
   created_at: string;
+  // Optional customer-uploaded documents (passport scans, visa letters, etc.)
+  // required for some cross-border tours. Populated via
+  // uploadBookingDocumentAction at booking time.
+  // Supabase: `alter table bookings add column document_urls jsonb;`
+  document_urls?: string[];
 }
 
 export interface Review {
