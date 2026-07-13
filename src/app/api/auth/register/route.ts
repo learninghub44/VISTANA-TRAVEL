@@ -6,6 +6,7 @@ import { hashPassword, generateToken, isStrongEnough } from "@/services/auth/pas
 import { setSessionCookie } from "@/services/auth/session";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { sendVerificationEmail } from "@/services/email";
+import { verifyOrigin } from "@/services/auth/csrf";
 
 const registerSchema = z.object({
   name: z.string().min(2).max(120),
@@ -16,6 +17,9 @@ const registerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const csrfError = verifyOrigin(req);
+    if (csrfError) return csrfError;
+
     const ip = getClientIp(req);
     const { ok } = rateLimit(`register:${ip}`, 5, 15 * 60 * 1000); // 5 registrations / 15 min per IP
     if (!ok) {

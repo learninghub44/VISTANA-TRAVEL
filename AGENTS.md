@@ -133,12 +133,15 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
 - [ ] SEO: only a single static title/description in root `layout.tsx`. No
   per-page metadata, no `sitemap.ts`/`robots.ts`, no Open Graph tags, no
   JSON-LD structured data, no canonical URLs.
-- [ ] No custom `not-found.tsx`, `error.tsx`, or `loading.tsx` anywhere —
-  falls back to generic Next.js defaults.
+- [x] Custom `not-found.tsx`, `error.tsx`, and `loading.tsx` added at
+  `src/app/`.
 - [ ] No reports/analytics export (PDF/Excel/CSV) for bookings/revenue/etc.
-- [ ] No CSRF protection beyond `sameSite: lax` cookies, no audit-log
-  writes yet on admin mutations (the `AuditLog` model/adapter methods exist
-  but nothing calls `db.addAuditLog()` yet), no automated backups.
+- [x] CSRF: raw API routes under `src/app/api/auth/*` and `/api/newsletter`
+  now verify Origin/Referer against Host via `src/services/auth/csrf.ts`
+  (Server Actions already get Next.js's built-in Origin/Host check for
+  free). Still no audit-log writes on admin mutations (the `AuditLog`
+  model/adapter methods exist but nothing calls `db.addAuditLog()` yet),
+  no automated backups.
 - [ ] Booking flow has no document upload step (spec: "upload required
   documents if necessary").
 - [ ] No Prisma/migrations — Supabase tables must be created manually to

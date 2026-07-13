@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { verifyOrigin } from "@/services/auth/csrf";
 
 const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: NextRequest) {
   try {
+    const csrfError = verifyOrigin(req);
+    if (csrfError) return csrfError;
+
     const ip = getClientIp(req);
     const { ok } = rateLimit(`newsletter:${ip}`, 5, 15 * 60 * 1000);
     if (!ok) {

@@ -5,6 +5,7 @@ import { verifyPassword } from "@/services/auth/password";
 import { setSessionCookie } from "@/services/auth/session";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { ensureAdminSeeded } from "@/services/auth/bootstrap";
+import { verifyOrigin } from "@/services/auth/csrf";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,6 +14,9 @@ const loginSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const csrfError = verifyOrigin(req);
+    if (csrfError) return csrfError;
+
     const ip = getClientIp(req);
     const { ok } = rateLimit(`login:${ip}`, 10, 15 * 60 * 1000); // 10 attempts / 15 min per IP
     if (!ok) {

@@ -4,11 +4,15 @@ import { db } from "@/services/db";
 import { generateToken } from "@/services/auth/password";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { sendPasswordResetEmail } from "@/services/email";
+import { verifyOrigin } from "@/services/auth/csrf";
 
 const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: NextRequest) {
   try {
+    const csrfError = verifyOrigin(req);
+    if (csrfError) return csrfError;
+
     const ip = getClientIp(req);
     const { ok } = rateLimit(`reset:${ip}`, 5, 15 * 60 * 1000);
     if (!ok) {

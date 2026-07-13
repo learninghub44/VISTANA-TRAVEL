@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/services/db";
 import { hashPassword } from "@/services/auth/password";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { verifyOrigin } from "@/services/auth/csrf";
 
 const schema = z.object({
   token: z.string().min(10),
@@ -11,6 +12,9 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const csrfError = verifyOrigin(req);
+    if (csrfError) return csrfError;
+
     const ip = getClientIp(req);
     const { ok } = rateLimit(`reset-confirm:${ip}`, 10, 15 * 60 * 1000);
     if (!ok) {
