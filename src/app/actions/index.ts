@@ -26,6 +26,29 @@ async function getCustomerSession(): Promise<Profile | null> {
   return profile || null;
 }
 
+// Fire-and-forget audit trail for admin mutations. Never blocks or fails
+// the calling action — logging errors are swallowed and console-logged.
+async function logAudit(
+  admin: Profile,
+  action: string,
+  entityType: string,
+  entityId?: string,
+  details?: string
+) {
+  try {
+    await db.addAuditLog({
+      actor_id: admin.id,
+      actor_name: admin.name,
+      action,
+      entity_type: entityType,
+      entity_id: entityId,
+      details,
+    });
+  } catch (e) {
+    console.error("Audit log error:", e);
+  }
+}
+
 // ----------------------------------------------------
 // Image Upload Action
 // ----------------------------------------------------
@@ -121,6 +144,7 @@ export async function updateBookingStatusAction(
     };
 
     await db.saveBooking(updatedBooking);
+    await logAudit(admin, "update_status", "booking", bookingId, `status → ${updates.status}`);
 
     // Notify Customer of Status Update
     const customer = await db.getProfileById(booking.customer_id);
@@ -149,7 +173,8 @@ export async function saveTourAction(tour: Omit<Tour, "id" | "created_at"> & { i
 
     const slug = tour.slug || tour.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const saved = await db.saveTour({ ...tour, slug });
-    
+    await logAudit(admin, tour.id ? "update" : "create", "tour", saved.id, saved.title);
+
     revalidatePath("/tours");
     revalidatePath(`/tours/${saved.slug}`);
     return { success: true, tour: saved };
@@ -164,6 +189,7 @@ export async function deleteTourAction(id: string): Promise<{ success: boolean; 
     if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
 
     await db.deleteTour(id);
+    await logAudit(admin, "delete", "tour", id);
     revalidatePath("/tours");
     return { success: true };
   } catch (e: any) {
@@ -181,7 +207,8 @@ export async function saveDestinationAction(destination: Omit<Destination, "id" 
 
     const slug = destination.slug || destination.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const saved = await db.saveDestination({ ...destination, slug });
-    
+    await logAudit(admin, destination.id ? "update" : "create", "destination", saved.id, saved.name);
+
     revalidatePath("/destinations");
     revalidatePath(`/destinations/${saved.slug}`);
     return { success: true, destination: saved };
@@ -196,6 +223,7 @@ export async function deleteDestinationAction(id: string): Promise<{ success: bo
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteDestination(id);
+    await logAudit(admin, "delete", "destination", id);
     revalidatePath("/destinations");
     return { success: true };
   } catch (e: any) {
@@ -212,6 +240,7 @@ export async function saveGuideAction(guide: Omit<Guide, "id" | "created_at"> & 
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveGuide(guide);
+    await logAudit(admin, guide.id ? "update" : "create", "guide", saved.id, saved.name);
     revalidatePath("/admin/guides");
     return { success: true, guide: saved };
   } catch (e: any) {
@@ -225,6 +254,7 @@ export async function deleteGuideAction(id: string): Promise<{ success: boolean;
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteGuide(id);
+    await logAudit(admin, "delete", "guide", id);
     revalidatePath("/admin/guides");
     return { success: true };
   } catch (e: any) {
@@ -241,6 +271,7 @@ export async function saveVehicleAction(vehicle: Omit<Vehicle, "id" | "created_a
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveVehicle(vehicle);
+    await logAudit(admin, vehicle.id ? "update" : "create", "vehicle", saved.id, `${saved.type} — ${saved.license_plate}`);
     revalidatePath("/admin/vehicles");
     return { success: true, vehicle: saved };
   } catch (e: any) {
@@ -254,6 +285,7 @@ export async function deleteVehicleAction(id: string): Promise<{ success: boolea
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteVehicle(id);
+    await logAudit(admin, "delete", "vehicle", id);
     revalidatePath("/admin/vehicles");
     return { success: true };
   } catch (e: any) {
@@ -270,6 +302,7 @@ export async function saveHotelAction(hotel: Omit<Hotel, "id" | "created_at"> & 
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveHotel(hotel);
+    await logAudit(admin, hotel.id ? "update" : "create", "hotel", saved.id, saved.name);
     revalidatePath("/admin/hotels");
     return { success: true, hotel: saved };
   } catch (e: any) {
@@ -283,6 +316,7 @@ export async function deleteHotelAction(id: string): Promise<{ success: boolean;
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteHotel(id);
+    await logAudit(admin, "delete", "hotel", id);
     revalidatePath("/admin/hotels");
     return { success: true };
   } catch (e: any) {
@@ -316,6 +350,7 @@ export async function updateReviewStatusAction(id: string, status: "Approved" | 
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.updateReviewStatus(id, status);
+    await logAudit(admin, "update_status", "review", id, `status → ${status}`);
     revalidatePath("/admin/reviews");
     return { success: true };
   } catch (e: any) {
@@ -329,6 +364,7 @@ export async function deleteReviewAction(id: string): Promise<{ success: boolean
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteReview(id);
+    await logAudit(admin, "delete", "review", id);
     revalidatePath("/admin/reviews");
     return { success: true };
   } catch (e: any) {
@@ -346,7 +382,8 @@ export async function saveBlogAction(blog: Omit<Blog, "id" | "created_at"> & { i
 
     const slug = blog.slug || blog.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const saved = await db.saveBlog({ ...blog, slug });
-    
+    await logAudit(admin, blog.id ? "update" : "create", "blog", saved.id, saved.title);
+
     revalidatePath("/blog");
     revalidatePath(`/blog/${saved.slug}`);
     return { success: true, blog: saved };
@@ -361,6 +398,7 @@ export async function deleteBlogAction(id: string): Promise<{ success: boolean; 
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteBlog(id);
+    await logAudit(admin, "delete", "blog", id);
     revalidatePath("/blog");
     return { success: true };
   } catch (e: any) {
@@ -377,6 +415,7 @@ export async function saveTestimonialAction(testimonial: Omit<Testimonial, "id" 
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveTestimonial(testimonial);
+    await logAudit(admin, testimonial.id ? "update" : "create", "testimonial", saved.id, saved.customer_name);
     revalidatePath("/");
     revalidatePath("/admin/testimonials");
     return { success: true, testimonial: saved };
@@ -391,6 +430,7 @@ export async function deleteTestimonialAction(id: string): Promise<{ success: bo
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteTestimonial(id);
+    await logAudit(admin, "delete", "testimonial", id);
     revalidatePath("/");
     revalidatePath("/admin/testimonials");
     return { success: true };
@@ -408,6 +448,7 @@ export async function savePartnerAction(partner: Omit<Partner, "id" | "created_a
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.savePartner(partner);
+    await logAudit(admin, partner.id ? "update" : "create", "partner", saved.id, saved.name);
     revalidatePath("/");
     revalidatePath("/admin/partners");
     return { success: true, partner: saved };
@@ -422,6 +463,7 @@ export async function deletePartnerAction(id: string): Promise<{ success: boolea
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deletePartner(id);
+    await logAudit(admin, "delete", "partner", id);
     revalidatePath("/");
     revalidatePath("/admin/partners");
     return { success: true };
@@ -439,6 +481,7 @@ export async function saveFaqAction(faq: Omit<Faq, "id" | "created_at"> & { id?:
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveFaq(faq);
+    await logAudit(admin, faq.id ? "update" : "create", "faq", saved.id, saved.question);
     revalidatePath("/");
     revalidatePath("/admin/faqs");
     return { success: true, faq: saved };
@@ -453,6 +496,7 @@ export async function deleteFaqAction(id: string): Promise<{ success: boolean; e
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteFaq(id);
+    await logAudit(admin, "delete", "faq", id);
     revalidatePath("/");
     revalidatePath("/admin/faqs");
     return { success: true };
@@ -470,6 +514,7 @@ export async function saveGalleryImageAction(image: Omit<GalleryImage, "id" | "c
     if (!admin) return { success: false, error: "Unauthorized." };
 
     const saved = await db.saveGalleryImage(image);
+    await logAudit(admin, image.id ? "update" : "create", "gallery_image", saved.id, saved.caption);
     revalidatePath("/");
     revalidatePath("/admin/gallery");
     return { success: true, image: saved };
@@ -484,6 +529,7 @@ export async function deleteGalleryImageAction(id: string): Promise<{ success: b
     if (!admin) return { success: false, error: "Unauthorized." };
 
     await db.deleteGalleryImage(id);
+    await logAudit(admin, "delete", "gallery_image", id);
     revalidatePath("/");
     revalidatePath("/admin/gallery");
     return { success: true };
