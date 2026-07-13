@@ -112,21 +112,17 @@ app throws on first session read.
 
 ## Known gaps / roadmap (as of the last audit)
 
-Phase 1 (auth security) is done — see git log. Still outstanding, roughly in
-priority order:
+Phase 1 (auth security) is done — see git log. Also done since: homepage
+testimonials/partners are wired to the DB with admin CRUD, all admin
+modules (hotels, vehicles, guides, customers, reviews, blog) now exist, and
+the homepage FAQ accordion, newsletter signup, and photo gallery sections
+are wired to the DB (`db.getFaqs()`, `POST /api/newsletter` → `db.
+addSubscriber()`, `db.getGalleryImages()`) with admin CRUD at `/admin/faqs`
+and `/admin/gallery`. Still outstanding, roughly in priority order:
 
-- [ ] **Kill hardcoded homepage mock data.** `src/app/page.tsx` has
-  hardcoded `testimonials` and `partners` arrays. The DB types/adapters for
-  `Testimonial` and `Partner` already exist (Phase 1) — wire the homepage to
-  fetch from `db.getTestimonials()` / `db.getPartners()` and build an admin
-  CRUD page for both.
-- [ ] Missing admin modules: `/admin/hotels`, `/admin/vehicles`,
-  `/admin/guides`, `/admin/customers`, `/admin/reviews`, `/admin/blog` — the
-  sidebar in `admin/layout.tsx` links to all of these but only bookings,
-  destinations, and tours actually exist. These are dead links today.
-- [ ] Homepage missing sections from spec: FAQ (DB model `Faq` exists),
-  newsletter signup (`NewsletterSubscriber` model exists), a real
-  gallery/albums feature (`GalleryImage` model exists), Instagram feed.
+- [ ] Instagram feed on the homepage — no real API integration exists yet;
+  needs a live Instagram Graph API token before it can be built (no
+  mock/placeholder data allowed per Hard Rule 1).
 - [ ] Customer portal: no "save favorite tours" feature yet (`Profile.
   favorite_tour_ids` field exists on the type, not wired to UI/actions).
 - [ ] SEO: only a single static title/description in root `layout.tsx`. No

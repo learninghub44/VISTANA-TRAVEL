@@ -4,7 +4,7 @@ import { db } from "@/services/db";
 import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
-import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner } from "@/services/db/types";
+import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage } from "@/services/db/types";
 import { getSession } from "@/services/auth/session";
 import { revalidatePath } from "next/cache";
 
@@ -427,6 +427,68 @@ export async function deletePartnerAction(id: string): Promise<{ success: boolea
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message || "Failed to delete partner." };
+  }
+}
+
+// ----------------------------------------------------
+// FAQ Actions
+// ----------------------------------------------------
+export async function saveFaqAction(faq: Omit<Faq, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; faq?: Faq; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveFaq(faq);
+    revalidatePath("/");
+    revalidatePath("/admin/faqs");
+    return { success: true, faq: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save FAQ." };
+  }
+}
+
+export async function deleteFaqAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteFaq(id);
+    revalidatePath("/");
+    revalidatePath("/admin/faqs");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete FAQ." };
+  }
+}
+
+// ----------------------------------------------------
+// Gallery Actions
+// ----------------------------------------------------
+export async function saveGalleryImageAction(image: Omit<GalleryImage, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; image?: GalleryImage; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveGalleryImage(image);
+    revalidatePath("/");
+    revalidatePath("/admin/gallery");
+    return { success: true, image: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save gallery image." };
+  }
+}
+
+export async function deleteGalleryImageAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteGalleryImage(id);
+    revalidatePath("/");
+    revalidatePath("/admin/gallery");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete gallery image." };
   }
 }
 

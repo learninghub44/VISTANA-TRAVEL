@@ -6,7 +6,9 @@ import HomeSearch from "@/components/layout/HomeSearch";
 import TourCard from "@/components/ui/TourCard";
 import DestinationCard from "@/components/ui/DestinationCard";
 import BlogCard from "@/components/ui/BlogCard";
-import { ShieldCheck, Compass, Users, Heart, Star, ArrowRight } from "lucide-react";
+import FaqAccordion from "@/components/ui/FaqAccordion";
+import NewsletterSignup from "@/components/ui/NewsletterSignup";
+import { ShieldCheck, Compass, Users, Heart, Star, ArrowRight, Camera } from "lucide-react";
 
 export default async function HomePage() {
   // Fetch data directly in server component
@@ -15,6 +17,8 @@ export default async function HomePage() {
   const blogs = await db.getBlogs();
   const partners = await db.getPartners();
   const testimonials = await db.getTestimonials(true);
+  const faqs = await db.getFaqs();
+  const galleryImages = await db.getGalleryImages();
 
   return (
     <>
@@ -263,6 +267,71 @@ export default async function HomePage() {
               <BlogCard key={blog.id} blog={blog} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="py-24 bg-slate-50 dark:bg-[#070a12] transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Moments Captured</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+              Photo Gallery
+            </h2>
+          </div>
+
+          {galleryImages.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {galleryImages.slice(0, 8).map((g) => (
+                <div key={g.id} className="relative aspect-square rounded-2xl overflow-hidden group">
+                  <img
+                    src={g.image_url}
+                    alt={g.caption || "Vistana Tours gallery photo"}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {g.caption && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-white text-xs font-medium">{g.caption}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/80 rounded-3xl py-16">
+              <Camera className="h-8 w-8 text-slate-350 dark:text-slate-600 mb-3" />
+              <p className="text-xs text-slate-450 dark:text-slate-500">No gallery photos available yet.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-24 bg-white dark:bg-[#0b0f19] transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Good to Know</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <FaqAccordion faqs={faqs} />
+        </div>
+      </section>
+
+      {/* Newsletter Signup Section */}
+      <section className="py-20 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-2">Stay Inspired</span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4">
+            Join Our Safari Newsletter
+          </h2>
+          <p className="text-sm text-slate-400 max-w-lg mx-auto mb-8">
+            Get travel inspiration, seasonal offers, and East Africa safari tips delivered straight to your inbox.
+          </p>
+          <NewsletterSignup />
         </div>
       </section>
 
