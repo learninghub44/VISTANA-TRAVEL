@@ -1,0 +1,401 @@
+"use server";
+
+import { db } from "@/services/db";
+import { storage } from "@/services/storage";
+import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
+import { whatsapp } from "@/services/whatsapp";
+import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile } from "@/services/db/types";
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+
+// Auth helper for server actions
+async function getAdminSession(): Promise<Profile | null> {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("vistana_session")?.value;
+  if (!sessionId) return null;
+  
+  const profile = await db.getProfileById(sessionId);
+  if (!profile || profile.role !== "admin") return null;
+  return profile;
+}
+
+async function getCustomerSession(): Promise<Profile | null> {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("vistana_session")?.value;
+  if (!sessionId) return null;
+  
+  const profile = await db.getProfileById(sessionId);
+  return profile || null;
+}
+
+// ----------------------------------------------------
+// Image Upload Action
+// ----------------------------------------------------
+export async function uploadImageAction(formData: FormData): Promise<{ url: string }> {
+  const file = formData.get("file") as File;
+  if (!file) throw new Error("No file uploaded");
+  
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const url = await storage.uploadImage(buffer, file.name, file.type);
+  return { url };
+}
+
+// ----------------------------------------------------
+// Booking Actions
+// ----------------------------------------------------
+export async function createBookingAction(data: {
+  tourId: string;
+  startDate: string;
+  endDate: string;
+  adults: number;
+  children: number;
+  specialRequests?: string;
+}): Promise<{ success: boolean; bookingId?: string; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) {
+      return { success: false, error: "Please log in to make a booking." };
+    }
+
+    const tours = await db.getTours();
+    const tour = tours.find((t) => t.id === data.tourId);
+    if (!tour) {
+      return { success: false, error: "Selected tour package not found." };
+    }
+
+    // Simple pricing: full price for adults, 50% for children
+    const pricePerAdult = tour.price_usd;
+    const pricePerChild = tour.price_usd * 0.5;
+    const totalPrice = data.adults * pricePerAdult + data.children * pricePerChild;
+
+    const newBooking: Omit<Booking, "id" | "created_at"> = {
+      tour_id: data.tourId,
+      customer_id: customer.id,
+      start_date: data.startDate,
+      end_date: data.endDate,
+      adults: data.adults,
+      children: data.children,
+      special_requests: data.specialRequests,
+      status: "Pending",
+      total_price: totalPrice,
+    };
+
+    const saved = await db.saveBooking(newBooking);
+
+    // Send notifications async (non-blocking)
+    sendBookingConfirmationEmail(saved, tour, customer.email, customer.name).catch(console.error);
+    if (customer.phone) {
+      whatsapp.notifyBookingRequest(saved, tour, customer.phone, customer.name).catch(console.error);
+    }
+
+    revalidatePath("/portal");
+    return { success: true, bookingId: saved.id };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to submit booking request." };
+  }
+}
+
+export async function updateBookingStatusAction(
+  bookingId: string,
+  updates: {
+    status: Booking["status"];
+    guideId?: string;
+    vehicleId?: string;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
+
+    const booking = await db.getBookingById(bookingId);
+    if (!booking) return { success: false, error: "Booking not found." };
+
+    const tours = await db.getTours();
+    const tour = tours.find((t) => t.id === booking.tour_id);
+    if (!tour) return { success: false, error: "Associated tour not found." };
+
+    const updatedBooking: Booking = {
+      ...booking,
+      status: updates.status,
+      guide_id: updates.guideId !== undefined ? updates.guideId : booking.guide_id,
+      vehicle_id: updates.vehicleId !== undefined ? updates.vehicleId : booking.vehicle_id,
+    };
+
+    await db.saveBooking(updatedBooking);
+
+    // Notify Customer of Status Update
+    const customer = await db.getProfileById(booking.customer_id);
+    if (customer) {
+      sendBookingStatusUpdateEmail(updatedBooking, tour, customer.email, customer.name).catch(console.error);
+      if (customer.phone) {
+        whatsapp.notifyBookingStatusChanged(updatedBooking, tour, customer.phone, customer.name).catch(console.error);
+      }
+    }
+
+    revalidatePath("/admin/bookings");
+    revalidatePath("/portal");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to update booking status." };
+  }
+}
+
+// ----------------------------------------------------
+// Tour Actions
+// ----------------------------------------------------
+export async function saveTourAction(tour: Omit<Tour, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; tour?: Tour; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
+
+    const slug = tour.slug || tour.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const saved = await db.saveTour({ ...tour, slug });
+    
+    revalidatePath("/tours");
+    revalidatePath(`/tours/${saved.slug}`);
+    return { success: true, tour: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save tour package." };
+  }
+}
+
+export async function deleteTourAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
+
+    await db.deleteTour(id);
+    revalidatePath("/tours");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete tour package." };
+  }
+}
+
+// ----------------------------------------------------
+// Destination Actions
+// ----------------------------------------------------
+export async function saveDestinationAction(destination: Omit<Destination, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; destination?: Destination; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const slug = destination.slug || destination.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const saved = await db.saveDestination({ ...destination, slug });
+    
+    revalidatePath("/destinations");
+    revalidatePath(`/destinations/${saved.slug}`);
+    return { success: true, destination: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save destination." };
+  }
+}
+
+export async function deleteDestinationAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteDestination(id);
+    revalidatePath("/destinations");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete destination." };
+  }
+}
+
+// ----------------------------------------------------
+// Guide Actions
+// ----------------------------------------------------
+export async function saveGuideAction(guide: Omit<Guide, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; guide?: Guide; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveGuide(guide);
+    revalidatePath("/admin/guides");
+    return { success: true, guide: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save guide." };
+  }
+}
+
+export async function deleteGuideAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteGuide(id);
+    revalidatePath("/admin/guides");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete guide." };
+  }
+}
+
+// ----------------------------------------------------
+// Vehicle Actions
+// ----------------------------------------------------
+export async function saveVehicleAction(vehicle: Omit<Vehicle, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; vehicle?: Vehicle; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveVehicle(vehicle);
+    revalidatePath("/admin/vehicles");
+    return { success: true, vehicle: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save vehicle." };
+  }
+}
+
+export async function deleteVehicleAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteVehicle(id);
+    revalidatePath("/admin/vehicles");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete vehicle." };
+  }
+}
+
+// ----------------------------------------------------
+// Hotel Actions
+// ----------------------------------------------------
+export async function saveHotelAction(hotel: Omit<Hotel, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; hotel?: Hotel; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveHotel(hotel);
+    revalidatePath("/admin/hotels");
+    return { success: true, hotel: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save hotel profile." };
+  }
+}
+
+export async function deleteHotelAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteHotel(id);
+    revalidatePath("/admin/hotels");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete hotel." };
+  }
+}
+
+// ----------------------------------------------------
+// Review Actions
+// ----------------------------------------------------
+export async function submitReviewAction(review: Omit<Review, "id" | "created_at" | "status">): Promise<{ success: boolean; review?: Review; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    const customerName = customer ? customer.name : review.customer_name || "Anonymous Traveler";
+
+    const saved = await db.saveReview({
+      ...review,
+      customer_name: customerName,
+      status: "Pending", // Admin must approve
+    });
+    
+    return { success: true, review: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to submit review." };
+  }
+}
+
+export async function updateReviewStatusAction(id: string, status: "Approved" | "Rejected"): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.updateReviewStatus(id, status);
+    revalidatePath("/admin/reviews");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to update review status." };
+  }
+}
+
+export async function deleteReviewAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteReview(id);
+    revalidatePath("/admin/reviews");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete review." };
+  }
+}
+
+// ----------------------------------------------------
+// Blog Actions
+// ----------------------------------------------------
+export async function saveBlogAction(blog: Omit<Blog, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; blog?: Blog; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const slug = blog.slug || blog.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const saved = await db.saveBlog({ ...blog, slug });
+    
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${saved.slug}`);
+    return { success: true, blog: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save blog post." };
+  }
+}
+
+export async function deleteBlogAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteBlog(id);
+    revalidatePath("/blog");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete blog post." };
+  }
+}
+
+export async function cancelBookingAction(bookingId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) return { success: false, error: "Please log in first." };
+
+    const booking = await db.getBookingById(bookingId);
+    if (!booking) return { success: false, error: "Booking not found." };
+    if (booking.customer_id !== customer.id) return { success: false, error: "Unauthorized." };
+
+    if (booking.status === "Paid" || booking.status === "Completed") {
+      return { success: false, error: "This booking is already paid or completed. Please contact support to request a refund." };
+    }
+
+    const updatedBooking: Booking = { ...booking, status: "Cancelled" };
+    await db.saveBooking(updatedBooking);
+
+    // Notify email
+    const tours = await db.getTours();
+    const tour = tours.find((t) => t.id === booking.tour_id);
+    if (tour) {
+      sendBookingStatusUpdateEmail(updatedBooking, tour, customer.email, customer.name).catch(console.error);
+    }
+
+    revalidatePath("/portal");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to cancel booking." };
+  }
+}

@@ -1,0 +1,145 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Compass, Mail, Lock, User, Phone } from "lucide-react";
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, password }),
+      });
+
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(data.error || "Failed to register.");
+      } else {
+        router.push("/portal");
+        router.refresh();
+      }
+    } catch (err) {
+      setLoading(false);
+      setError("An unexpected error occurred. Please try again.");
+    }
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#070a12] p-4 sm:p-6 transition-colors">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900/60 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800/80 shadow-xl flex flex-col justify-between">
+        
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
+            <Compass className="h-8 w-8 text-emerald-600 group-hover:rotate-45 transition-transform duration-300" />
+            <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-emerald-800 to-emerald-600 dark:from-emerald-400 dark:to-emerald-200 bg-clip-text text-transparent">
+              Vistana
+            </span>
+          </Link>
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Create Account</h2>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            Join Vistana to customize and manage your bespoke safaris.
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-550 pl-1">Full Name</label>
+            <div className="relative flex items-center">
+              <User className="absolute left-3.5 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Jane Doe"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-550 pl-1">Email Address</label>
+            <div className="relative flex items-center">
+              <Mail className="absolute left-3.5 h-4 w-4 text-slate-400" />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-550 pl-1">Phone Number</label>
+            <div className="relative flex items-center">
+              <Phone className="absolute left-3.5 h-4 w-4 text-slate-400" />
+              <input
+                type="tel"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+254 700 000 000"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-450 dark:text-slate-550 pl-1">Password</label>
+            <div className="relative flex items-center">
+              <Lock className="absolute left-3.5 h-4 w-4 text-slate-400" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Minimum 6 characters"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+              />
+            </div>
+          </div>
+
+          {error && <p className="text-xs text-red-500 font-medium pl-1">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center cursor-pointer"
+          >
+            {loading ? "Creating Account..." : "Register"}
+          </button>
+        </form>
+
+        <div className="text-center mt-6 text-xs text-slate-450 dark:text-slate-550 border-t border-slate-100 dark:border-slate-800 pt-4">
+          Already have an account?{" "}
+          <Link href="/portal/login" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+            Sign In Here
+          </Link>
+        </div>
+
+      </div>
+    </main>
+  );
+}
