@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog, SiteSettings } from "./types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -387,6 +387,29 @@ class SupabaseDbAdapter implements DatabaseAdapter {
   }
   async addAuditLog(log: Omit<AuditLog, "id" | "created_at">): Promise<AuditLog> {
     const { data, error } = await this.client.from("audit_logs").insert(log).select().single();
+    if (error) throw error;
+    return data;
+  }
+
+  // Site Settings — single row keyed by a fixed id
+  // Required Supabase table (see AGENTS.md — no migrations folder yet):
+  //   create table site_settings (
+  //     id text primary key default 'site-settings',
+  //     facebook_url text, instagram_url text, twitter_url text,
+  //     tiktok_url text, youtube_url text, linkedin_url text,
+  //     whatsapp_number text, updated_at timestamptz not null default now()
+  //   );
+  async getSiteSettings(): Promise<SiteSettings> {
+    const { data, error } = await this.client.from("site_settings").select("*").eq("id", "site-settings").maybeSingle();
+    if (error) throw error;
+    return data || { id: "site-settings", updated_at: new Date().toISOString() };
+  }
+  async saveSiteSettings(settings: Partial<Omit<SiteSettings, "id" | "updated_at">>): Promise<SiteSettings> {
+    const { data, error } = await this.client
+      .from("site_settings")
+      .upsert({ ...settings, id: "site-settings", updated_at: new Date().toISOString() })
+      .select()
+      .single();
     if (error) throw error;
     return data;
   }

@@ -561,6 +561,33 @@ export async function toggleFavoriteTourAction(tourId: string): Promise<{ succes
   }
 }
 
+// ----------------------------------------------------
+// Site Settings Actions (social links, etc.)
+// ----------------------------------------------------
+export async function saveSiteSettingsAction(settings: {
+  facebook_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  tiktok_url?: string;
+  youtube_url?: string;
+  linkedin_url?: string;
+  whatsapp_number?: string;
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
+
+    await db.saveSiteSettings(settings);
+    await logAudit(admin, "update", "site_settings", "site-settings", "Updated social media links");
+
+    revalidatePath("/");
+    revalidatePath("/admin/settings");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save settings." };
+  }
+}
+
 export async function cancelBookingAction(bookingId: string): Promise<{ success: boolean; error?: string }> {
   try {
     const customer = await getCustomerSession();

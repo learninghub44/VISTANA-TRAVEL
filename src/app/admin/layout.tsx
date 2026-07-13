@@ -19,7 +19,8 @@ import {
   Quote,
   Handshake,
   HelpCircle,
-  Images
+  Images,
+  Settings
 } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -52,6 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { name: "Partners", href: "/admin/partners", icon: Handshake },
     { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
     { name: "Gallery", href: "/admin/gallery", icon: Images },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   return (

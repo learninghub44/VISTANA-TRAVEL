@@ -179,6 +179,18 @@ export interface AuditLog {
   created_at: string;
 }
 
+export interface SiteSettings {
+  id: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  tiktok_url?: string;
+  youtube_url?: string;
+  linkedin_url?: string;
+  whatsapp_number?: string;
+  updated_at: string;
+}
+
 export interface DatabaseAdapter {
   // Destinations
   getDestinations(): Promise<Destination[]>;
@@ -260,4 +272,8 @@ export interface DatabaseAdapter {
   // Audit Logs
   getAuditLogs(limit?: number): Promise<AuditLog[]>;
   addAuditLog(log: Omit<AuditLog, "id" | "created_at">): Promise<AuditLog>;
+
+  // Site Settings (social links, etc.)
+  getSiteSettings(): Promise<SiteSettings>;
+  saveSiteSettings(settings: Partial<Omit<SiteSettings, "id" | "updated_at">>): Promise<SiteSettings>;
 }

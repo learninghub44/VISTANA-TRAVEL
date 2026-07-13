@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -21,6 +21,7 @@ interface LocalDbSchema {
   subscribers: NewsletterSubscriber[];
   gallery: GalleryImage[];
   audit_logs: AuditLog[];
+  settings: SiteSettings;
 }
 
 // Helper to generate UUIDs locally
@@ -442,7 +443,8 @@ const initialData: LocalDbSchema = {
   faqs: [],
   subscribers: [],
   gallery: [],
-  audit_logs: []
+  audit_logs: [],
+  settings: { id: "site-settings", updated_at: new Date().toISOString() }
 };
 
 class LocalDbAdapter implements DatabaseAdapter {
@@ -467,6 +469,7 @@ class LocalDbAdapter implements DatabaseAdapter {
         subscribers: parsed.subscribers || [],
         gallery: parsed.gallery || [],
         audit_logs: parsed.audit_logs || [],
+        settings: parsed.settings || initialData.settings,
       };
     } catch (e) {
       console.error("Failed to read local DB file, returning seed data", e);
@@ -1022,6 +1025,20 @@ class LocalDbAdapter implements DatabaseAdapter {
     db.audit_logs.push(newItem);
     this.writeDb(db);
     return newItem;
+  }
+
+  // Site Settings
+  async getSiteSettings(): Promise<SiteSettings> {
+    const db = this.readDb();
+    return db.settings || { id: "site-settings", updated_at: new Date().toISOString() };
+  }
+  async saveSiteSettings(settings: Partial<Omit<SiteSettings, "id" | "updated_at">>): Promise<SiteSettings> {
+    const db = this.readDb();
+    const current = db.settings || { id: "site-settings", updated_at: new Date().toISOString() };
+    const updated: SiteSettings = { ...current, ...settings, id: "site-settings", updated_at: new Date().toISOString() };
+    db.settings = updated;
+    this.writeDb(db);
+    return updated;
   }
 }
 

@@ -1,7 +1,23 @@
 import Link from "next/link";
-import { Compass, Mail, Phone, MapPin, Send, Globe, Camera, AtSign } from "lucide-react";
+import { Compass, Mail, Phone, MapPin, Send, Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle } from "lucide-react";
+import { db } from "@/services/db";
 
-export default function Footer() {
+const SOCIAL_LINKS_CONFIG = [
+  { key: "facebook_url" as const, label: "Facebook", icon: Globe },
+  { key: "instagram_url" as const, label: "Instagram", icon: Camera },
+  { key: "twitter_url" as const, label: "Twitter / X", icon: AtSign },
+  { key: "tiktok_url" as const, label: "TikTok", icon: Music2 },
+  { key: "youtube_url" as const, label: "YouTube", icon: Play },
+  { key: "linkedin_url" as const, label: "LinkedIn", icon: Briefcase },
+];
+
+export default async function Footer() {
+  const settings = await db.getSiteSettings();
+  const activeSocialLinks = SOCIAL_LINKS_CONFIG.filter((s) => settings[s.key]);
+  const whatsappHref = settings.whatsapp_number
+    ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}`
+    : null;
+
   return (
     <footer className="bg-slate-900 text-slate-300 dark:bg-[#070a12] border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -18,17 +34,33 @@ export default function Footer() {
             <p className="text-sm text-slate-400 leading-relaxed">
               Crafting premium, tailored safaris and travel experiences across Kenya, Tanzania, Zanzibar, and East Africa. Let us guide you on your next unforgettable journey.
             </p>
-            <div className="flex space-x-4 pt-2">
-              <Link href="#" aria-label="Facebook" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <Globe className="h-4 w-4" />
-              </Link>
-              <Link href="#" aria-label="Instagram" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <Camera className="h-4 w-4" />
-              </Link>
-              <Link href="#" aria-label="Twitter / X" className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all">
-                <AtSign className="h-4 w-4" />
-              </Link>
-            </div>
+            {(activeSocialLinks.length > 0 || whatsappHref) && (
+              <div className="flex space-x-4 pt-2">
+                {activeSocialLinks.map(({ key, label, icon: Icon }) => (
+                  <Link
+                    key={key}
+                    href={settings[key] as string}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </Link>
+                ))}
+                {whatsappHref && (
+                  <Link
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="WhatsApp"
+                    className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}
