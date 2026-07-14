@@ -1,0 +1,49 @@
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright (c) 2026 Vistana Tours & Travel. All rights reserved.
+
+This software and associated documentation files (the "Software") are the
+confidential and proprietary property of Vistana Tours & Travel ("Owner").
+
+1. GRANT OF RIGHTS
+   No license, right, or interest in the Software is granted to any person
+   or entity except as expressly authorized in writing by the Owner. All
+   rights not expressly granted are reserved by the Owner.
+
+2. RESTRICTIONS
+   Except as expressly permitted in writing by the Owner, no person may:
+   (a) copy, reproduce, distribute, publish, or disclose the Software or
+       any part of it to any third party;
+   (b) modify, adapt, translate, reverse engineer, decompile, or
+       disassemble the Software;
+   (c) sublicense, sell, rent, lease, or otherwise transfer rights to the
+       Software;
+   (d) remove or alter any copyright, trademark, or other proprietary
+       notice contained in the Software.
+
+3. AUTHORIZED USE
+   Access to and use of the Software is limited to individuals and
+   entities expressly authorized by the Owner (including its engaged
+   developers and contractors), solely for the purpose of developing,
+   maintaining, deploying, and operating the Software on behalf of the
+   Owner.
+
+4. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE OWNER OR ITS DEVELOPERS BE
+   LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE
+   OF THE SOFTWARE.
+
+5. THIRD-PARTY COMPONENTS
+   The Software incorporates open-source third-party packages (see
+   `package.json`), each governed by its own license. This proprietary
+   license applies only to the original code authored for this project
+   and does not alter the license terms of those third-party components.
+
+6. GOVERNING LAW
+   This license is governed by the laws of the United Republic of
+   Tanzania, without regard to its conflict-of-laws principles.
+
+For licensing inquiries, contact Vistana Tours & Travel directly.
