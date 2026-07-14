@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ContactForm from "@/components/contact/ContactForm";
-import { Mail, Phone, MapPin, Compass, MessageSquare } from "lucide-react";
+import { Mail, MapPin, Compass, MessageSquare, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -96,6 +96,32 @@ export default function ContactPage() {
                 </div>
               </div>
 
+              {/* Business Hours */}
+              <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm">
+                <h3 className="font-serif font-bold text-lg pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-navy-500" />
+                  <span>Business Hours</span>
+                </h3>
+                <ul className="mt-4 space-y-2 text-xs text-slate-500 dark:text-slate-400">
+                  <li className="flex justify-between">
+                    <span>Monday – Friday</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">7:00 AM – 8:00 PM</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Saturday</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">8:00 AM – 6:00 PM</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Sunday</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">9:00 AM – 3:00 PM</span>
+                  </li>
+                  <li className="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800/50">
+                    <span>WhatsApp Support</span>
+                    <span className="font-semibold text-gold-600 dark:text-gold-400">24/7</span>
+                  </li>
+                </ul>
+              </div>
+
             </div>
 
             {/* Right: Contact Form */}
@@ -106,16 +132,25 @@ export default function ContactPage() {
 
           </div>
 
-          {/* Interactive Map Mock */}
-          <div className="mt-12 bg-white dark:bg-slate-900/60 p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm overflow-hidden aspect-[21/9] flex items-center justify-center relative bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80')] bg-cover bg-center">
-            {/* Glassmorphic card on map */}
-            <div className="absolute inset-0 bg-slate-950/40" />
-            <div className="relative z-10 glassmorphism p-5 rounded-2xl max-w-sm text-center border border-white/20">
-              <Compass className="h-8 w-8 text-navy-500 mx-auto animate-spin" />
-              <h4 className="font-serif font-bold text-slate-900 dark:text-white mt-2">Vistana Headquarters Location</h4>
-              <p className="text-[10px] text-slate-500 dark:text-slate-405 leading-relaxed mt-1 font-light">
-                Ngong Road, Nairobi, Kenya. Our offices are located near the forest, overlooking the Ngong Hills. Visitors are welcome for fresh East African coffee!
-              </p>
+          {/* Google Maps Embed */}
+          <div className="mt-12 bg-white dark:bg-slate-900/60 p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm overflow-hidden">
+            <div className="relative aspect-[21/9] rounded-2xl overflow-hidden">
+              <iframe
+                title="Vistana Tours & Travel — Nairobi Head Office Location"
+                src="https://www.google.com/maps?q=Ngong+Road,+Nairobi,+Kenya&output=embed"
+                className="absolute inset-0 w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <div className="absolute top-4 left-4 glassmorphism p-4 rounded-2xl max-w-xs border border-white/20 flex items-start gap-2.5">
+                <Compass className="h-5 w-5 text-navy-500 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-serif font-bold text-sm text-slate-900 dark:text-white">Vistana Headquarters</h4>
+                  <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed mt-0.5">
+                    Ngong Road, Nairobi, Kenya — visitors welcome for fresh East African coffee!
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 

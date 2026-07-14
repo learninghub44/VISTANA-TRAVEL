@@ -4,6 +4,7 @@ import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomeSearch from "@/components/layout/HomeSearch";
+import HeroFadeIn from "@/components/layout/HeroFadeIn";
 import TourCard from "@/components/ui/TourCard";
 import DestinationCard from "@/components/ui/DestinationCard";
 import BlogCard from "@/components/ui/BlogCard";
@@ -56,18 +57,35 @@ export default async function HomePage() {
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white flex flex-col items-center">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gold bg-navy/50 px-4 py-2 rounded-full border border-gold/30 backdrop-blur-md mb-6">
-            Tours · Travel · Booking
-          </span>
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-tight max-w-5xl mb-6">
-            Discover Africa&apos;s Most <br />
-            <span className="bg-gradient-to-r from-gold via-gold-300 to-ocean bg-clip-text text-transparent">
-              Unforgettable Adventures
+          <HeroFadeIn>
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gold bg-navy/50 px-4 py-2 rounded-full border border-gold/30 backdrop-blur-md mb-6 inline-block">
+              Tours · Travel · Booking
             </span>
-          </h1>
-          <p className="text-sm sm:text-lg text-slate-200 max-w-3xl mb-12 leading-relaxed font-light">
-            Book luxury safaris, hotels, flights, tours, holiday packages, and unique African experiences — all in one place.
-          </p>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-tight max-w-5xl mb-6 mx-auto">
+              Discover Africa&apos;s Most <br />
+              <span className="bg-gradient-to-r from-gold via-gold-300 to-ocean bg-clip-text text-transparent">
+                Extraordinary Adventures
+              </span>
+            </h1>
+            <p className="text-sm sm:text-lg text-slate-200 max-w-3xl mb-8 leading-relaxed font-light mx-auto">
+              Book unforgettable safaris, tours, hotels, flights, holiday packages, and unique African experiences—all from one premium travel platform.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+              <Link
+                href="/tours"
+                className="bg-gold hover:brightness-95 text-navy-950 font-bold text-sm px-8 py-3.5 rounded-full shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Explore Tours
+              </Link>
+              <Link
+                href="/contact"
+                className="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-sm px-8 py-3.5 rounded-full backdrop-blur-md hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Plan My Trip
+              </Link>
+            </div>
+          </HeroFadeIn>
 
           <HomeSearch destinations={destinations} />
         </div>
@@ -147,7 +165,7 @@ export default async function HomePage() {
               Why Discerning Travelers Choose Us
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 leading-relaxed">
-              We don't just organize trips; we curate deeply personal, immersive stories. Our commitment to luxury, local communities, and safety is unparalleled.
+              We don&apos;t just organize trips; we curate deeply personal, immersive stories. Our commitment to luxury, local communities, and safety is unparalleled.
             </p>
           </div>
 
@@ -220,7 +238,7 @@ export default async function HomePage() {
                         ))}
                       </div>
                       <p className="text-sm text-slate-300 italic leading-relaxed mb-4">
-                        "{t.content}"
+                        &quot;{t.content}&quot;
                       </p>
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-bold text-white">{t.customer_name}</span>

@@ -69,9 +69,13 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Tours", href: "/tours" },
     { name: "Destinations", href: "/destinations" },
-    { name: "Blog", href: "/blog" },
+    { name: "Safaris", href: "/safaris" },
+    { name: "Tours", href: "/tours" },
+    { name: "Hotels", href: "/hotels" },
+    { name: "Flights", href: "/flights" },
+    { name: "Holiday Packages", href: "/holiday-packages" },
+    { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
 
@@ -115,18 +119,18 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden xl:flex items-center space-x-5 2xl:space-x-6">
             {navLinks.map((link) => (
-              <Link key={link.name} href={link.href} className={`text-sm font-medium ${activeClass(link.href)}`}>
+              <Link key={link.name} href={link.href} className={`text-[13px] font-medium whitespace-nowrap ${activeClass(link.href)}`}>
                 {link.name}
               </Link>
             ))}
           </div>
 
           {/* Desktop Action Buttons */}
-          <div className="hidden lg:flex items-center space-x-3">
+          <div className="hidden xl:flex items-center space-x-3">
             {/* Language / Currency selector */}
-            <div className="relative">
+            <div className="relative hidden 2xl:block">
               <button
                 onClick={() => setLangOpen(!langOpen)}
                 className={`flex items-center space-x-1 text-xs font-semibold px-3 py-2 rounded-full border transition-colors ${
@@ -231,7 +235,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center">
+          <div className="xl:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={`p-2 focus:outline-none ${solid ? "text-navy dark:text-slate-300" : "text-white"}`}
@@ -244,7 +248,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Panel */}
       {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-navy shadow-lg border-t border-slate-200/20 px-4 pt-2 pb-6 space-y-3">
+        <div className="xl:hidden bg-white dark:bg-navy shadow-lg border-t border-slate-200/20 px-4 pt-2 pb-6 space-y-3">
           {navLinks.map((link) => (
             <Link
               key={link.name}

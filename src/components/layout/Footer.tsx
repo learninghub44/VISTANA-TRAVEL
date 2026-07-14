@@ -77,13 +77,28 @@ export default async function Footer() {
             <h3 className="text-white font-semibold mb-4 text-lg">Explore</h3>
             <ul className="space-y-2.5 text-sm">
               <li>
+                <Link href="/safaris" className="hover:text-gold-400 transition-colors">Luxury Safaris</Link>
+              </li>
+              <li>
                 <Link href="/tours" className="hover:text-gold-400 transition-colors">Featured Tours</Link>
               </li>
               <li>
                 <Link href="/destinations" className="hover:text-gold-400 transition-colors">Popular Destinations</Link>
               </li>
               <li>
+                <Link href="/hotels" className="hover:text-gold-400 transition-colors">Hotels & Resorts</Link>
+              </li>
+              <li>
+                <Link href="/holiday-packages" className="hover:text-gold-400 transition-colors">Holiday Packages</Link>
+              </li>
+              <li>
+                <Link href="/flights" className="hover:text-gold-400 transition-colors">Flights</Link>
+              </li>
+              <li>
                 <Link href="/blog" className="hover:text-gold-400 transition-colors">Travel Blog & News</Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-gold-400 transition-colors">About Us</Link>
               </li>
               <li>
                 <Link href="/faqs" className="hover:text-gold-400 transition-colors">FAQs</Link>
