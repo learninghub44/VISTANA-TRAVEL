@@ -2,12 +2,13 @@ import { redirect } from "next/navigation";
 import { db } from "@/services/db";
 import { getSession } from "@/services/auth/session";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Compass,
   LayoutDashboard,
   ClipboardList,
   MapPin,
   Map,
+  Compass,
   Hotel,
   Car,
   Users,

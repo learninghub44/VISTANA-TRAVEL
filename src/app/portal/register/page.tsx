@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Compass, Mail, Lock, User, Phone } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, User, Phone } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -48,7 +49,13 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
-            <Compass className="h-8 w-8 text-emerald-600 group-hover:rotate-45 transition-transform duration-300" />
+            <Image
+              src="/brand/vistana-icon.png"
+              alt="Vistana Tours & Travel"
+              width={40}
+              height={32}
+              className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+            />
             <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-emerald-800 to-emerald-600 dark:from-emerald-400 dark:to-emerald-200 bg-clip-text text-transparent">
               Vistana
             </span>

@@ -2,7 +2,10 @@
 
 :root {
   --background: #f8fafc;
-  --foreground: #0f172a;
+  --foreground: #0B1F3A;
+  --brand-navy: #0B1F3A;
+  --brand-ocean: #0099E6;
+  --brand-gold: #F4A825;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,8 +18,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans), system-ui, sans-serif;
-  --font-serif: var(--font-serif), Georgia, serif;
+  --color-navy: var(--brand-navy);
+  --color-ocean: var(--brand-ocean);
+  --color-gold: var(--brand-gold);
+  --font-sans: var(--font-sans), Manrope, "DM Sans", Sora, system-ui, sans-serif;
+  --font-serif: var(--font-sans), Manrope, "DM Sans", Sora, system-ui, sans-serif;
 }
 
 body {
@@ -39,14 +45,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.text-gradient-emerald {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+.text-gradient-navy {
+  background: linear-gradient(135deg, #0B1F3A 0%, #0099E6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  background: linear-gradient(135deg, #F4A825 0%, #d97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -71,12 +77,12 @@ body {
 
 /* Legal document typography */
 .legal-prose h2 {
-  font-family: var(--font-serif), Georgia, serif;
   font-weight: 700;
   font-size: 1.125rem;
-  color: #0f172a;
+  color: #0B1F3A;
   padding-top: 0.5rem;
 }
+
 
 .dark .legal-prose h2 {
   color: #f8fafc;

@@ -32,34 +32,32 @@ export default async function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-12 overflow-hidden bg-slate-950">
-        {/* Background Image with Parallax look */}
+      <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden bg-navy">
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1920&q=80"
-            alt="East Africa Safari Hero"
-            className="w-full h-full object-cover opacity-60 scale-105 animate-[pulse_10s_infinite]"
+            alt="Maasai Mara safari at sunset"
+            className="w-full h-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-slate-950/60" />
-          <div className="absolute inset-0 bg-emerald-950/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/40" />
         </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white flex flex-col items-center">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/40 px-4 py-2 rounded-full border border-emerald-500/20 backdrop-blur-md mb-6 animate-fade-in">
-            Luxury & Adventure Travel Experts
+          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gold bg-navy/50 px-4 py-2 rounded-full border border-gold/30 backdrop-blur-md mb-6">
+            Tours · Travel · Booking
           </span>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-tight max-w-5xl mb-6">
-            Unveiling East Africa’s <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-amber-200 to-amber-400 bg-clip-text text-transparent">
-              Untamed Luxury
+            Discover Africa&apos;s Most <br />
+            <span className="bg-gradient-to-r from-gold via-amber-200 to-ocean bg-clip-text text-transparent">
+              Unforgettable Adventures
             </span>
           </h1>
           <p className="text-sm sm:text-lg text-slate-200 max-w-3xl mb-12 leading-relaxed font-light">
-            Bespoke safaris, tropical beach escapes, and high-altitude climbs across Kenya, Tanzania, and Zanzibar. Experience the wild in ultimate comfort.
+            Book luxury safaris, hotels, flights, tours, holiday packages, and unique African experiences — all in one place.
           </p>
 
-          {/* Glassmorphic Search Bar */}
           <HomeSearch destinations={destinations} />
         </div>
       </section>
@@ -69,14 +67,14 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
             <div>
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Where to go</span>
+              <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Where to go</span>
               <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
                 Popular Destinations
               </h2>
             </div>
             <Link
               href="/destinations"
-              className="inline-flex items-center space-x-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors mt-4 md:mt-0 group"
+              className="inline-flex items-center space-x-1.5 text-sm font-bold text-ocean dark:text-ocean hover:text-navy dark:hover:text-white transition-colors mt-4 md:mt-0 group"
             >
               <span>View All Destinations</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -98,14 +96,14 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
             <div>
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Handcrafted Journeys</span>
+              <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Handcrafted Journeys</span>
               <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
                 Featured Safaris & Tour Packages
               </h2>
             </div>
             <Link
               href="/tours"
-              className="inline-flex items-center space-x-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors mt-4 md:mt-0 group"
+              className="inline-flex items-center space-x-1.5 text-sm font-bold text-ocean dark:text-ocean hover:text-navy dark:hover:text-white transition-colors mt-4 md:mt-0 group"
             >
               <span>Explore All Tours</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -133,7 +131,7 @@ export default async function HomePage() {
       <section className="py-24 bg-slate-50 dark:bg-[#070a12] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">The Vistana Difference</span>
+            <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">The Vistana Difference</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
               Why Discerning Travelers Choose Us
             </h2>
@@ -145,7 +143,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Feature 1 */}
             <div className="bg-white dark:bg-slate-900/40 p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 hover:shadow-lg transition-all text-center">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5 text-emerald-600 dark:text-emerald-400">
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-ocean/10 flex items-center justify-center mb-5 text-ocean dark:text-ocean">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <h3 className="font-serif font-bold text-lg mb-2 text-slate-950 dark:text-white">5-Star Luxury Camps</h3>
@@ -156,7 +154,7 @@ export default async function HomePage() {
 
             {/* Feature 2 */}
             <div className="bg-white dark:bg-slate-900/40 p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 hover:shadow-lg transition-all text-center">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5 text-emerald-600 dark:text-emerald-400">
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-ocean/10 flex items-center justify-center mb-5 text-ocean dark:text-ocean">
                 <Compass className="h-6 w-6" />
               </div>
               <h3 className="font-serif font-bold text-lg mb-2 text-slate-950 dark:text-white">Bespoke Itineraries</h3>
@@ -167,7 +165,7 @@ export default async function HomePage() {
 
             {/* Feature 3 */}
             <div className="bg-white dark:bg-slate-900/40 p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 hover:shadow-lg transition-all text-center">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5 text-emerald-600 dark:text-emerald-400">
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-ocean/10 flex items-center justify-center mb-5 text-ocean dark:text-ocean">
                 <Users className="h-6 w-6" />
               </div>
               <h3 className="Expert Guides mb-2 font-serif font-bold text-lg text-slate-950 dark:text-white">Expert Guides</h3>
@@ -178,7 +176,7 @@ export default async function HomePage() {
 
             {/* Feature 4 */}
             <div className="bg-white dark:bg-slate-900/40 p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 hover:shadow-lg transition-all text-center">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5 text-emerald-600 dark:text-emerald-400">
+              <div className="mx-auto w-12 h-12 rounded-2xl bg-ocean/10 flex items-center justify-center mb-5 text-ocean dark:text-ocean">
                 <Heart className="h-6 w-6" />
               </div>
               <h3 className="Eco-Conscious mb-2 font-serif font-bold text-lg text-slate-950 dark:text-white">Eco-Conscious</h3>
@@ -198,7 +196,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Testimonials */}
             <div>
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-2">Guest Diaries</span>
+              <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Guest Diaries</span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold mb-8">What Our Discerning Guests Say</h2>
               
               <div className="space-y-6">
@@ -216,7 +214,7 @@ export default async function HomePage() {
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-bold text-white">{t.customer_name}</span>
                         {t.customer_location && (
-                          <span className="text-emerald-400">{t.customer_location}</span>
+                          <span className="text-gold">{t.customer_location}</span>
                         )}
                       </div>
                     </div>
@@ -229,23 +227,27 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Travel Stats */}
-            <div className="grid grid-cols-2 gap-8 text-center bg-slate-800/25 p-10 rounded-3xl border border-slate-800 backdrop-blur-md">
-              <div>
-                <span className="block font-serif text-4xl sm:text-5xl font-extrabold text-emerald-400">15k+</span>
-                <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mt-2">Happy Guests</span>
-              </div>
-              <div>
-                <span className="block font-serif text-4xl sm:text-5xl font-extrabold text-emerald-400">120+</span>
-                <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mt-2">Safari Routes</span>
-              </div>
-              <div className="border-t border-slate-800/70 pt-8">
-                <span className="block font-serif text-4xl sm:text-5xl font-extrabold text-emerald-400">98.7%</span>
-                <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mt-2">Satisfaction</span>
-              </div>
-              <div className="border-t border-slate-800/70 pt-8">
-                <span className="block font-serif text-4xl sm:text-5xl font-extrabold text-emerald-400">15+</span>
-                <span className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mt-2">Years Active</span>
+            {/* Curated Collections (replaces the old stats/counter grid) */}
+            <div>
+              <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Curated For You</span>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold mb-6">Travel Collections</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { title: "Luxury Safaris", img: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=600&q=80" },
+                  { title: "Beach Escapes", img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80" },
+                  { title: "Honeymoon Getaways", img: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=600&q=80" },
+                  { title: "Family Adventures", img: "https://images.unsplash.com/photo-1516912481808-3406841bd33c?auto=format&fit=crop&w=600&q=80" },
+                ].map((c) => (
+                  <Link
+                    key={c.title}
+                    href="/tours"
+                    className="group relative h-32 sm:h-36 rounded-2xl overflow-hidden border border-slate-800"
+                  >
+                    <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
+                    <span className="absolute bottom-3 left-3 text-sm font-bold text-white">{c.title}</span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -257,14 +259,14 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
             <div>
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Vistana Journal</span>
+              <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Vistana Journal</span>
               <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
                 Latest Travel Blog & Safari Guides
               </h2>
             </div>
             <Link
               href="/blog"
-              className="inline-flex items-center space-x-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors mt-4 md:mt-0 group"
+              className="inline-flex items-center space-x-1.5 text-sm font-bold text-ocean dark:text-ocean hover:text-navy dark:hover:text-white transition-colors mt-4 md:mt-0 group"
             >
               <span>Read Our Blog</span>
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -283,7 +285,7 @@ export default async function HomePage() {
       <section className="py-24 bg-slate-50 dark:bg-[#070a12] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Moments Captured</span>
+            <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Moments Captured</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
               Photo Gallery
             </h2>
@@ -319,7 +321,7 @@ export default async function HomePage() {
       <section className="py-24 bg-white dark:bg-[#0b0f19] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Follow Along</span>
+            <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Follow Along</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
               From Our Social Feed
             </h2>
@@ -375,7 +377,7 @@ export default async function HomePage() {
       <section className="py-24 bg-white dark:bg-[#0b0f19] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Good to Know</span>
+            <span className="text-xs font-bold text-ocean dark:text-ocean uppercase tracking-widest block mb-2">Good to Know</span>
             <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
               Frequently Asked Questions
             </h2>
@@ -389,7 +391,7 @@ export default async function HomePage() {
       <section className="py-20 bg-slate-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest block mb-2">Stay Inspired</span>
+          <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Stay Inspired</span>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4">
             Join Our Safari Newsletter
           </h2>

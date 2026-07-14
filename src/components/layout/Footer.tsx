@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Compass, Mail, Phone, MapPin, Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle } from "lucide-react";
 import { cachedDb } from "@/services/db/cached";
 import NewsletterForm from "@/components/layout/NewsletterForm";
 
@@ -27,7 +28,13 @@ export default async function Footer() {
           {/* Brand Info */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
-              <Compass className="h-8 w-8 text-emerald-400" />
+              <Image
+                src="/brand/vistana-icon.png"
+                alt="Vistana Tours & Travel"
+                width={40}
+                height={32}
+                className="h-9 w-auto"
+              />
               <span className="font-serif text-2xl font-bold tracking-wide text-white">
                 Vistana
               </span>
