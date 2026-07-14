@@ -19,8 +19,8 @@
   // (CI secrets, or a local .env.production).
   "vars": {
     "NEXT_PUBLIC_APP_URL": "",
-    "NEXT_PUBLIC_SUPABASE_URL": "",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": ""
+    "NEXT_PUBLIC_SUPABASE_URL": "https://dlrnotppcknihunkuuuw.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_EjMiT_Puk7XIqQFMhjZ6lQ_NSq_rFK2"
   },
   "observability": {
     "enabled": true
