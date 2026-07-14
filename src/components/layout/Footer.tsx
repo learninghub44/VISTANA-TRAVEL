@@ -21,7 +21,8 @@ export default async function Footer() {
     : null;
 
   return (
-    <footer className="bg-slate-900 text-slate-300 dark:bg-[#070a12] border-t border-slate-800">
+    <footer className="relative bg-gradient-to-b from-slate-900 to-navy-950 dark:from-[#070a12] dark:to-navy-950 text-slate-300 overflow-hidden">
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold-500/60 to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           
@@ -51,7 +52,7 @@ export default async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="p-2 bg-slate-800 hover:bg-navy-600 rounded-full text-slate-400 hover:text-white transition-all"
+                    className="p-2.5 bg-white/5 hover:bg-gold-500 rounded-xl text-slate-400 hover:text-navy-950 border border-white/10 hover:border-gold-500 transition-all duration-300"
                   >
                     <Icon className="h-4 w-4" />
                   </Link>
@@ -62,7 +63,7 @@ export default async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-2 bg-slate-800 hover:bg-navy-600 rounded-full text-slate-400 hover:text-white transition-all"
+                    className="p-2.5 bg-white/5 hover:bg-gold-500 rounded-xl text-slate-400 hover:text-navy-950 border border-white/10 hover:border-gold-500 transition-all duration-300"
                   >
                     <MessageCircle className="h-4 w-4" />
                   </Link>
@@ -76,19 +77,19 @@ export default async function Footer() {
             <h3 className="text-white font-semibold mb-4 text-lg">Explore</h3>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/tours" className="hover:text-navy-400 transition-colors">Featured Tours</Link>
+                <Link href="/tours" className="hover:text-gold-400 transition-colors">Featured Tours</Link>
               </li>
               <li>
-                <Link href="/destinations" className="hover:text-navy-400 transition-colors">Popular Destinations</Link>
+                <Link href="/destinations" className="hover:text-gold-400 transition-colors">Popular Destinations</Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-navy-400 transition-colors">Travel Blog & News</Link>
+                <Link href="/blog" className="hover:text-gold-400 transition-colors">Travel Blog & News</Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-navy-400 transition-colors">Contact Us</Link>
+                <Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link>
               </li>
               <li>
-                <Link href="/portal" className="hover:text-navy-400 transition-colors">Customer Portal</Link>
+                <Link href="/portal" className="hover:text-gold-400 transition-colors">Customer Portal</Link>
               </li>
             </ul>
           </div>
@@ -98,17 +99,17 @@ export default async function Footer() {
             <h3 className="text-white font-semibold mb-4 text-lg">Contact Us</h3>
             <ul className="space-y-3.5 text-sm">
               <li className="flex items-start space-x-2.5">
-                <MapPin className="h-5 w-5 text-navy-400 shrink-0 mt-0.5" />
+                <MapPin className="h-5 w-5 text-gold-500 shrink-0 mt-0.5" />
                 <span className="text-slate-400 leading-tight">
                   Vistana Plaza, Ngong Road,<br />Nairobi, Kenya
                 </span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <Phone className="h-5 w-5 text-navy-400 shrink-0" />
+                <Phone className="h-5 w-5 text-gold-500 shrink-0" />
                 <span className="text-slate-400">+254 700 123 456</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <Mail className="h-5 w-5 text-navy-400 shrink-0" />
+                <Mail className="h-5 w-5 text-gold-500 shrink-0" />
                 <span className="text-slate-400">info@vistanatours.com</span>
               </li>
             </ul>
@@ -125,18 +126,18 @@ export default async function Footer() {
 
         </div>
 
-        <hr className="border-slate-800 my-10" />
+        <hr className="border-white/10 my-10" />
 
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} Vistana Tours & Travel. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0">
-            <Link href="/privacy-policy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
-            <Link href="/terms-of-service" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
-            <Link href="/refund-policy" className="hover:text-slate-400 transition-colors">Refund Policy</Link>
-            <Link href="/dpa" className="hover:text-slate-400 transition-colors">DPA</Link>
-            <Link href="/msa" className="hover:text-slate-400 transition-colors">MSA</Link>
-            <Link href="/cyber-liability-insurance" className="hover:text-slate-400 transition-colors">Cyber Insurance</Link>
-            <Link href="/sitemap.xml" className="hover:text-slate-400 transition-colors">Sitemap</Link>
+            <Link href="/privacy-policy" className="hover:text-gold-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-gold-400 transition-colors">Terms of Service</Link>
+            <Link href="/refund-policy" className="hover:text-gold-400 transition-colors">Refund Policy</Link>
+            <Link href="/dpa" className="hover:text-gold-400 transition-colors">DPA</Link>
+            <Link href="/msa" className="hover:text-gold-400 transition-colors">MSA</Link>
+            <Link href="/cyber-liability-insurance" className="hover:text-gold-400 transition-colors">Cyber Insurance</Link>
+            <Link href="/sitemap.xml" className="hover:text-gold-400 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ import DestinationCard from "@/components/ui/DestinationCard";
 import BlogCard from "@/components/ui/BlogCard";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import NewsletterSignup from "@/components/ui/NewsletterSignup";
-import { ShieldCheck, Compass, Users, Heart, Star, ArrowRight, Camera } from "lucide-react";
+import { ShieldCheck, Compass, Users, Heart, Star, ArrowRight, Camera, Smartphone, Download, Bell, MapPinned } from "lucide-react";
 import { getSession } from "@/services/auth/session";
 
 export default async function HomePage() {
@@ -50,7 +50,7 @@ export default async function HomePage() {
           </span>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-tight max-w-5xl mb-6">
             Discover Africa&apos;s Most <br />
-            <span className="bg-gradient-to-r from-gold via-amber-200 to-ocean bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-gold via-gold-300 to-ocean bg-clip-text text-transparent">
               Unforgettable Adventures
             </span>
           </h1>
@@ -190,7 +190,7 @@ export default async function HomePage() {
 
       {/* Travel Stats & Testimonials Section */}
       <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.08),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(244,168,37,0.08),transparent)]" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -203,7 +203,7 @@ export default async function HomePage() {
                 {testimonials.length > 0 ? (
                   testimonials.slice(0, 2).map((t) => (
                     <div key={t.id} className="bg-slate-800/50 border border-slate-700/40 p-6 sm:p-8 rounded-2xl backdrop-blur-sm">
-                      <div className="flex space-x-1 mb-4 text-amber-400">
+                      <div className="flex space-x-1 mb-4 text-gold-400">
                         {[...Array(t.rating)].map((_, i) => (
                           <Star key={i} className="h-4 w-4 fill-current" />
                         ))}
@@ -387,9 +387,78 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Mobile App Promotion Section */}
+      <section className="py-24 bg-navy-950 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(0,153,230,0.12),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(244,168,37,0.08),transparent)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Copy + CTAs */}
+            <div>
+              <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Vistana On the Go</span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight">
+                Book, Track, and Explore from Your Pocket
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed mb-8 max-w-lg">
+                Get the Vistana app for real-time booking updates, exclusive mobile-only offers, and a digital passport of every safari and getaway you take with us.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                {[
+                  { icon: Bell, label: "Live trip alerts" },
+                  { icon: MapPinned, label: "Offline itineraries" },
+                  { icon: Download, label: "Mobile-only deals" },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <Icon className="h-4 w-4 text-gold-400 shrink-0" />
+                    <span className="text-xs font-medium text-slate-200">{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="#"
+                  className="flex items-center gap-2.5 bg-white text-navy-950 px-5 py-3 rounded-xl font-semibold text-sm hover:bg-slate-100 transition-colors shadow-lg"
+                >
+                  <Smartphone className="h-5 w-5" />
+                  Get it on iOS
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-2.5 bg-transparent border border-white/25 text-white px-5 py-3 rounded-xl font-semibold text-sm hover:bg-white/10 transition-colors"
+                >
+                  <Smartphone className="h-5 w-5" />
+                  Get it on Android
+                </Link>
+              </div>
+            </div>
+
+            {/* Phone mockup */}
+            <div className="relative flex justify-center lg:justify-end">
+              <div className="relative w-56 sm:w-64 aspect-[9/19] rounded-[2.5rem] border-[6px] border-slate-800 bg-slate-900 shadow-2xl overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=500&q=80"
+                  alt="Vistana mobile app preview"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent" />
+                <div className="absolute bottom-5 inset-x-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3">
+                  <p className="text-[10px] text-gold-300 font-semibold uppercase tracking-wider mb-1">Upcoming Trip</p>
+                  <p className="text-xs text-white font-bold">Maasai Mara Safari — 3 days</p>
+                </div>
+              </div>
+              {/* Decorative glow */}
+              <div className="absolute -z-10 w-64 h-64 bg-gold-500/10 rounded-full blur-3xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter Signup Section */}
       <section className="py-20 bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,153,230,0.08),transparent)]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Stay Inspired</span>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4">
