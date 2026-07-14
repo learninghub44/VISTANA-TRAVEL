@@ -30,11 +30,11 @@ export default async function Footer() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/brand/vistana-icon.png"
+                src="/brand/vistana-icon-transparent.png"
                 alt="Vistana Tours & Travel"
-                width={40}
-                height={32}
-                className="h-9 w-auto"
+                width={46}
+                height={37}
+                className="h-10 w-auto object-contain"
               />
               <span className="font-serif text-2xl font-bold tracking-wide text-white">
                 Vistana

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, Lock, User, Phone } from "lucide-react";
+import { Mail, Lock, User, Phone, ArrowRight } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -33,6 +33,7 @@ export default function RegisterPage() {
       if (!res.ok) {
         setError(data.error || "Failed to register.");
       } else {
+        window.dispatchEvent(new Event("vistana:auth-changed"));
         router.push("/portal");
         router.refresh();
       }
@@ -43,28 +44,58 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#070a12] p-4 sm:p-6 transition-colors">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900/60 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800/80 shadow-xl flex flex-col justify-between">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
-            <Image
-              src="/brand/vistana-icon.png"
-              alt="Vistana Tours & Travel"
-              width={40}
-              height={32}
-              className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
-            />
-            <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-navy-800 to-navy-600 dark:from-navy-400 dark:to-navy-200 bg-clip-text text-transparent">
-              Vistana
-            </span>
+    <main className="min-h-screen flex bg-slate-50 dark:bg-[#070a12] transition-colors">
+      {/* Image side */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80"
+          alt="Safari guide overlooking the Serengeti plains"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/30 to-navy-950/10" />
+        <div className="relative z-10 flex flex-col justify-between p-10 w-full">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-semibold w-fit transition-colors">
+            <ArrowRight className="h-4 w-4 rotate-180" />
+            Back to Home
           </Link>
-          <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Create Account</h2>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            Join Vistana to customize and manage your bespoke safaris.
-          </p>
+          <div>
+            <span className="text-xs font-bold text-gold uppercase tracking-widest block mb-2">Join Vistana</span>
+            <h2 className="font-serif text-3xl font-bold text-white leading-tight max-w-sm">
+              Create an account and start planning your bespoke East Africa adventure.
+            </h2>
+          </div>
         </div>
+      </div>
+
+      {/* Form side */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900/60 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800/80 shadow-xl flex flex-col justify-between">
+
+          {/* Mobile back-to-home link (image side is hidden below lg) */}
+          <Link href="/" className="lg:hidden inline-flex items-center gap-2 text-navy-600 dark:text-navy-400 hover:text-navy-700 text-xs font-semibold w-fit mb-6">
+            <ArrowRight className="h-3.5 w-3.5 rotate-180" />
+            Back to Home
+          </Link>
+
+          {/* Header */}
+          <div className="text-center mb-8">
+            <Link href="/" className="inline-flex items-center space-x-2 group mb-4">
+              <Image
+                src="/brand/vistana-icon-transparent.png"
+                alt="Vistana Tours & Travel"
+                width={46}
+                height={37}
+                className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+              />
+              <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-navy-800 to-navy-600 dark:from-navy-400 dark:to-navy-200 bg-clip-text text-transparent">
+                Vistana
+              </span>
+            </Link>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Create Account</h2>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+              Join Vistana to customize and manage your bespoke safaris.
+            </p>
+          </div>
 
         {/* Form */}
         <form onSubmit={handleRegister} className="space-y-4">
@@ -146,6 +177,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
+        </div>
       </div>
     </main>
   );

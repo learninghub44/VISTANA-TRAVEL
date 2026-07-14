@@ -19,23 +19,33 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const fetchSession = async () => {
-    try {
-      const res = await fetch("/api/auth/session");
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (e) {
-      setUser(null);
-    }
-  };
-
   useEffect(() => {
-    fetchSession();
-  }, [pathname]);
+    let cancelled = false;
+
+    const loadSession = async () => {
+      try {
+        const res = await fetch("/api/auth/session");
+        if (cancelled) return;
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        if (!cancelled) setUser(null);
+      }
+    };
+
+    loadSession();
+    // Re-check only when explicitly told to (login/logout), not on every route change.
+    window.addEventListener("vistana:auth-changed", loadSession);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("vistana:auth-changed", loadSession);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +62,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
+    window.dispatchEvent(new Event("vistana:auth-changed"));
     router.push("/");
     router.refresh();
   };
@@ -87,11 +98,11 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group shrink-0">
             <Image
-              src="/brand/vistana-icon.png"
+              src="/brand/vistana-icon-transparent.png"
               alt="Vistana Tours & Travel"
-              width={40}
-              height={32}
-              className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+              width={46}
+              height={37}
+              className="h-10 sm:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
               priority
             />
             <span
