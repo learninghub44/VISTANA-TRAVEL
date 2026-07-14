@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import DestinationCard from "@/components/ui/DestinationCard";
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function DestinationsPage() {
-  const destinations = await db.getDestinations();
-  const tours = await db.getTours();
+  const destinations = await cachedDb.getDestinations();
+  const tours = await cachedDb.getTours();
 
   return (
     <>

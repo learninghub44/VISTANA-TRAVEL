@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BookingForm from "@/components/tours/BookingForm";
@@ -12,7 +13,7 @@ import type { Metadata } from "next";
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const params = await props.params;
-  const tour = await db.getTourBySlug(params.slug);
+  const tour = await cachedDb.getTourBySlug(params.slug);
   if (!tour) return {};
 
   const description = tour.description.length > 155 ? `${tour.description.slice(0, 152)}...` : tour.description;
@@ -40,16 +41,16 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 
 export default async function TourDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const tour = await db.getTourBySlug(params.slug);
+  const tour = await cachedDb.getTourBySlug(params.slug);
 
   if (!tour) {
     notFound();
   }
 
-  const destination = (await db.getDestinations()).find((d) => d.id === tour.destination_id);
-  const guides = await db.getGuides();
+  const destination = (await cachedDb.getDestinations()).find((d) => d.id === tour.destination_id);
+  const guides = await cachedDb.getGuides();
   const guide = tour.guide_id ? guides.find((g) => g.id === tour.guide_id) : null;
-  const approvedReviews = await db.getReviews(tour.id, true);
+  const approvedReviews = await cachedDb.getApprovedReviews(tour.id);
 
   const session = await getSession();
   const profile = session ? await db.getProfileById(session.sub) : null;

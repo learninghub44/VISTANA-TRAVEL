@@ -13,10 +13,15 @@ vi.mock("next/headers", () => ({
     set: () => {},
     delete: () => {},
   }),
+  headers: async () => ({
+    get: () => null,
+  }),
 }));
 
 vi.mock("next/cache", () => ({
   revalidatePath: () => {},
+  updateTag: () => {},
+  unstable_cache: (fn: (...args: any[]) => any) => fn,
 }));
 
 process.env.SESSION_SECRET = "test-session-secret-at-least-32-chars-long";

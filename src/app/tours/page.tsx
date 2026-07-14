@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import TourCard from "@/components/ui/TourCard";
@@ -22,8 +23,8 @@ interface SearchParams {
 
 export default async function ToursPage(props: { searchParams: Promise<SearchParams> }) {
   const searchParams = await props.searchParams;
-  const destinations = await db.getDestinations();
-  const allTours = await db.getTours();
+  const destinations = await cachedDb.getDestinations();
+  const allTours = await cachedDb.getTours();
 
   const session = await getSession();
   const profile = session ? await db.getProfileById(session.sub) : null;

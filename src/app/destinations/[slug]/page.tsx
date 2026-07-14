@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import TourCard from "@/components/ui/TourCard";
@@ -9,7 +10,7 @@ import type { Metadata } from "next";
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const params = await props.params;
-  const destination = await db.getDestinationBySlug(params.slug);
+  const destination = await cachedDb.getDestinationBySlug(params.slug);
   if (!destination) return {};
 
   const description = destination.overview.length > 155 ? `${destination.overview.slice(0, 152)}...` : destination.overview;
@@ -37,13 +38,13 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 
 export default async function DestinationDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const destination = await db.getDestinationBySlug(params.slug);
+  const destination = await cachedDb.getDestinationBySlug(params.slug);
 
   if (!destination) {
     notFound();
   }
 
-  const allTours = await db.getTours();
+  const allTours = await cachedDb.getTours();
   const matchingTours = allTours.filter((t) => t.destination_id === destination.id);
 
   return (

@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { notFound } from "next/navigation";
@@ -8,7 +9,7 @@ import type { Metadata } from "next";
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const params = await props.params;
-  const blog = await db.getBlogBySlug(params.slug);
+  const blog = await cachedDb.getBlogBySlug(params.slug);
   if (!blog) return {};
 
   const plainText = blog.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -38,7 +39,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
 
 export default async function BlogDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const blog = await db.getBlogBySlug(params.slug);
+  const blog = await cachedDb.getBlogBySlug(params.slug);
 
   if (!blog) {
     notFound();

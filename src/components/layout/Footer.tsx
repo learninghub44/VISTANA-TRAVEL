@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Compass, Mail, Phone, MapPin, Send, Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle } from "lucide-react";
-import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 
 const SOCIAL_LINKS_CONFIG = [
   { key: "facebook_url" as const, label: "Facebook", icon: Globe },
@@ -12,7 +12,7 @@ const SOCIAL_LINKS_CONFIG = [
 ];
 
 export default async function Footer() {
-  const settings = await db.getSiteSettings();
+  const settings = await cachedDb.getSiteSettings();
   const activeSocialLinks = SOCIAL_LINKS_CONFIG.filter((s) => settings[s.key]);
   const whatsappHref = settings.whatsapp_number
     ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}`

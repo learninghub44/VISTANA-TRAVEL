@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomeSearch from "@/components/layout/HomeSearch";
@@ -13,14 +14,14 @@ import { getSession } from "@/services/auth/session";
 
 export default async function HomePage() {
   // Fetch data directly in server component
-  const destinations = await db.getDestinations();
-  const tours = await db.getTours();
-  const blogs = await db.getBlogs();
-  const partners = await db.getPartners();
-  const testimonials = await db.getTestimonials(true);
-  const faqs = await db.getFaqs();
-  const galleryImages = await db.getGalleryImages();
-  const socialPosts = await db.getSocialPosts();
+  const destinations = await cachedDb.getDestinations();
+  const tours = await cachedDb.getTours();
+  const blogs = await cachedDb.getBlogs();
+  const partners = await cachedDb.getPartners();
+  const testimonials = await cachedDb.getTestimonials(true);
+  const faqs = await cachedDb.getFaqs();
+  const galleryImages = await cachedDb.getGalleryImages();
+  const socialPosts = await cachedDb.getSocialPosts();
 
   const session = await getSession();
   const profile = session ? await db.getProfileById(session.sub) : null;

@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BlogCard from "@/components/ui/BlogCard";
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogListPage() {
-  const blogs = await db.getBlogs();
+  const blogs = await cachedDb.getBlogs();
 
   return (
     <>
