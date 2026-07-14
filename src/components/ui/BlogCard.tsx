@@ -14,7 +14,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
   });
 
   return (
-    <article className="group bg-white dark:bg-slate-900/60 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 dark:border-slate-800/80 flex flex-col h-full">
+    <article className="group bg-white dark:bg-slate-900/60 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-slate-100 dark:border-slate-800/80 flex flex-col h-full">
       {/* Blog Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 shrink-0">
         <img
@@ -24,7 +24,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
           loading="lazy"
         />
         {/* Category Tag */}
-        <span className="absolute top-4 left-4 bg-emerald-600/90 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm shadow-md">
+        <span className="absolute top-4 left-4 bg-navy-600/90 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm shadow-md">
           {blog.category}
         </span>
       </div>
@@ -45,7 +45,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="font-serif text-base sm:text-lg font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-3">
+          <h3 className="font-serif text-base sm:text-lg font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-navy-600 dark:group-hover:text-navy-400 transition-colors mb-3">
             <Link href={`/blog/${blog.slug}`}>
               {blog.title}
             </Link>
@@ -61,7 +61,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
         <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
           <Link
             href={`/blog/${blog.slug}`}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors group/btn"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-navy-600 dark:text-navy-400 hover:text-navy-700 dark:hover:text-navy-300 transition-colors group/btn"
           >
             <span>Read Article</span>
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

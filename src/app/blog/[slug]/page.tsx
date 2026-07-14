@@ -74,7 +74,7 @@ export default async function BlogDetailPage(props: { params: Promise<{ slug: st
           {/* Back button */}
           <Link
             href="/blog"
-            className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-705 transition-colors mb-6 group"
+            className="inline-flex items-center space-x-1.5 text-xs font-bold text-navy-600 dark:text-navy-400 hover:text-navy-705 transition-colors mb-6 group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Journal</span>
@@ -82,7 +82,7 @@ export default async function BlogDetailPage(props: { params: Promise<{ slug: st
 
           {/* Heading */}
           <header className="space-y-4 mb-8">
-            <span className="bg-emerald-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+            <span className="bg-navy-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block">
               {blog.category}
             </span>
             

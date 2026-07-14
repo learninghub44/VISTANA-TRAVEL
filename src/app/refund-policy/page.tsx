@@ -14,7 +14,7 @@ export default function RefundPolicyPage() {
         <p>
           This Refund Policy explains how cancellations, date changes, and refunds are handled for
           bookings made with <strong>Vistana Tours &amp; Travel</strong>. It forms part of our{" "}
-          <a href="/terms-of-service" className="text-emerald-600 dark:text-emerald-400 underline">Terms of Service</a>.
+          <a href="/terms-of-service" className="text-navy-600 dark:text-navy-400 underline">Terms of Service</a>.
           Where a specific tour, hotel, or Supplier has different published conditions (for example
           a non-refundable peak-season rate), those conditions will be shown at checkout and take
           precedence over the general schedule below.

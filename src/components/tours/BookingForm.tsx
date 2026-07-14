@@ -109,15 +109,15 @@ export default function BookingForm({ tour }: BookingFormProps) {
 
   if (success) {
     return (
-      <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-500/20 rounded-3xl p-8 text-center text-slate-800 dark:text-slate-200 shadow-lg">
-        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600 dark:text-emerald-400">
+      <div className="bg-navy-50 dark:bg-navy-950/20 border border-navy-500/20 rounded-3xl p-8 text-center text-slate-800 dark:text-slate-200 shadow-lg">
+        <div className="w-16 h-16 bg-navy-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-navy-600 dark:text-navy-400">
           <Sparkles className="h-8 w-8 animate-pulse" />
         </div>
-        <h3 className="font-serif text-2xl font-bold text-emerald-800 dark:text-emerald-400 mb-2">Request Submitted!</h3>
+        <h3 className="font-serif text-2xl font-bold text-navy-800 dark:text-navy-400 mb-2">Request Submitted!</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 max-w-sm mx-auto">
           Thank you for choosing Vistana. Your booking request for <strong>{tour.title}</strong> is pending confirmation. An email details sheet has been dispatched.
         </p>
-        <p className="text-[10px] text-emerald-600 dark:text-emerald-500 font-semibold animate-pulse">
+        <p className="text-[10px] text-navy-600 dark:text-navy-500 font-semibold animate-pulse">
           Redirecting to your portal...
         </p>
       </div>
@@ -138,7 +138,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
               min={new Date().toISOString().split("T")[0]}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm focus:ring-1 focus:ring-emerald-500 outline-none text-slate-800 dark:text-slate-200 cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm focus:ring-1 focus:ring-navy-500 outline-none text-slate-800 dark:text-slate-200 cursor-pointer"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
             <select
               value={adults}
               onChange={(e) => setAdults(parseInt(e.target.value))}
-              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-emerald-500 text-slate-850 dark:text-slate-200 cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-navy-500 text-slate-850 dark:text-slate-200 cursor-pointer"
             >
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                 <option key={num} value={num}>
@@ -164,7 +164,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
             <select
               value={children}
               onChange={(e) => setChildren(parseInt(e.target.value))}
-              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-emerald-500 text-slate-850 dark:text-slate-200 cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-navy-500 text-slate-850 dark:text-slate-200 cursor-pointer"
             >
               {[0, 1, 2, 3, 4, 5, 6].map((num) => (
                 <option key={num} value={num}>
@@ -182,7 +182,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
             value={specialRequests}
             onChange={(e) => setSpecialRequests(e.target.value)}
             placeholder="Dietary requests, guides preference, extra transfer luggage..."
-            className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-emerald-500 text-slate-800 dark:text-slate-200 resize-none h-20"
+            className="w-full bg-slate-50 dark:bg-slate-850 border-none rounded-xl py-3 px-4 text-sm outline-none focus:ring-1 focus:ring-navy-500 text-slate-800 dark:text-slate-200 resize-none h-20"
           />
         </div>
 
@@ -191,7 +191,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
           <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 pl-1">
             Supporting Documents <span className="normal-case font-medium text-slate-400">(optional — passport scan, visa letter, etc.)</span>
           </label>
-          <label className="flex items-center justify-center space-x-2 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl py-3 px-4 text-xs text-slate-500 dark:text-slate-400 cursor-pointer hover:border-emerald-500 hover:text-emerald-600 transition-colors">
+          <label className="flex items-center justify-center space-x-2 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl py-3 px-4 text-xs text-slate-500 dark:text-slate-400 cursor-pointer hover:border-navy-500 hover:text-navy-600 transition-colors">
             <FileUp className="h-4 w-4" />
             <span>Click to attach PDF, JPG, or PNG (max 8MB each)</span>
             <input
@@ -213,7 +213,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
                   className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-850 rounded-lg py-2 px-3 text-slate-600 dark:text-slate-300"
                 >
                   <span className="flex items-center space-x-1.5 truncate">
-                    <FileCheck2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                    <FileCheck2 className="h-3.5 w-3.5 text-navy-600 shrink-0" />
                     <span className="truncate">{file.name}</span>
                   </span>
                   <button
@@ -259,7 +259,7 @@ export default function BookingForm({ tour }: BookingFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center"
+          className="w-full bg-navy-600 hover:bg-navy-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center"
         >
           {uploadingDocs ? "Uploading documents..." : loading ? "Processing..." : "Submit Booking Request"}
         </button>

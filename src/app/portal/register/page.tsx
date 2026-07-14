@@ -56,7 +56,7 @@ export default function RegisterPage() {
               height={32}
               className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-emerald-800 to-emerald-600 dark:from-emerald-400 dark:to-emerald-200 bg-clip-text text-transparent">
+            <span className="font-serif text-2xl font-bold tracking-wide bg-gradient-to-r from-navy-800 to-navy-600 dark:from-navy-400 dark:to-navy-200 bg-clip-text text-transparent">
               Vistana
             </span>
           </Link>
@@ -78,7 +78,7 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jane Doe"
-                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-navy-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
               />
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-navy-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
               />
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+254 700 000 000"
-                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-navy-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 characters"
-                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-emerald-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
+                className="w-full bg-slate-50 dark:bg-slate-850/50 border border-transparent focus:border-navy-600/30 rounded-xl py-3 pl-11 pr-4 text-sm outline-none text-slate-800 dark:text-slate-200"
               />
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center cursor-pointer"
+            className="w-full bg-navy-600 hover:bg-navy-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-sm flex items-center justify-center cursor-pointer"
           >
             {loading ? "Creating Account..." : "Register"}
           </button>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
         <div className="text-center mt-6 text-xs text-slate-450 dark:text-slate-550 border-t border-slate-100 dark:border-slate-800 pt-4">
           Already have an account?{" "}
-          <Link href="/portal/login" className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">
+          <Link href="/portal/login" className="text-navy-600 dark:text-navy-400 font-bold hover:underline">
             Sign In Here
           </Link>
         </div>

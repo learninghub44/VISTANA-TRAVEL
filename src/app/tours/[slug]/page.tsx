@@ -110,7 +110,7 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-white w-full">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="bg-emerald-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
+              <span className="bg-navy-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4 inline-block">
                 {tour.category}
               </span>
               <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight max-w-4xl mb-4 leading-tight">
@@ -127,11 +127,11 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
 
           <div className="flex flex-wrap gap-y-2 gap-x-6 items-center text-xs text-slate-300">
             <span className="flex items-center space-x-1">
-              <MapPin className="h-4 w-4 text-emerald-400" />
+              <MapPin className="h-4 w-4 text-navy-400" />
               <span>{destination ? destination.name : "East Africa"}</span>
             </span>
             <span className="flex items-center space-x-1">
-              <Clock className="h-4 w-4 text-emerald-400" />
+              <Clock className="h-4 w-4 text-navy-400" />
               <span>{tour.duration_days} Days</span>
             </span>
             <span className="flex items-center space-x-1 bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded-full font-semibold">
@@ -187,14 +187,14 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
                     >
                       <summary className="flex justify-between items-center focus:outline-none list-none">
                         <div className="flex items-center space-x-3.5">
-                          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
+                          <span className="flex-shrink-0 w-8 h-8 rounded-full bg-navy-500/10 text-navy-600 dark:text-navy-400 font-bold text-xs flex items-center justify-center">
                             {day.day}
                           </span>
                           <span className="font-serif font-bold text-sm sm:text-base text-slate-900 dark:text-white">
                             {day.title}
                           </span>
                         </div>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold group-open:hidden">Expand</span>
+                        <span className="text-xs text-navy-600 dark:text-navy-400 font-semibold group-open:hidden">Expand</span>
                         <span className="text-xs text-slate-400 font-semibold hidden group-open:inline">Collapse</span>
                       </summary>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-relaxed pl-11">
@@ -209,11 +209,11 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Inclusions */}
                 <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm">
-                  <h3 className="font-serif font-bold text-lg mb-4 text-emerald-700 dark:text-emerald-400">What's Included</h3>
+                  <h3 className="font-serif font-bold text-lg mb-4 text-navy-700 dark:text-navy-400">What's Included</h3>
                   <ul className="space-y-2.5 text-xs text-slate-650 dark:text-slate-300">
                     {tour.inclusions.map((inc, i) => (
                       <li key={i} className="flex items-start space-x-2">
-                        <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                        <Check className="h-4 w-4 text-navy-500 shrink-0 mt-0.5" />
                         <span>{inc}</span>
                       </li>
                     ))}
@@ -239,10 +239,10 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
                   <img
                     src={guide.image_url}
                     alt={guide.name}
-                    className="w-16 h-16 rounded-full object-cover shrink-0 border border-emerald-500/20"
+                    className="w-16 h-16 rounded-full object-cover shrink-0 border border-navy-500/20"
                   />
                   <div className="text-center sm:text-left flex-grow">
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-semibold">Your Safari Naturalist Guide</span>
+                    <span className="text-[10px] text-navy-600 dark:text-navy-400 uppercase tracking-widest font-semibold">Your Safari Naturalist Guide</span>
                     <h3 className="font-serif font-bold text-base text-slate-900 dark:text-white mt-0.5">{guide.name}</h3>
                     <p className="text-xs text-slate-450 dark:text-slate-400 mt-1">
                       Speaks: {guide.languages.join(", ")} | {guide.experience_years} Years Experience
@@ -266,7 +266,7 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
                     >
                       <summary className="flex justify-between items-center focus:outline-none list-none">
                         <span className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-slate-200 flex items-center space-x-2">
-                          <HelpCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                          <HelpCircle className="h-4 w-4 text-navy-500 shrink-0" />
                           <span>{faq.question}</span>
                         </span>
                         <span className="text-xs text-slate-400 group-open:rotate-180 transition-transform font-bold">&#9662;</span>
@@ -321,9 +321,9 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
               <BookingForm tour={tour} />
               
               <div className="bg-slate-900 text-white rounded-3xl p-6 text-center border border-slate-850 relative overflow-hidden">
-                <div className="absolute inset-0 bg-emerald-950/20" />
+                <div className="absolute inset-0 bg-navy-950/20" />
                 <div className="relative z-10 space-y-3.5">
-                  <Shield className="h-8 w-8 text-emerald-400 mx-auto" />
+                  <Shield className="h-8 w-8 text-navy-400 mx-auto" />
                   <h4 className="font-bold text-sm text-slate-100">Safe & Secure Booking</h4>
                   <p className="text-[10px] text-slate-400 leading-relaxed">
                     Your details are protected with 256-bit SSL encryption. Future-ready modules for direct payments are fully sandboxed.

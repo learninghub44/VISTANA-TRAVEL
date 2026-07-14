@@ -20,7 +20,7 @@ export default async function BlogListPage() {
 
       {/* Header */}
       <section className="bg-slate-900 text-white pt-32 pb-16 relative">
-        <div className="absolute inset-0 bg-emerald-950/20" />
+        <div className="absolute inset-0 bg-navy-950/20" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h1 className="font-serif text-3xl sm:text-5xl font-extrabold mb-3">Vistana Travel Journal</h1>
           <p className="text-slate-300 text-xs sm:text-sm font-light max-w-2xl mx-auto">

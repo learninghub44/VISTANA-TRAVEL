@@ -68,7 +68,7 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
       
       {/* Small Header */}
       <section className="bg-slate-900 text-white pt-32 pb-16 relative">
-        <div className="absolute inset-0 bg-emerald-950/20" />
+        <div className="absolute inset-0 bg-navy-950/20" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h1 className="font-serif text-3xl sm:text-5xl font-extrabold mb-3">Our Tour Packages</h1>
           <p className="text-slate-300 text-xs sm:text-sm font-light max-w-2xl mx-auto">
@@ -86,7 +86,7 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
             <aside className="lg:sticky lg:top-24 bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm">
               <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <span className="font-bold flex items-center space-x-2 text-slate-800 dark:text-slate-200">
-                  <Filter className="h-4 w-4 text-emerald-500" />
+                  <Filter className="h-4 w-4 text-navy-500" />
                   <span>Filters</span>
                 </span>
                 {(fDest || fCat || fPrice || fDur) && (
@@ -108,8 +108,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                     href={`/tours?${new URLSearchParams({ ...searchParams, destination: "" }).toString()}`}
                     className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                       !fDest
-                        ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                        : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                        ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                        : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                     }`}
                   >
                     All Destinations
@@ -120,8 +120,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                       href={`/tours?${new URLSearchParams({ ...searchParams, destination: d.id }).toString()}`}
                       className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                         fDest === d.id
-                          ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                          : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                          ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                          : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                       }`}
                     >
                       {d.name}
@@ -138,8 +138,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                     href={`/tours?${new URLSearchParams({ ...searchParams, category: "" }).toString()}`}
                     className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                       !fCat
-                        ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                        : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                        ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                        : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                     }`}
                   >
                     All Styles
@@ -150,8 +150,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                       href={`/tours?${new URLSearchParams({ ...searchParams, category: c }).toString()}`}
                       className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                         fCat.toLowerCase() === c.toLowerCase()
-                          ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                          : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                          ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                          : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                       }`}
                     >
                       {c}
@@ -176,8 +176,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                       href={`/tours?${new URLSearchParams({ ...searchParams, price: p.value }).toString()}`}
                       className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                         (p.value === "" && !fPrice) || (fPrice.toString() === p.value)
-                          ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                          : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                          ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                          : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                       }`}
                     >
                       {p.label}
@@ -201,8 +201,8 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                       href={`/tours?${new URLSearchParams({ ...searchParams, duration: d.value }).toString()}`}
                       className={`block text-xs py-1.5 px-3 rounded-lg transition-colors ${
                         fDur === d.value
-                          ? "bg-emerald-50 text-emerald-700 font-bold dark:bg-emerald-950/20 dark:text-emerald-300"
-                          : "text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400"
+                          ? "bg-navy-50 text-navy-700 font-bold dark:bg-navy-950/20 dark:text-navy-300"
+                          : "text-slate-600 hover:text-navy-600 dark:text-slate-300 dark:hover:text-navy-400"
                       }`}
                     >
                       {d.label}
@@ -244,7 +244,7 @@ export default async function ToursPage(props: { searchParams: Promise<SearchPar
                   </p>
                   <Link
                     href="/tours"
-                    className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all"
+                    className="mt-6 text-xs bg-navy-600 hover:bg-navy-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all"
                   >
                     Reset Filters
                   </Link>

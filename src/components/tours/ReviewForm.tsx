@@ -48,14 +48,14 @@ export default function ReviewForm({ tourId }: ReviewFormProps) {
 
   if (success) {
     return (
-      <div className="bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-500/10 rounded-2xl p-6 text-center">
-        <h4 className="font-bold text-emerald-800 dark:text-emerald-400 text-sm">Review Submitted!</h4>
+      <div className="bg-navy-50 dark:bg-navy-950/10 border border-navy-500/10 rounded-2xl p-6 text-center">
+        <h4 className="font-bold text-navy-800 dark:text-navy-400 text-sm">Review Submitted!</h4>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
           Thank you for sharing your feedback. Your review will be displayed once approved by our moderation team.
         </p>
         <button
           onClick={() => setSuccess(false)}
-          className="mt-3 text-xs font-semibold text-emerald-600 dark:text-emerald-400 underline decoration-dotted"
+          className="mt-3 text-xs font-semibold text-navy-600 dark:text-navy-400 underline decoration-dotted"
         >
           Submit another review
         </button>
@@ -98,7 +98,7 @@ export default function ReviewForm({ tourId }: ReviewFormProps) {
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
           placeholder="Anonymous Explorer"
-          className="w-full bg-white dark:bg-slate-950 border border-slate-250/20 rounded-xl py-2 px-3 text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-800 dark:text-slate-200"
+          className="w-full bg-white dark:bg-slate-950 border border-slate-250/20 rounded-xl py-2 px-3 text-xs outline-none focus:ring-1 focus:ring-navy-500 text-slate-800 dark:text-slate-200"
         />
       </div>
 
@@ -109,7 +109,7 @@ export default function ReviewForm({ tourId }: ReviewFormProps) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Share details of the guides, vehicles, lodges, sightings..."
-          className="w-full bg-white dark:bg-slate-950 border border-slate-250/20 rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-805 dark:text-slate-200 h-24 resize-none"
+          className="w-full bg-white dark:bg-slate-950 border border-slate-250/20 rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-navy-500 text-slate-805 dark:text-slate-200 h-24 resize-none"
         />
       </div>
 

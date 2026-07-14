@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
           Because our Suppliers, cloud infrastructure, and offices span Tanzania, Kenya, and
           providers hosted outside East Africa, personal data may be transferred across borders.
           Where data leaves Tanzania or Kenya, we rely on contractual safeguards with our
-          processors (see our <a href="/dpa" className="text-emerald-600 dark:text-emerald-400 underline">Data Processing Agreement</a>)
+          processors (see our <a href="/dpa" className="text-navy-600 dark:text-navy-400 underline">Data Processing Agreement</a>)
           and select providers that maintain appropriate technical and organizational security
           measures.
         </p>

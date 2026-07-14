@@ -51,7 +51,7 @@ export default async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={label}
-                    className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all"
+                    className="p-2 bg-slate-800 hover:bg-navy-600 rounded-full text-slate-400 hover:text-white transition-all"
                   >
                     <Icon className="h-4 w-4" />
                   </Link>
@@ -62,7 +62,7 @@ export default async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="WhatsApp"
-                    className="p-2 bg-slate-800 hover:bg-emerald-600 rounded-full text-slate-400 hover:text-white transition-all"
+                    className="p-2 bg-slate-800 hover:bg-navy-600 rounded-full text-slate-400 hover:text-white transition-all"
                   >
                     <MessageCircle className="h-4 w-4" />
                   </Link>
@@ -76,19 +76,19 @@ export default async function Footer() {
             <h3 className="text-white font-semibold mb-4 text-lg">Explore</h3>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/tours" className="hover:text-emerald-400 transition-colors">Featured Tours</Link>
+                <Link href="/tours" className="hover:text-navy-400 transition-colors">Featured Tours</Link>
               </li>
               <li>
-                <Link href="/destinations" className="hover:text-emerald-400 transition-colors">Popular Destinations</Link>
+                <Link href="/destinations" className="hover:text-navy-400 transition-colors">Popular Destinations</Link>
               </li>
               <li>
-                <Link href="/blog" className="hover:text-emerald-400 transition-colors">Travel Blog & News</Link>
+                <Link href="/blog" className="hover:text-navy-400 transition-colors">Travel Blog & News</Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-emerald-400 transition-colors">Contact Us</Link>
+                <Link href="/contact" className="hover:text-navy-400 transition-colors">Contact Us</Link>
               </li>
               <li>
-                <Link href="/portal" className="hover:text-emerald-400 transition-colors">Customer Portal</Link>
+                <Link href="/portal" className="hover:text-navy-400 transition-colors">Customer Portal</Link>
               </li>
             </ul>
           </div>
@@ -98,17 +98,17 @@ export default async function Footer() {
             <h3 className="text-white font-semibold mb-4 text-lg">Contact Us</h3>
             <ul className="space-y-3.5 text-sm">
               <li className="flex items-start space-x-2.5">
-                <MapPin className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                <MapPin className="h-5 w-5 text-navy-400 shrink-0 mt-0.5" />
                 <span className="text-slate-400 leading-tight">
                   Vistana Plaza, Ngong Road,<br />Nairobi, Kenya
                 </span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <Phone className="h-5 w-5 text-emerald-400 shrink-0" />
+                <Phone className="h-5 w-5 text-navy-400 shrink-0" />
                 <span className="text-slate-400">+254 700 123 456</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <Mail className="h-5 w-5 text-emerald-400 shrink-0" />
+                <Mail className="h-5 w-5 text-navy-400 shrink-0" />
                 <span className="text-slate-400">info@vistanatours.com</span>
               </li>
             </ul>

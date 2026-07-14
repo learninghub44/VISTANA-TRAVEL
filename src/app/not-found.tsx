@@ -5,8 +5,8 @@ export default function NotFound() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-slate-50 dark:bg-[#0b0f19] px-6">
       <div className="text-center max-w-md">
-        <div className="mx-auto mb-6 w-16 h-16 rounded-full bg-emerald-600/10 flex items-center justify-center">
-          <Compass className="w-8 h-8 text-emerald-600" strokeWidth={1.5} />
+        <div className="mx-auto mb-6 w-16 h-16 rounded-full bg-navy-600/10 flex items-center justify-center">
+          <Compass className="w-8 h-8 text-navy-600" strokeWidth={1.5} />
         </div>
         <h1 className="font-serif text-6xl text-slate-900 dark:text-slate-100 mb-2">
           404
@@ -21,7 +21,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/"
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-full font-medium transition-all hover:shadow-md"
+            className="bg-navy-600 hover:bg-navy-700 text-white px-6 py-3 rounded-full font-medium transition-all hover:shadow-md"
           >
             Back to Home
           </Link>

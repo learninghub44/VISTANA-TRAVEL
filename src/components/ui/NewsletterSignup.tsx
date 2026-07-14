@@ -35,9 +35,9 @@ export default function NewsletterSignup() {
 
   if (status === "success") {
     return (
-      <div className="flex items-center justify-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl py-4 px-6 max-w-lg mx-auto">
-        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-        <span className="text-sm text-emerald-300 font-medium">{message}</span>
+      <div className="flex items-center justify-center space-x-2 bg-navy-500/10 border border-navy-500/20 rounded-2xl py-4 px-6 max-w-lg mx-auto">
+        <CheckCircle2 className="h-5 w-5 text-navy-400 shrink-0" />
+        <span className="text-sm text-navy-300 font-medium">{message}</span>
       </div>
     );
   }
@@ -53,13 +53,13 @@ export default function NewsletterSignup() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Your email address"
-            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none focus:border-emerald-500/50 transition-colors"
+            className="w-full bg-slate-800/60 border border-slate-700/50 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none focus:border-navy-500/50 transition-colors"
           />
         </div>
         <button
           type="submit"
           disabled={status === "loading"}
-          className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white font-bold py-3 px-6 rounded-xl text-sm flex items-center justify-center space-x-2 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-navy-600 hover:bg-navy-700 disabled:opacity-60 text-white font-bold py-3 px-6 rounded-xl text-sm flex items-center justify-center space-x-2 shadow transition-colors shrink-0 cursor-pointer"
         >
           <span>{status === "loading" ? "Subscribing..." : "Subscribe"}</span>
           {status !== "loading" && <Send className="h-4 w-4" />}

@@ -34,7 +34,7 @@ export default function BookingsList({ bookings, tours, guides, vehicles }: Book
       Pending: "bg-amber-100 text-amber-800 dark:bg-amber-950/20 dark:text-amber-300 border-amber-250/20",
       Confirmed: "bg-blue-100 text-blue-800 dark:bg-blue-950/20 dark:text-blue-300 border-blue-250/20",
       "Awaiting Payment": "bg-purple-100 text-purple-800 dark:bg-purple-950/20 dark:text-purple-300 border-purple-250/20",
-      Paid: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-300 border-emerald-250/20",
+      Paid: "bg-navy-100 text-navy-800 dark:bg-navy-950/20 dark:text-navy-300 border-navy-250/20",
       Completed: "bg-slate-100 text-slate-800 dark:bg-slate-800/40 dark:text-slate-350 border-slate-700/20",
       Cancelled: "bg-red-100 text-red-800 dark:bg-red-950/20 dark:text-red-300 border-red-250/20",
       Refunded: "bg-gray-100 text-gray-800 dark:bg-gray-850 dark:text-gray-300 border-gray-700/20",
@@ -120,8 +120,8 @@ export default function BookingsList({ bookings, tours, guides, vehicles }: Book
 
                   {/* Guide and Vehicle assignments */}
                   {(guide || vehicle) && (
-                    <div className="bg-emerald-500/5 dark:bg-emerald-950/10 border border-emerald-500/10 p-4 rounded-2xl space-y-2">
-                      <h4 className="font-serif font-bold text-xs text-emerald-800 dark:text-emerald-400">Assigned Logistics</h4>
+                    <div className="bg-navy-500/5 dark:bg-navy-950/10 border border-navy-500/10 p-4 rounded-2xl space-y-2">
+                      <h4 className="font-serif font-bold text-xs text-navy-800 dark:text-navy-400">Assigned Logistics</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pl-1">
                         {guide && (
                           <div className="flex items-center space-x-3">
@@ -194,7 +194,7 @@ export default function BookingsList({ bookings, tours, guides, vehicles }: Book
           </p>
           <Link
             href="/tours"
-            className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all"
+            className="mt-6 text-xs bg-navy-600 hover:bg-navy-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all"
           >
             Browse Safari Packages
           </Link>

@@ -63,14 +63,14 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-white w-full">
-          <span className="bg-emerald-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">
+          <span className="bg-navy-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">
             Destination Spotlight
           </span>
           <h1 className="font-serif text-3xl sm:text-5xl font-extrabold tracking-tight mb-2 leading-tight">
             {destination.name}
           </h1>
           <p className="flex items-center space-x-1 text-xs text-slate-350 font-medium">
-            <MapPin className="h-4 w-4 text-emerald-450 shrink-0" />
+            <MapPin className="h-4 w-4 text-navy-450 shrink-0" />
             <span>Latitude: {destination.latitude.toFixed(4)}, Longitude: {destination.longitude.toFixed(4)}</span>
           </p>
         </div>
@@ -97,14 +97,14 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
                 
                 {/* Attractions */}
                 <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm">
-                  <h3 className="font-serif font-bold text-lg text-emerald-850 dark:text-emerald-400 mb-4 flex items-center space-x-2">
-                    <CompassIcon className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <h3 className="font-serif font-bold text-lg text-navy-850 dark:text-navy-400 mb-4 flex items-center space-x-2">
+                    <CompassIcon className="h-5 w-5 text-navy-500 shrink-0" />
                     <span>Top Attractions</span>
                   </h3>
                   <ul className="space-y-3.5 text-xs text-slate-650 dark:text-slate-305">
                     {destination.attractions.map((att) => (
                       <li key={att} className="flex items-start space-x-2.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-navy-500 shrink-0 mt-1.5" />
                         <span>{att}</span>
                       </li>
                     ))}
@@ -113,14 +113,14 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
 
                 {/* Activities */}
                 <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm">
-                  <h3 className="font-serif font-bold text-lg text-emerald-850 dark:text-emerald-400 mb-4 flex items-center space-x-2">
-                    <Compass className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <h3 className="font-serif font-bold text-lg text-navy-850 dark:text-navy-400 mb-4 flex items-center space-x-2">
+                    <Compass className="h-5 w-5 text-navy-500 shrink-0" />
                     <span>Popular Activities</span>
                   </h3>
                   <ul className="space-y-3.5 text-xs text-slate-650 dark:text-slate-305">
                     {destination.activities.map((act) => (
                       <li key={act} className="flex items-start space-x-2.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 mt-1.5" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-navy-500 shrink-0 mt-1.5" />
                         <span>{act}</span>
                       </li>
                     ))}
@@ -158,7 +158,7 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
               {/* Weather Info */}
               <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm text-slate-800 dark:text-slate-200">
                 <h3 className="font-serif font-bold text-base mb-4 flex items-center space-x-2">
-                  <CloudSun className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <CloudSun className="h-5 w-5 text-navy-500 shrink-0" />
                   <span>Climate & Weather</span>
                 </h3>
                 <p className="text-xs text-slate-555 dark:text-slate-400 leading-relaxed font-light">
@@ -169,7 +169,7 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
               {/* Travel Tips */}
               <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm text-slate-800 dark:text-slate-200 space-y-4">
                 <h3 className="font-serif font-bold text-base flex items-center space-x-2">
-                  <Info className="h-5 w-5 text-emerald-500 shrink-0" />
+                  <Info className="h-5 w-5 text-navy-500 shrink-0" />
                   <span>Travel Information</span>
                 </h3>
                 

@@ -62,7 +62,7 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
           {/* Header */}
           <div className="bg-slate-900 dark:bg-[#070a12] text-white px-4 py-3.5 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
-              <Compass className="h-5 w-5 text-emerald-400" />
+              <Compass className="h-5 w-5 text-navy-400" />
               <div>
                 <p className="font-serif font-bold text-sm leading-tight">Vistana AI Assistant</p>
                 <p className="text-[10px] text-slate-400 leading-tight">Ask about tours & destinations</p>
@@ -84,7 +84,7 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed whitespace-pre-wrap ${
                     m.role === "user"
-                      ? "bg-emerald-600 text-white rounded-br-sm"
+                      ? "bg-navy-600 text-white rounded-br-sm"
                       : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-bl-sm"
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl rounded-bl-sm px-3.5 py-2.5 flex items-center gap-2">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-navy-500" />
                   <span className="text-[11px] text-slate-400">Thinking&hellip;</span>
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold py-2 rounded-full border border-emerald-200 dark:border-emerald-900 hover:bg-emerald-100 dark:hover:bg-emerald-950/50 transition-colors"
+                className="flex items-center justify-center gap-2 w-full bg-navy-50 dark:bg-navy-950/30 text-navy-700 dark:text-navy-400 text-[11px] font-semibold py-2 rounded-full border border-navy-200 dark:border-navy-900 hover:bg-navy-100 dark:hover:bg-navy-950/50 transition-colors"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 Prefer a human? Chat on WhatsApp
@@ -123,14 +123,14 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about a safari, price, or destination..."
-              className="flex-1 px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs border-none outline-none focus:ring-1 focus:ring-emerald-500"
+              className="flex-1 px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs border-none outline-none focus:ring-1 focus:ring-navy-500"
               maxLength={2000}
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
               aria-label="Send message"
-              className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white p-2.5 rounded-full transition-colors shrink-0"
+              className="bg-navy-600 hover:bg-navy-700 disabled:opacity-40 text-white p-2.5 rounded-full transition-colors shrink-0"
             >
               <Send className="h-4 w-4" />
             </button>
@@ -142,7 +142,7 @@ export default function AssistantWidget({ whatsappHref }: { whatsappHref: string
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label={open ? "Close travel assistant" : "Open travel assistant"}
-        className="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-xl transition-all hover:scale-105"
+        className="bg-navy-600 hover:bg-navy-700 text-white p-4 rounded-full shadow-xl transition-all hover:scale-105"
       >
         {open ? <X className="h-6 w-6" /> : <Compass className="h-6 w-6" />}
       </button>

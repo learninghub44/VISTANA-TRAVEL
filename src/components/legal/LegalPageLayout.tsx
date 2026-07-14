@@ -29,9 +29,9 @@ export default function LegalPageLayout({
 
       {/* Header */}
       <section className="bg-slate-900 text-white pt-32 pb-14 relative">
-        <div className="absolute inset-0 bg-emerald-950/20" />
+        <div className="absolute inset-0 bg-navy-950/20" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <FileText className="h-8 w-8 text-emerald-400 mx-auto mb-3" />
+          <FileText className="h-8 w-8 text-navy-400 mx-auto mb-3" />
           <h1 className="font-serif text-3xl sm:text-5xl font-extrabold mb-3">{title}</h1>
           <p className="text-slate-400 text-xs font-light">Effective Date: {effectiveDate}</p>
         </div>
@@ -52,7 +52,7 @@ export default function LegalPageLayout({
                       href={item.href}
                       className={`block px-3 py-2 rounded-xl transition-colors ${
                         item.href === currentHref
-                          ? "bg-emerald-600 text-white font-semibold"
+                          ? "bg-navy-600 text-white font-semibold"
                           : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >

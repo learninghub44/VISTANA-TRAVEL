@@ -69,7 +69,7 @@ export default function MSAPage() {
         <p>
           To the extent either party processes personal data of travelers on the other&apos;s
           behalf under an Order, the parties&apos; obligations are governed by the{" "}
-          <a href="/dpa" className="text-emerald-600 dark:text-emerald-400 underline">Data Processing Agreement</a>,
+          <a href="/dpa" className="text-navy-600 dark:text-navy-400 underline">Data Processing Agreement</a>,
           which is incorporated into this MSA by reference.
         </p>
       </section>
@@ -99,7 +99,7 @@ export default function MSAPage() {
         <p>
           Vistana maintains public liability insurance appropriate to its tour operations and, as
           described in our{" "}
-          <a href="/cyber-liability-insurance" className="text-emerald-600 dark:text-emerald-400 underline">Cyber Liability Insurance Statement</a>,
+          <a href="/cyber-liability-insurance" className="text-navy-600 dark:text-navy-400 underline">Cyber Liability Insurance Statement</a>,
           cyber liability coverage appropriate to the personal data it processes through the
           Platform. Certificates of insurance are available to corporate Clients on request.
         </p>

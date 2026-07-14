@@ -60,7 +60,7 @@ export default function TermsOfServicePage() {
         <h2>4. Cancellations, Amendments, and Refunds</h2>
         <p>
           Cancellations, date changes, and refund eligibility are governed by our{" "}
-          <a href="/refund-policy" className="text-emerald-600 dark:text-emerald-400 underline">Refund Policy</a>,
+          <a href="/refund-policy" className="text-navy-600 dark:text-navy-400 underline">Refund Policy</a>,
           which forms part of these Terms. Some Suppliers (e.g. certain lodges during peak season) apply their own
           non-refundable or restricted-change conditions, which will be disclosed at the time of booking.
         </p>

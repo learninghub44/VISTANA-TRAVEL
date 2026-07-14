@@ -38,7 +38,7 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
                 {f.question}
               </span>
               <ChevronDown
-                className={`h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`h-4 w-4 text-navy-600 dark:text-navy-400 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
             {isOpen && (

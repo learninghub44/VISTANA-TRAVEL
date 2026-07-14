@@ -23,6 +23,45 @@
   --color-gold: var(--brand-gold);
   --font-sans: var(--font-sans), Manrope, "DM Sans", Sora, system-ui, sans-serif;
   --font-serif: var(--font-sans), Manrope, "DM Sans", Sora, system-ui, sans-serif;
+
+  /* Full shade scales so components can move off navy-XXX one-for-one */
+  --color-navy-50: #eef2f8;
+  --color-navy-100: #dbe3f0;
+  --color-navy-200: #b7c7e1;
+  --color-navy-250: #a3b6d6;
+  --color-navy-300: #8ea5c9;
+  --color-navy-400: #5b7ba8;
+  --color-navy-450: #45688f;
+  --color-navy-500: #33517a;
+  --color-navy-600: #253f63;
+  --color-navy-700: #1a2f4d;
+  --color-navy-705: #192e4b;
+  --color-navy-800: #12233b;
+  --color-navy-850: #0f1d31;
+  --color-navy-900: #0c1729;
+  --color-navy-950: #0B1F3A;
+
+  --color-ocean-50: #e6f6ff;
+  --color-ocean-100: #cceeff;
+  --color-ocean-200: #99ddff;
+  --color-ocean-300: #66cbff;
+  --color-ocean-400: #33baff;
+  --color-ocean-500: #0099E6;
+  --color-ocean-600: #007ab8;
+  --color-ocean-700: #005c8a;
+  --color-ocean-800: #003d5c;
+  --color-ocean-950: #001f2e;
+
+  --color-gold-50: #fef8ec;
+  --color-gold-100: #fdedc9;
+  --color-gold-200: #fbdb93;
+  --color-gold-300: #f9c95d;
+  --color-gold-400: #f6b940;
+  --color-gold-500: #F4A825;
+  --color-gold-600: #c4841a;
+  --color-gold-700: #936314;
+  --color-gold-800: #62420d;
+  --color-gold-950: #2f2007;
 }
 
 body {
