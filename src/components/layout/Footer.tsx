@@ -86,6 +86,9 @@ export default async function Footer() {
                 <Link href="/blog" className="hover:text-gold-400 transition-colors">Travel Blog & News</Link>
               </li>
               <li>
+                <Link href="/faqs" className="hover:text-gold-400 transition-colors">FAQs</Link>
+              </li>
+              <li>
                 <Link href="/contact" className="hover:text-gold-400 transition-colors">Contact Us</Link>
               </li>
               <li>
@@ -106,7 +109,9 @@ export default async function Footer() {
               </li>
               <li className="flex items-center space-x-2.5">
                 <Phone className="h-5 w-5 text-gold-500 shrink-0" />
-                <span className="text-slate-400">+254 700 123 456</span>
+                <a href="tel:+254701059192" className="text-slate-400 hover:text-gold-400 transition-colors">
+                  +254 701 059 192
+                </a>
               </li>
               <li className="flex items-center space-x-2.5">
                 <Mail className="h-5 w-5 text-gold-500 shrink-0" />

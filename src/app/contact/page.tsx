@@ -45,7 +45,7 @@ export default function ContactPage() {
                   </p>
                 </div>
                 <a
-                  href="https://wa.me/254700123456"
+                  href="https://wa.me/254701059192"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white text-navy-700 font-bold text-xs py-2.5 px-4 rounded-full text-center hover:bg-navy-50 transition-colors uppercase tracking-wider block mt-3"
@@ -67,7 +67,9 @@ export default function ContactPage() {
                       <p className="text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5 font-light">
                         Vistana Plaza, 4th Floor, Ngong Road,<br />Nairobi, Kenya
                       </p>
-                      <p className="text-slate-400 mt-1 font-semibold">Phone: +254 700 123 456</p>
+                      <p className="text-slate-400 mt-1 font-semibold">
+                        Phone: <a href="tel:+254701059192" className="hover:text-gold-400 transition-colors">+254 701 059 192</a>
+                      </p>
                     </div>
                   </div>
 
