@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomeSearch from "@/components/layout/HomeSearch";
 import HeroFadeIn from "@/components/layout/HeroFadeIn";
+import StatsCounter from "@/components/layout/StatsCounter";
 import TourCard from "@/components/ui/TourCard";
 import DestinationCard from "@/components/ui/DestinationCard";
 import BlogCard from "@/components/ui/BlogCard";
@@ -47,10 +48,10 @@ export default async function HomePage() {
             loop
             playsInline
             preload="auto"
-            poster="https://assets.mixkit.co/videos/4368/4368-thumb-720-0.jpg"
+            poster="https://assets.mixkit.co/videos/11146/11146-thumb-720-0.jpg"
             className="absolute inset-0 w-full h-full object-cover scale-105"
           >
-            <source src="https://assets.mixkit.co/videos/4368/4368-720.mp4" type="video/mp4" />
+            <source src="https://assets.mixkit.co/videos/11146/11146-720.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/40" />
         </div>
@@ -214,6 +215,14 @@ export default async function HomePage() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Stats Counter Band */}
+      <section className="py-16 bg-navy-950 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(244,168,37,0.08),transparent)]" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <StatsCounter />
         </div>
       </section>
 
