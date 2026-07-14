@@ -33,13 +33,24 @@ export default async function HomePage() {
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden bg-navy">
-        {/* Background Image */}
+        {/* Background Video (with image fallback beneath, in case video fails to load) */}
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1920&q=80"
             alt="Maasai Mara safari at sunset"
             className="w-full h-full object-cover scale-105"
           />
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="https://assets.mixkit.co/videos/4368/4368-thumb-720-0.jpg"
+            className="absolute inset-0 w-full h-full object-cover scale-105"
+          >
+            <source src="https://assets.mixkit.co/videos/4368/4368-720.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/40" />
         </div>
 
