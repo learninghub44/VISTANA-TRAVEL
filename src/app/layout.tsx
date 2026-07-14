@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SITE_URL, SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE } from "@/services/seo/constants";
+import AssistantWidgetServer from "@/components/ai/AssistantWidgetServer";
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
@@ -64,6 +65,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         {children}
+        <AssistantWidgetServer />
       </body>
     </html>
   );
