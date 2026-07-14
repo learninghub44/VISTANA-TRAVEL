@@ -757,6 +757,9 @@ const saveSiteSettingsSchema = z.object({
   youtube_url: httpUrl.optional(),
   linkedin_url: httpUrl.optional(),
   whatsapp_number: z.string().trim().max(20).regex(/^[0-9+()\-\s]*$/, "Invalid phone number").optional(),
+  office_address: z.string().trim().max(200).optional(),
+  office_phone: z.string().trim().max(20).regex(/^[0-9+()\-\s]*$/, "Invalid phone number").or(z.literal("")).optional(),
+  office_email: z.string().trim().email("Invalid email").or(z.literal("")).optional(),
 });
 
 export async function saveSiteSettingsAction(settings: {
@@ -767,6 +770,9 @@ export async function saveSiteSettingsAction(settings: {
   youtube_url?: string;
   linkedin_url?: string;
   whatsapp_number?: string;
+  office_address?: string;
+  office_phone?: string;
+  office_email?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     const admin = await getAdminSession();
@@ -779,7 +785,7 @@ export async function saveSiteSettingsAction(settings: {
     settings = parsed.data;
 
     await db.saveSiteSettings(settings);
-    await logAudit(admin, "update", "site_settings", "site-settings", "Updated social media links");
+    await logAudit(admin, "update", "site_settings", "site-settings", "Updated site settings");
 
     revalidatePath("/");
     revalidatePath("/admin/settings");

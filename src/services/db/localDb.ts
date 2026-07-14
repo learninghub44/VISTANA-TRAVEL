@@ -510,7 +510,13 @@ const initialData: LocalDbSchema = {
   ],
   social_posts: [],
   audit_logs: [],
-  settings: { id: "site-settings", updated_at: new Date().toISOString() }
+  settings: {
+    id: "site-settings",
+    office_address: "Vistana Plaza, 4th Floor, Ngong Road, Nairobi, Kenya",
+    office_phone: "+254 701 059 192",
+    office_email: "info@vistanatours.com",
+    updated_at: new Date().toISOString(),
+  }
 };
 
 class LocalDbAdapter implements DatabaseAdapter {

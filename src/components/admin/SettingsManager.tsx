@@ -3,11 +3,22 @@
 import { useState } from "react";
 import { saveSiteSettingsAction } from "@/app/actions";
 import { SiteSettings } from "@/services/db/types";
-import { Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle, Save, CheckCircle2 } from "lucide-react";
+import { Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle, MapPin, Phone, Mail, Save, CheckCircle2 } from "lucide-react";
 
 interface SettingsManagerProps {
   settings: SiteSettings;
 }
+
+const CONTACT_FIELDS: {
+  key: keyof Pick<SiteSettings, "office_address" | "office_phone" | "office_email">;
+  label: string;
+  placeholder: string;
+  icon: React.ElementType;
+}[] = [
+  { key: "office_address", label: "Office Address", placeholder: "Vistana Plaza, 4th Floor, Ngong Road, Nairobi, Kenya", icon: MapPin },
+  { key: "office_phone", label: "Office Phone", placeholder: "+254 701 059 192", icon: Phone },
+  { key: "office_email", label: "Office Email", placeholder: "info@vistanatours.com", icon: Mail },
+];
 
 const FIELDS: {
   key: keyof Pick<
@@ -52,6 +63,9 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
       youtube_url: form.youtube_url || undefined,
       linkedin_url: form.linkedin_url || undefined,
       whatsapp_number: form.whatsapp_number || undefined,
+      office_address: form.office_address || undefined,
+      office_phone: form.office_phone || undefined,
+      office_email: form.office_email || undefined,
     });
 
     setLoading(false);
@@ -65,9 +79,9 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm space-y-6 max-w-2xl">
       <div>
-        <h3 className="font-serif font-bold text-lg text-slate-900">Social Media Links</h3>
+        <h3 className="font-serif font-bold text-lg text-slate-900">Contact Details</h3>
         <p className="text-[10px] text-slate-400 mt-0.5">
-          These links power the icons in the site footer. Leave a field blank to hide that icon.
+          This is the single source of truth for the real office shown on the Contact page and site footer. Only enter offices that actually exist.
         </p>
       </div>
 
@@ -76,6 +90,31 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
           {error}
         </div>
       )}
+
+      <div className="space-y-4">
+        {CONTACT_FIELDS.map(({ key, label, placeholder, icon: Icon }) => (
+          <div key={key} className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <Icon className="h-3.5 w-3.5 text-gold-600" />
+              {label}
+            </label>
+            <input
+              type="text"
+              value={(form[key] as string) || ""}
+              onChange={(e) => handleChange(key, e.target.value)}
+              placeholder={placeholder}
+              className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="pt-2 border-t border-slate-100">
+        <h3 className="font-serif font-bold text-lg text-slate-900">Social Media Links</h3>
+        <p className="text-[10px] text-slate-400 mt-0.5">
+          These links power the icons in the site footer. Leave a field blank to hide that icon.
+        </p>
+      </div>
 
       <div className="space-y-4">
         {FIELDS.map(({ key, label, placeholder, icon: Icon }) => (

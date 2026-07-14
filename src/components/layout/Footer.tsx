@@ -116,22 +116,26 @@ export default async function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4 text-lg">Contact Us</h3>
             <ul className="space-y-3.5 text-sm">
-              <li className="flex items-start space-x-2.5">
-                <MapPin className="h-5 w-5 text-gold-500 shrink-0 mt-0.5" />
-                <span className="text-slate-400 leading-tight">
-                  Vistana Plaza, Ngong Road,<br />Nairobi, Kenya
-                </span>
-              </li>
-              <li className="flex items-center space-x-2.5">
-                <Phone className="h-5 w-5 text-gold-500 shrink-0" />
-                <a href="tel:+254701059192" className="text-slate-400 hover:text-gold-400 transition-colors">
-                  +254 701 059 192
-                </a>
-              </li>
-              <li className="flex items-center space-x-2.5">
-                <Mail className="h-5 w-5 text-gold-500 shrink-0" />
-                <span className="text-slate-400">info@vistanatours.com</span>
-              </li>
+              {settings.office_address && (
+                <li className="flex items-start space-x-2.5">
+                  <MapPin className="h-5 w-5 text-gold-500 shrink-0 mt-0.5" />
+                  <span className="text-slate-400 leading-tight">{settings.office_address}</span>
+                </li>
+              )}
+              {settings.office_phone && (
+                <li className="flex items-center space-x-2.5">
+                  <Phone className="h-5 w-5 text-gold-500 shrink-0" />
+                  <a href={`tel:${settings.office_phone.replace(/[^0-9+]/g, "")}`} className="text-slate-400 hover:text-gold-400 transition-colors">
+                    {settings.office_phone}
+                  </a>
+                </li>
+              )}
+              {settings.office_email && (
+                <li className="flex items-center space-x-2.5">
+                  <Mail className="h-5 w-5 text-gold-500 shrink-0" />
+                  <span className="text-slate-400">{settings.office_email}</span>
+                </li>
+              )}
             </ul>
           </div>
 

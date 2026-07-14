@@ -207,6 +207,9 @@ export interface SiteSettings {
   youtube_url?: string;
   linkedin_url?: string;
   whatsapp_number?: string;
+  office_address?: string;
+  office_phone?: string;
+  office_email?: string;
   updated_at: string;
 }
 

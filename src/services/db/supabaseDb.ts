@@ -412,7 +412,9 @@ class SupabaseDbAdapter implements DatabaseAdapter {
   //     id text primary key default 'site-settings',
   //     facebook_url text, instagram_url text, twitter_url text,
   //     tiktok_url text, youtube_url text, linkedin_url text,
-  //     whatsapp_number text, updated_at timestamptz not null default now()
+  //     whatsapp_number text,
+  //     office_address text, office_phone text, office_email text,
+  //     updated_at timestamptz not null default now()
   //   );
   async getSiteSettings(): Promise<SiteSettings> {
     const { data, error } = await this.client.from("site_settings").select("*").eq("id", "site-settings").maybeSingle();

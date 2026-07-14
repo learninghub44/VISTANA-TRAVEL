@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ContactForm from "@/components/contact/ContactForm";
+import { cachedDb } from "@/services/db/cached";
 import { Mail, MapPin, Compass, MessageSquare, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -10,7 +11,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await cachedDb.getSiteSettings();
+  const officeAddress = settings.office_address || "Nairobi, Kenya";
+  const officePhone = settings.office_phone;
+  const officeEmail = settings.office_email || "info@vistanatours.com";
+  const whatsappNumber = settings.whatsapp_number || "254701059192";
+  const mapsQuery = encodeURIComponent(officeAddress);
+
   return (
     <>
       <Navbar />
@@ -45,7 +53,7 @@ export default function ContactPage() {
                   </p>
                 </div>
                 <a
-                  href="https://wa.me/254701059192"
+                  href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white text-navy-700 font-bold text-xs py-2.5 px-4 rounded-full text-center hover:bg-navy-50 transition-colors uppercase tracking-wider block mt-3"
@@ -56,32 +64,21 @@ export default function ContactPage() {
 
               {/* Office Details */}
               <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm space-y-6 text-slate-805 dark:text-slate-200">
-                <h3 className="font-serif font-bold text-lg pb-3 border-b border-slate-100 dark:border-slate-800">Office Head offices</h3>
-                
+                <h3 className="font-serif font-bold text-lg pb-3 border-b border-slate-100 dark:border-slate-800">Office</h3>
+
                 <div className="space-y-4 text-xs">
-                  {/* Nairobi */}
                   <div className="flex items-start space-x-3">
                     <MapPin className="h-5 w-5 text-navy-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-905 dark:text-white block">Nairobi Head Office</span>
+                      <span className="font-bold text-slate-905 dark:text-white block">Head Office</span>
                       <p className="text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5 font-light">
-                        Vistana Plaza, 4th Floor, Ngong Road,<br />Nairobi, Kenya
+                        {officeAddress}
                       </p>
-                      <p className="text-slate-400 mt-1 font-semibold">
-                        Phone: <a href="tel:+254701059192" className="hover:text-gold-400 transition-colors">+254 701 059 192</a>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Arusha */}
-                  <div className="flex items-start space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800/50">
-                    <MapPin className="h-5 w-5 text-navy-500 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold text-slate-905 dark:text-white block">Arusha Liaison Office</span>
-                      <p className="text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5 font-light">
-                        Serengeti House, Safari Way,<br />Arusha, Tanzania
-                      </p>
-                      <p className="text-slate-400 mt-1 font-semibold">Phone: +255 750 987 654</p>
+                      {officePhone && (
+                        <p className="text-slate-400 mt-1 font-semibold">
+                          Phone: <a href={`tel:${officePhone.replace(/[^0-9+]/g, "")}`} className="hover:text-gold-400 transition-colors">{officePhone}</a>
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -90,7 +87,7 @@ export default function ContactPage() {
                     <Mail className="h-5 w-5 text-navy-500 shrink-0" />
                     <div>
                       <span className="font-bold text-slate-905 dark:text-white block">Email Inquiry</span>
-                      <p className="text-slate-550 dark:text-slate-405 mt-0.5 font-light">info@vistanatours.com</p>
+                      <p className="text-slate-550 dark:text-slate-405 mt-0.5 font-light">{officeEmail}</p>
                     </div>
                   </div>
                 </div>
@@ -136,8 +133,8 @@ export default function ContactPage() {
           <div className="mt-12 bg-white dark:bg-slate-900/60 p-4 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm overflow-hidden">
             <div className="relative aspect-[21/9] rounded-2xl overflow-hidden">
               <iframe
-                title="Vistana Tours & Travel — Nairobi Head Office Location"
-                src="https://www.google.com/maps?q=Ngong+Road,+Nairobi,+Kenya&output=embed"
+                title="Vistana Tours & Travel — Head Office Location"
+                src={`https://www.google.com/maps?q=${mapsQuery}&output=embed`}
                 className="absolute inset-0 w-full h-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -147,7 +144,7 @@ export default function ContactPage() {
                 <div>
                   <h4 className="font-serif font-bold text-sm text-slate-900 dark:text-white">Vistana Headquarters</h4>
                   <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed mt-0.5">
-                    Ngong Road, Nairobi, Kenya — visitors welcome for fresh East African coffee!
+                    {officeAddress} — visitors welcome for fresh East African coffee!
                   </p>
                 </div>
               </div>
