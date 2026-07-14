@@ -5,7 +5,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomeSearch from "@/components/layout/HomeSearch";
 import HeroFadeIn from "@/components/layout/HeroFadeIn";
-import HeroVideo from "@/components/layout/HeroVideo";
 import StatsCounter from "@/components/layout/StatsCounter";
 import TourCard from "@/components/ui/TourCard";
 import DestinationCard from "@/components/ui/DestinationCard";
@@ -43,10 +42,17 @@ export default async function HomePage() {
             alt="Maasai Mara safari at sunset"
             className="w-full h-full object-cover scale-105"
           />
-          <HeroVideo
-            src="https://assets.mixkit.co/videos/11146/11146-720.mp4"
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
             poster="https://assets.mixkit.co/videos/11146/11146-thumb-720-0.jpg"
-          />
+            className="absolute inset-0 w-full h-full object-cover scale-105"
+          >
+            <source src="https://assets.mixkit.co/videos/11146/11146-720.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/40" />
         </div>
 
