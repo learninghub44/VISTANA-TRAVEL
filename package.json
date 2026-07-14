@@ -16,7 +16,6 @@
     "restore": "node scripts/restore-db.mjs"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1086.0",
     "@supabase/supabase-js": "^2.110.3",
     "framer-motion": "^12.42.2",
     "jose": "^6.2.3",

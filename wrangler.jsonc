@@ -10,7 +10,7 @@
   },
   // Non-secret config can live here as plain vars, for server-side runtime
   // access. Set actual secrets (SESSION_SECRET, SUPABASE_SERVICE_ROLE_KEY,
-  // RESEND_API_KEY, R2 keys, ADMIN_PASSWORD, GROQ_API_KEY) with
+  // RESEND_API_KEY, ADMIN_PASSWORD, GROQ_API_KEY) with
   // `wrangler secret put <NAME>` instead of committing them here.
   //
   // NOTE: NEXT_PUBLIC_* values get inlined into the client bundle at BUILD

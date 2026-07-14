@@ -61,9 +61,11 @@ marketing site + customer booking portal + admin operations dashboard.
   cookies, see `src/services/auth/`.
 - Email: Resend (`RESEND_API_KEY`), raw `fetch` call in
   `src/services/email/index.ts`. Falls back to console-logging if unset.
-- File storage: Cloudflare R2 via `@aws-sdk/client-s3` (S3-compatible),
-  `src/services/storage/index.ts`. Falls back to local disk
-  (`public/uploads`) if R2 env vars are unset — dev only.
+- File storage: Supabase Storage (public `images` bucket), via
+  `src/services/storage/index.ts`, using the same Supabase project/
+  credentials as the database. Falls back to local disk (`public/uploads`)
+  only when Supabase itself isn't configured — dev only, doesn't work on
+  Workers (no writable fs).
 - Payments: `src/services/payments/index.ts` is an intentional
   **future-ready abstraction layer only** — M-Pesa/Stripe/Bank Transfer
   providers are mocked by design (original spec: "no live payment
@@ -71,8 +73,8 @@ marketing site + customer booking portal + admin operations dashboard.
   real payment gateways unless explicitly asked.
 - WhatsApp: `src/services/whatsapp/index.ts` is intentionally disabled by
   default (`isEnabled = false`), also future-ready-only by design.
-- Deployment target: Cloudflare Pages (frontend) + Supabase (DB) + Cloudflare
-  R2 (storage) + Resend (email), per original spec.
+- Deployment target: Cloudflare Workers (frontend, via OpenNext) + Supabase
+  (DB + Storage) + Resend (email), per original spec.
 
 ## Directory map
 
@@ -170,8 +172,8 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
 - [x] No automated backups — added `npm run backup`
   (`scripts/backup-db.mjs`), a plain Node script (not tied to any CI
   provider) that dumps every table to timestamped JSON via the
-  service-role key, optionally uploading to Cloudflare R2 if its env vars
-  are set. Also added `npm run restore` (`scripts/restore-db.mjs`, upserts
+  service-role key, optionally uploading to a private Supabase Storage
+  bucket too. Also added `npm run restore` (`scripts/restore-db.mjs`, upserts
   a backup back in — does not delete rows added since) and
   `npm run backup:scheduler` (`scripts/backup-scheduler.mjs`), a small
   always-on worker process for hosts without native scheduled tasks —

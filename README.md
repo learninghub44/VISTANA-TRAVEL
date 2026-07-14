@@ -3,7 +3,7 @@
 Booking and management platform for a tours company operating in Kenya and
 Tanzania: public marketing site, customer booking portal, and admin
 dashboard. Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4,
-Supabase (Postgres), Cloudflare R2 for file storage.
+Supabase (Postgres + Storage) for data and file storage.
 
 ## Getting started
 
@@ -27,7 +27,7 @@ Required:
 
 Recommended (feature degrades gracefully without it):
 - `RESEND_API_KEY` — emails are console-logged instead of sent if unset
-- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN` — falls back to local filesystem storage, which does not persist on Workers/Pages
+- `SUPABASE_STORAGE_BUCKET` — defaults to `images`; without Supabase configured at all, uploads fall back to local filesystem storage, which does not persist on Workers/Pages (see `supabase/migrations/20260714120001_create_storage_bucket.sql` for the bucket setup)
 - `GROQ_API_KEY`, `GROQ_MODEL` — AI assistant feature is disabled without a key
 
 Not wired up yet (safe to leave unset): `STRIPE_SECRET_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER` — payments and WhatsApp integration are future-ready abstraction layers only, per the original spec.
@@ -59,8 +59,6 @@ npx wrangler secret put SESSION_SECRET
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put RESEND_API_KEY
 npx wrangler secret put ADMIN_PASSWORD
-npx wrangler secret put R2_ACCESS_KEY_ID
-npx wrangler secret put R2_SECRET_ACCESS_KEY
 npx wrangler secret put GROQ_API_KEY
 # ...etc for any other secret values
 ```
@@ -72,5 +70,5 @@ but note `NEXT_PUBLIC_*` values are inlined into the client bundle at
 `npm run deploy` actually runs (CI secrets or a local `.env.production`),
 not just in `wrangler.jsonc`.
 
-`ADMIN_EMAIL`, `R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN`, and
-`GROQ_MODEL` aren't secret and can go in `wrangler.jsonc`'s `vars` too.
+`ADMIN_EMAIL`, `SUPABASE_STORAGE_BUCKET`, and `GROQ_MODEL` aren't secret and
+can go in `wrangler.jsonc`'s `vars` too.

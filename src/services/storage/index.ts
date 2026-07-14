@@ -1,103 +1,77 @@
 import fs from "fs";
 import path from "path";
-
-// In a real application, you would configure AWS S3 Client for Cloudflare R2:
-// import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSupabaseClient } from "@/services/db/supabaseClient";
 
 export interface StorageProvider {
   uploadImage(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string>;
 }
 
+// Local-disk fallback for `next dev`. NOTE: this cannot work on Cloudflare
+// Workers at all — there is no writable filesystem there — so it only ever
+// runs in local development where NEXT_PUBLIC_SUPABASE_URL is unset.
 class LocalStorageProvider implements StorageProvider {
   async uploadImage(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
+
     // Clean up filename to prevent directory traversal
     const safeName = Date.now() + "_" + fileName.replace(/[^a-zA-Z0-9.\-_]/g, "");
     const filePath = path.join(uploadDir, safeName);
-    
+
     fs.writeFileSync(filePath, fileBuffer);
     return `/uploads/${safeName}`;
   }
 }
 
-class R2StorageProvider implements StorageProvider {
-  async uploadImage(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
-    // Falls back to local storage if AWS SDK or credentials are missing
-    try {
-      if (
-        !process.env.R2_ACCOUNT_ID ||
-        !process.env.R2_ACCESS_KEY_ID ||
-        !process.env.R2_SECRET_ACCESS_KEY ||
-        !process.env.R2_BUCKET_NAME
-      ) {
-        throw new Error("R2 Credentials missing");
-      }
-      
-      // dynamically import AWS SDK to prevent import errors if not installed
-      const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
-      
-      const r2Client = new S3Client({
-        region: "auto",
-        endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-        credentials: {
-          accessKeyId: process.env.R2_ACCESS_KEY_ID,
-          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-        },
-      });
+// Default bucket name; override with SUPABASE_STORAGE_BUCKET if you want a
+// different bucket. The bucket must exist and be public (see
+// supabase/migrations/20260714120001_create_storage_bucket.sql) so uploaded
+// images are servable via a plain public URL without extra signing.
+const DEFAULT_BUCKET = "images";
 
-      const safeName = Date.now() + "_" + fileName.replace(/[^a-zA-Z0-9.\-_]/g, "");
-      
-      await r2Client.send(
-        new PutObjectCommand({
-          Bucket: process.env.R2_BUCKET_NAME,
-          Key: safeName,
-          Body: fileBuffer,
-          ContentType: mimeType,
-        })
-      );
-      
-      const customDomain = process.env.R2_CUSTOM_DOMAIN || `https://${process.env.R2_BUCKET_NAME}.r2.dev`;
-      return `${customDomain}/${safeName}`;
-    } catch (e) {
-      console.warn("[Vistana Storage] Cloudflare R2 upload failed or not configured, falling back to local file storage:", e);
-      return new LocalStorageProvider().uploadImage(fileBuffer, fileName, mimeType);
+class SupabaseStorageProvider implements StorageProvider {
+  async uploadImage(fileBuffer: Buffer, fileName: string, mimeType: string): Promise<string> {
+    const bucket = process.env.SUPABASE_STORAGE_BUCKET || DEFAULT_BUCKET;
+    const safeName = Date.now() + "_" + fileName.replace(/[^a-zA-Z0-9.\-_]/g, "");
+
+    const client = getSupabaseClient();
+    const { error } = await client.storage.from(bucket).upload(safeName, fileBuffer, {
+      contentType: mimeType,
+      cacheControl: "31536000", // 1 year — filenames are already unique (timestamp-prefixed)
+      upsert: false,
+    });
+
+    if (error) {
+      throw new Error(`[Vistana Storage] Supabase Storage upload failed (bucket "${bucket}"): ${error.message}`);
     }
+
+    const { data } = client.storage.from(bucket).getPublicUrl(safeName);
+    return data.publicUrl;
   }
 }
 
-// Same class of bug fixed in src/services/db/supabaseDb.ts: deciding the
-// provider once at module top-level reads process.env at import time, which
-// on Cloudflare Workers can run before per-request env population — risking
-// a silent fall-through to LocalStorageProvider. That fallback is doubly
-// broken there anyway, since Workers have no writable filesystem (fs.*
-// calls will throw) — it only works under `next dev` / a Node server.
-// Resolving the provider lazily, per call, avoids the timing issue and
-// keeps the R2 path as the only one that can actually work in production.
+// Provider is resolved lazily (per call, cached after first success) rather
+// than once at module load — same Workers/OpenNext env-timing concern as
+// src/services/db/supabaseClient.ts. Supabase Storage is used whenever
+// Supabase itself is configured (same credentials as the database), falling
+// back to local disk only for `next dev` without Supabase configured at all.
 let cachedProvider: StorageProvider | null = null;
 
 function resolveStorageProvider(): StorageProvider {
   if (cachedProvider) return cachedProvider;
 
-  const useR2 = Boolean(
-    process.env.R2_ACCOUNT_ID &&
-    process.env.R2_ACCESS_KEY_ID &&
-    process.env.R2_SECRET_ACCESS_KEY &&
-    process.env.R2_BUCKET_NAME
-  );
+  const useSupabase = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
-  if (!useR2) {
+  if (!useSupabase) {
     console.warn(
-      "[Vistana Storage] R2 credentials not set (or not visible at runtime) — using LocalStorageProvider, " +
-      "which writes to the local filesystem and will fail on Cloudflare Workers (no writable fs there). " +
-      "Set R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET_NAME as Wrangler secrets for production."
+      "[Vistana Storage] NEXT_PUBLIC_SUPABASE_URL not set — using LocalStorageProvider, which writes to the local " +
+      "filesystem and will fail on Cloudflare Workers (no writable fs there). Configure Supabase to enable image uploads in production."
     );
   }
 
-  cachedProvider = useR2 ? new R2StorageProvider() : new LocalStorageProvider();
+  cachedProvider = useSupabase ? new SupabaseStorageProvider() : new LocalStorageProvider();
   return cachedProvider;
 }
 

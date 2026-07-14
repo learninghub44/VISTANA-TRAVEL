@@ -443,7 +443,71 @@ const initialData: LocalDbSchema = {
   partners: [],
   faqs: [],
   subscribers: [],
-  gallery: [],
+  gallery: [
+    {
+      id: "gallery-01",
+      image_url: "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80",
+      caption: "The Great Wildebeest Migration crossing the Maasai Mara",
+      category: "Safari",
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-02",
+      image_url: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80",
+      caption: "Golden hour over the Mara savanna",
+      category: "Safari",
+      created_at: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-03",
+      image_url: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=1200&q=80",
+      caption: "Game drive at sunset, Maasai Mara National Reserve",
+      category: "Wildlife",
+      created_at: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-04",
+      image_url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80",
+      caption: "The endless plains of the Serengeti",
+      category: "Nature",
+      created_at: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-05",
+      image_url: "https://images.unsplash.com/photo-1504829857797-ddff28127792?auto=format&fit=crop&w=1200&q=80",
+      caption: "Wildlife up close in the Serengeti ecosystem",
+      category: "Wildlife",
+      created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-06",
+      image_url: "https://images.unsplash.com/photo-1540206395-68808572332f?auto=format&fit=crop&w=1200&q=80",
+      caption: "Turquoise waters off the Zanzibar Archipelago",
+      category: "Beach",
+      created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-07",
+      image_url: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&w=1200&q=80",
+      caption: "Sunset dhow cruise, Zanzibar",
+      category: "Beach",
+      created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-08",
+      image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+      caption: "Pristine white sands of Diani Beach",
+      category: "Beach",
+      created_at: new Date(Date.now() - 16 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: "gallery-09",
+      image_url: "https://images.unsplash.com/photo-1576085898323-218337e3e43c?auto=format&fit=crop&w=1200&q=80",
+      caption: "Palm groves along the Diani coastline",
+      category: "Nature",
+      created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ],
   social_posts: [],
   audit_logs: [],
   settings: { id: "site-settings", updated_at: new Date().toISOString() }
