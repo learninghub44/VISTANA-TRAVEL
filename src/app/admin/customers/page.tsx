@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import CustomersManager from "@/components/admin/CustomersManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCustomersPage() {
   const allProfiles = await db.getProfiles();
   const customers = allProfiles.filter((p) => p.role === "customer");

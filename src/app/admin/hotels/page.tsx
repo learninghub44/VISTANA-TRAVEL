@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import HotelsManager from "@/components/admin/HotelsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminHotelsPage() {
   const hotels = await db.getHotels();
 

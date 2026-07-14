@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import ReviewsManager from "@/components/admin/ReviewsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminReviewsPage() {
   const reviews = await db.getReviews();
   const tours = await db.getTours();

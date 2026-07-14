@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import BlogManager from "@/components/admin/BlogManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminBlogPage() {
   const blogs = await db.getBlogs();
 

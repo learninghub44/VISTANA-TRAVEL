@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import SettingsManager from "@/components/admin/SettingsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminSettingsPage() {
   const settings = await db.getSiteSettings();
 

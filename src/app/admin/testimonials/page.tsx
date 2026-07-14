@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminTestimonialsPage() {
   const testimonials = await db.getTestimonials();
 

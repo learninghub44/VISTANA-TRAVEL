@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import PartnersManager from "@/components/admin/PartnersManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPartnersPage() {
   const partners = await db.getPartners();
 

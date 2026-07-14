@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import FaqManager from "@/components/admin/FaqManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminFaqsPage() {
   const faqs = await db.getFaqs();
 

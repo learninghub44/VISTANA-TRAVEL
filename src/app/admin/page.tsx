@@ -8,6 +8,8 @@ import {
   BookingsVolumeChart,
 } from "@/components/admin/DashboardCharts";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const bookings = await db.getBookings();
   const tours = await db.getTours();

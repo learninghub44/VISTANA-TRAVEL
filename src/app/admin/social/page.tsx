@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import SocialFeedManager from "@/components/admin/SocialFeedManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminSocialFeedPage() {
   const posts = await db.getSocialPosts();
 

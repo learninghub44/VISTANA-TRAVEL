@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import VehiclesManager from "@/components/admin/VehiclesManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminVehiclesPage() {
   const vehicles = await db.getVehicles();
 

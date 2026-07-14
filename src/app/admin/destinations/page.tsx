@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import DestinationsManager from "@/components/admin/DestinationsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDestinationsPage() {
   const destinations = await db.getDestinations();
 

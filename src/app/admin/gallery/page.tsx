@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import GalleryManager from "@/components/admin/GalleryManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminGalleryPage() {
   const images = await db.getGalleryImages();
   const destinations = await db.getDestinations();

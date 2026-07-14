@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import GuidesManager from "@/components/admin/GuidesManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminGuidesPage() {
   const guides = await db.getGuides();
 

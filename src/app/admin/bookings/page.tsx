@@ -1,6 +1,8 @@
 import { db } from "@/services/db";
 import BookingsManager from "@/components/admin/BookingsManager";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminBookingsPage() {
   const bookings = await db.getBookings();
   const tours = await db.getTours();
