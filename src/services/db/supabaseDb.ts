@@ -1,12 +1,31 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+// This adapter only ever runs server-side (server actions / server
+// components — verified no "use client" file imports it), so it's safe to
+// use the service-role key here, which bypasses Row Level Security. This is
+// required once RLS is enabled (see supabase/migrations) since the app does
+// its own auth checks in src/app/actions/index.ts rather than relying on
+// Supabase Auth / auth.uid(). Falls back to the anon key with a loud warning
+// so existing setups don't silently break, but that fallback only works if
+// RLS is left disabled on the project — not recommended for production.
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const supabaseKey = supabaseServiceKey || supabaseAnonKey;
+
+if (supabaseUrl && supabaseAnonKey && !supabaseServiceKey) {
+  console.warn(
+    "[Vistana DB Service] SUPABASE_SERVICE_ROLE_KEY is not set — falling back to the anon key for server-side database access. " +
+    "This only works if Row Level Security is left disabled on your Supabase tables, which also means the same anon key " +
+    "(public by design) can read/write your data directly via the Supabase REST API. Set SUPABASE_SERVICE_ROLE_KEY and " +
+    "run supabase/migrations/*_enable_rls.sql to close that off."
+  );
+}
 
 let supabase: SupabaseClient | null = null;
-if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey);
 }
 
 class SupabaseDbAdapter implements DatabaseAdapter {
@@ -375,6 +394,31 @@ class SupabaseDbAdapter implements DatabaseAdapter {
   }
   async deleteGalleryImage(id: string): Promise<boolean> {
     const { error } = await this.client.from("gallery_images").delete().eq("id", id);
+    if (error) throw error;
+    return true;
+  }
+
+  // Social Feed — admin-curated (no live Instagram API integration; see AGENTS.md)
+  // Required Supabase table:
+  //   create table social_posts (
+  //     id uuid primary key default gen_random_uuid(),
+  //     image_url text not null, caption text,
+  //     platform text not null check (platform in ('instagram','facebook','tiktok','twitter')),
+  //     post_url text, display_order int not null default 0,
+  //     created_at timestamptz not null default now()
+  //   );
+  async getSocialPosts(): Promise<SocialPost[]> {
+    const { data, error } = await this.client.from("social_posts").select("*").order("display_order", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  }
+  async saveSocialPost(p: Omit<SocialPost, "id" | "created_at"> & { id?: string }): Promise<SocialPost> {
+    const { data, error } = await this.client.from("social_posts").upsert({ ...p, id: p.id || undefined }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async deleteSocialPost(id: string): Promise<boolean> {
+    const { error } = await this.client.from("social_posts").delete().eq("id", id);
     if (error) throw error;
     return true;
   }

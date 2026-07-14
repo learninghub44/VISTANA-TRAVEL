@@ -4,7 +4,7 @@ import { db } from "@/services/db";
 import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
-import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage } from "@/services/db/types";
+import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage, SocialPost } from "@/services/db/types";
 import { getSession } from "@/services/auth/session";
 import { revalidatePath } from "next/cache";
 import { rateLimit } from "@/services/auth/rateLimit";
@@ -574,6 +574,39 @@ export async function deleteGalleryImageAction(id: string): Promise<{ success: b
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message || "Failed to delete gallery image." };
+  }
+}
+
+// ----------------------------------------------------
+// Social Feed Actions (admin-curated — no live Instagram API integration)
+// ----------------------------------------------------
+export async function saveSocialPostAction(post: Omit<SocialPost, "id" | "created_at"> & { id?: string }): Promise<{ success: boolean; post?: SocialPost; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    const saved = await db.saveSocialPost(post);
+    await logAudit(admin, post.id ? "update" : "create", "social_post", saved.id, saved.caption);
+    revalidatePath("/");
+    revalidatePath("/admin/social");
+    return { success: true, post: saved };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to save social post." };
+  }
+}
+
+export async function deleteSocialPostAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+
+    await db.deleteSocialPost(id);
+    await logAudit(admin, "delete", "social_post", id);
+    revalidatePath("/");
+    revalidatePath("/admin/social");
+    return { success: true };
+  } catch (e: any) {
+    return { success: false, error: e.message || "Failed to delete social post." };
   }
 }
 

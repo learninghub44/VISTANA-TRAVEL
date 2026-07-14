@@ -125,9 +125,12 @@ JSON-LD structured data (`TravelAgency` sitewide, `TouristTrip` on tour
 pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
 `src/app/robots.ts`. Still outstanding, roughly in priority order:
 
-- [ ] Instagram feed on the homepage — no real API integration exists yet;
-  needs a live Instagram Graph API token before it can be built (no
-  mock/placeholder data allowed per Hard Rule 1).
+- [x] Instagram feed on the homepage — resolved without a live API
+  integration (no token available). Instead, admins curate posts manually
+  via `/admin/social` (`SocialPost` type, `SocialFeedManager.tsx`),
+  displayed in a homepage "From Our Social Feed" section with a real empty
+  state when there are no posts yet. Each post links out to the real post
+  on whichever platform it came from.
 - [x] Customer portal "save favorite tours" — done (heart icon on
   `TourCard`, wired via `toggleFavoriteTourAction` to
   `Profile.favorite_tour_ids`, surfaced on `/portal`).
@@ -146,7 +149,6 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   `src/app/actions/index.ts` is called from every admin create/update/delete
   action (tours, destinations, guides, vehicles, hotels, reviews, blog,
   testimonials, partners, faqs, gallery, site settings, booking status).
-  Still no automated backups.
 - [x] Booking flow document upload step — done. `Booking.document_urls`
   (see `src/services/db/types.ts`) is populated via the new
   `uploadBookingDocumentAction` (customer-session-gated, PDF/JPG/PNG/WEBP
@@ -154,9 +156,24 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   before `createBookingAction`. Uploaded docs are visible to admins in
   `BookingsManager`'s edit modal. Supabase: run
   `alter table bookings add column document_urls jsonb;`.
-- [ ] No Prisma/migrations — Supabase tables must be created manually to
-  match `src/services/db/types.ts`. If you add a new entity, document the
-  SQL needed.
+- [x] No Prisma/migrations — this project still doesn't use an ORM/migration
+  tool, but there is now a real, versioned schema: `supabase/migrations/`
+  has a baseline SQL file for every table matching
+  `src/services/db/types.ts`, plus a follow-up migration enabling Row Level
+  Security with no policies (default-deny for the anon/authenticated
+  roles). **This requires `SUPABASE_SERVICE_ROLE_KEY` to be set** (server-only,
+  see `.env.example`) — `supabaseDb.ts` now prefers it over the anon key,
+  since the anon key is public by design and, without RLS, gave direct
+  read/write access to every table via the Supabase REST API, bypassing
+  this app's own auth checks entirely. If you add a new entity, add a new
+  numbered migration file rather than editing the baseline.
+- [x] No automated backups — added `npm run backup`
+  (`scripts/backup-db.mjs`), a plain Node script (not tied to any CI
+  provider) that dumps every table to timestamped JSON via the
+  service-role key, optionally uploading to Cloudflare R2 if its env vars
+  are set. No automated restore script yet, and nothing schedules this
+  script for you yet — run it manually or wire it into a cron/scheduled
+  task on whatever host you use.
 - [~] Automated tests: started. Vitest configured (`vitest.config.ts`,
   `npm test`) with unit tests for `src/services/auth/password.ts` and
   `src/services/auth/rateLimit.ts`. Still no coverage for session/JWT

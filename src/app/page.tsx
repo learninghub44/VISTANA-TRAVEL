@@ -20,6 +20,7 @@ export default async function HomePage() {
   const testimonials = await db.getTestimonials(true);
   const faqs = await db.getFaqs();
   const galleryImages = await db.getGalleryImages();
+  const socialPosts = await db.getSocialPosts();
 
   const session = await getSession();
   const profile = session ? await db.getProfileById(session.sub) : null;
@@ -308,6 +309,62 @@ export default async function HomePage() {
             <div className="flex flex-col items-center justify-center text-center bg-white dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/80 rounded-3xl py-16">
               <Camera className="h-8 w-8 text-slate-350 dark:text-slate-600 mb-3" />
               <p className="text-xs text-slate-450 dark:text-slate-500">No gallery photos available yet.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Social Feed Section */}
+      <section className="py-24 bg-white dark:bg-[#0b0f19] transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block mb-2">Follow Along</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+              From Our Social Feed
+            </h2>
+          </div>
+
+          {socialPosts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {socialPosts.slice(0, 8).map((post) => {
+                const content = (
+                  <>
+                    <img
+                      src={post.image_url}
+                      alt={post.caption || "Vistana Tours social post"}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-white text-xs font-medium line-clamp-2">
+                        {post.caption || `View on ${post.platform}`}
+                      </span>
+                    </div>
+                    <div className="absolute top-2 right-2 bg-white/90 dark:bg-slate-900/90 rounded-full p-1.5">
+                      <Camera className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
+                    </div>
+                  </>
+                );
+                return post.post_url ? (
+                  <a
+                    key={post.id}
+                    href={post.post_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative aspect-square rounded-2xl overflow-hidden group block"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <div key={post.id} className="relative aspect-square rounded-2xl overflow-hidden group">
+                    {content}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/80 rounded-3xl py-16">
+              <Camera className="h-8 w-8 text-slate-350 dark:text-slate-600 mb-3" />
+              <p className="text-xs text-slate-450 dark:text-slate-500">No social posts available yet.</p>
             </div>
           )}
         </div>

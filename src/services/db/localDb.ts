@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -20,6 +20,7 @@ interface LocalDbSchema {
   faqs: Faq[];
   subscribers: NewsletterSubscriber[];
   gallery: GalleryImage[];
+  social_posts: SocialPost[];
   audit_logs: AuditLog[];
   settings: SiteSettings;
 }
@@ -443,6 +444,7 @@ const initialData: LocalDbSchema = {
   faqs: [],
   subscribers: [],
   gallery: [],
+  social_posts: [],
   audit_logs: [],
   settings: { id: "site-settings", updated_at: new Date().toISOString() }
 };
@@ -468,6 +470,7 @@ class LocalDbAdapter implements DatabaseAdapter {
         faqs: parsed.faqs || [],
         subscribers: parsed.subscribers || [],
         gallery: parsed.gallery || [],
+        social_posts: parsed.social_posts || [],
         audit_logs: parsed.audit_logs || [],
         settings: parsed.settings || initialData.settings,
       };
@@ -1011,6 +1014,35 @@ class LocalDbAdapter implements DatabaseAdapter {
     db.gallery = db.gallery.filter((g) => g.id !== id);
     this.writeDb(db);
     return db.gallery.length < len;
+  }
+
+  // Social Feed
+  async getSocialPosts(): Promise<SocialPost[]> {
+    const posts = this.readDb().social_posts || [];
+    return [...posts].sort((a, b) => a.display_order - b.display_order);
+  }
+  async saveSocialPost(p: Omit<SocialPost, "id" | "created_at"> & { id?: string }): Promise<SocialPost> {
+    const db = this.readDb();
+    if (!db.social_posts) db.social_posts = [];
+    if (p.id) {
+      const idx = db.social_posts.findIndex((x) => x.id === p.id);
+      if (idx > -1) {
+        db.social_posts[idx] = { ...db.social_posts[idx], ...p, id: p.id };
+        this.writeDb(db);
+        return db.social_posts[idx];
+      }
+    }
+    const newItem: SocialPost = { ...p, id: generateId(), created_at: new Date().toISOString() };
+    db.social_posts.push(newItem);
+    this.writeDb(db);
+    return newItem;
+  }
+  async deleteSocialPost(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = db.social_posts.length;
+    db.social_posts = db.social_posts.filter((p) => p.id !== id);
+    this.writeDb(db);
+    return db.social_posts.length < len;
   }
 
   // Audit Logs

@@ -173,6 +173,20 @@ export interface GalleryImage {
   created_at: string;
 }
 
+// Admin-curated social feed shown on the homepage in place of a live
+// Instagram API integration (no live API token available — see AGENTS.md).
+// Admins add posts manually; each links out to the real post on the
+// platform it came from.
+export interface SocialPost {
+  id: string;
+  image_url: string;
+  caption?: string;
+  platform: "instagram" | "facebook" | "tiktok" | "twitter";
+  post_url?: string;
+  display_order: number;
+  created_at: string;
+}
+
 export interface AuditLog {
   id: string;
   actor_id: string;
@@ -273,6 +287,11 @@ export interface DatabaseAdapter {
   getGalleryImages(): Promise<GalleryImage[]>;
   saveGalleryImage(g: Omit<GalleryImage, "id" | "created_at"> & { id?: string }): Promise<GalleryImage>;
   deleteGalleryImage(id: string): Promise<boolean>;
+
+  // Social Feed (admin-curated, replaces a live Instagram API integration)
+  getSocialPosts(): Promise<SocialPost[]>;
+  saveSocialPost(p: Omit<SocialPost, "id" | "created_at"> & { id?: string }): Promise<SocialPost>;
+  deleteSocialPost(id: string): Promise<boolean>;
 
   // Audit Logs
   getAuditLogs(limit?: number): Promise<AuditLog[]>;

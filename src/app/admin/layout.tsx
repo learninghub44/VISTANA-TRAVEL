@@ -20,6 +20,7 @@ import {
   Handshake,
   HelpCircle,
   Images,
+  Camera,
   Settings
 } from "lucide-react";
 
@@ -53,6 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { name: "Partners", href: "/admin/partners", icon: Handshake },
     { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
     { name: "Gallery", href: "/admin/gallery", icon: Images },
+    { name: "Social Feed", href: "/admin/social", icon: Camera },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
