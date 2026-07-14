@@ -133,10 +133,14 @@ export default async function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} Vistana Tours & Travel. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-slate-400 transition-colors">Sitemap</Link>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 md:mt-0">
+            <Link href="/privacy-policy" className="hover:text-slate-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-slate-400 transition-colors">Terms of Service</Link>
+            <Link href="/refund-policy" className="hover:text-slate-400 transition-colors">Refund Policy</Link>
+            <Link href="/dpa" className="hover:text-slate-400 transition-colors">DPA</Link>
+            <Link href="/msa" className="hover:text-slate-400 transition-colors">MSA</Link>
+            <Link href="/cyber-liability-insurance" className="hover:text-slate-400 transition-colors">Cyber Insurance</Link>
+            <Link href="/sitemap.xml" className="hover:text-slate-400 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>
