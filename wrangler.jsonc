@@ -18,7 +18,7 @@
   // present as env vars in whatever environment runs `npm run deploy`
   // (CI secrets, or a local .env.production).
   "vars": {
-    "NEXT_PUBLIC_APP_URL": "https://vistanatours.co.ke",
+    "NEXT_PUBLIC_APP_URL": "",
     "NEXT_PUBLIC_SUPABASE_URL": "",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": ""
   },
