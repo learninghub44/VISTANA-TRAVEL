@@ -3,25 +3,50 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
+  LayoutDashboard,
+  ClipboardList,
+  Map,
   Compass,
+  Hotel,
+  Car,
+  Users,
+  UserCheck,
+  Star,
+  FileText,
+  Quote,
+  Handshake,
+  HelpCircle,
+  Images,
+  Camera,
+  Settings,
   Eye,
   LogOut,
   Menu,
   X,
-  type LucideIcon,
 } from "lucide-react";
 
-export interface AdminMenuItem {
-  name: string;
-  href: string;
-  icon: LucideIcon;
-}
+const menuItems = [
+  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+  { name: "Tours", href: "/admin/tours", icon: Compass },
+  { name: "Destinations", href: "/admin/destinations", icon: Map },
+  { name: "Hotels", href: "/admin/hotels", icon: Hotel },
+  { name: "Vehicles", href: "/admin/vehicles", icon: Car },
+  { name: "Guides", href: "/admin/guides", icon: UserCheck },
+  { name: "Customers", href: "/admin/customers", icon: Users },
+  { name: "Reviews", href: "/admin/reviews", icon: Star },
+  { name: "Blog Posts", href: "/admin/blog", icon: FileText },
+  { name: "Testimonials", href: "/admin/testimonials", icon: Quote },
+  { name: "Partners", href: "/admin/partners", icon: Handshake },
+  { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
+  { name: "Gallery", href: "/admin/gallery", icon: Images },
+  { name: "Social Feed", href: "/admin/social", icon: Camera },
+  { name: "Settings", href: "/admin/settings", icon: Settings },
+];
 
 export default function AdminShell({
-  menuItems,
   children,
 }: {
-  menuItems: AdminMenuItem[];
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
