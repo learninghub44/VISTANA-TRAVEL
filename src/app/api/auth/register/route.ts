@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await hashPassword(password);
     const verificationToken = generateToken();
-    const newId = "cust-" + Math.random().toString(36).substring(2, 9);
+    const newId = crypto.randomUUID();
 
     const newProfile: Profile = {
       id: newId,

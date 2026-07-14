@@ -18,7 +18,7 @@ export async function ensureAdminSeeded(): Promise<void> {
 
   const passwordHash = await hashPassword(adminPassword);
   await db.saveProfile({
-    id: "admin-" + Date.now(),
+    id: crypto.randomUUID(),
     email: adminEmail.toLowerCase(),
     role: "admin",
     name: "Admin",
