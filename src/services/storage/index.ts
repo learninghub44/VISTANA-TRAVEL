@@ -69,10 +69,39 @@ class R2StorageProvider implements StorageProvider {
   }
 }
 
-const useR2 = 
-  process.env.R2_ACCOUNT_ID && 
-  process.env.R2_ACCESS_KEY_ID && 
-  process.env.R2_SECRET_ACCESS_KEY && 
-  process.env.R2_BUCKET_NAME;
+// Same class of bug fixed in src/services/db/supabaseDb.ts: deciding the
+// provider once at module top-level reads process.env at import time, which
+// on Cloudflare Workers can run before per-request env population — risking
+// a silent fall-through to LocalStorageProvider. That fallback is doubly
+// broken there anyway, since Workers have no writable filesystem (fs.*
+// calls will throw) — it only works under `next dev` / a Node server.
+// Resolving the provider lazily, per call, avoids the timing issue and
+// keeps the R2 path as the only one that can actually work in production.
+let cachedProvider: StorageProvider | null = null;
 
-export const storage: StorageProvider = useR2 ? new R2StorageProvider() : new LocalStorageProvider();
+function resolveStorageProvider(): StorageProvider {
+  if (cachedProvider) return cachedProvider;
+
+  const useR2 = Boolean(
+    process.env.R2_ACCOUNT_ID &&
+    process.env.R2_ACCESS_KEY_ID &&
+    process.env.R2_SECRET_ACCESS_KEY &&
+    process.env.R2_BUCKET_NAME
+  );
+
+  if (!useR2) {
+    console.warn(
+      "[Vistana Storage] R2 credentials not set (or not visible at runtime) — using LocalStorageProvider, " +
+      "which writes to the local filesystem and will fail on Cloudflare Workers (no writable fs there). " +
+      "Set R2_ACCOUNT_ID / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET_NAME as Wrangler secrets for production."
+    );
+  }
+
+  cachedProvider = useR2 ? new R2StorageProvider() : new LocalStorageProvider();
+  return cachedProvider;
+}
+
+export const storage: StorageProvider = {
+  uploadImage: (fileBuffer, fileName, mimeType) =>
+    resolveStorageProvider().uploadImage(fileBuffer, fileName, mimeType),
+};

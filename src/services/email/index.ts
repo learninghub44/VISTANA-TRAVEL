@@ -59,7 +59,16 @@ class ResendEmailProvider implements EmailProvider {
   }
 }
 
-export const email: EmailProvider = process.env.RESEND_API_KEY ? new ResendEmailProvider() : new ConsoleEmailProvider();
+// Resolved lazily (per call) rather than once at module load — same
+// Workers/OpenNext env-timing concern as src/services/db/supabaseDb.ts.
+// ResendEmailProvider also re-checks the key at call time and falls back to
+// ConsoleEmailProvider itself, so this was never a hard failure like the DB
+// case, but a stale top-level read could still silently downgrade real
+// emails to console logging in production.
+export const email: EmailProvider = {
+  sendEmail: (options) =>
+    (process.env.RESEND_API_KEY ? new ResendEmailProvider() : new ConsoleEmailProvider()).sendEmail(options),
+};
 
 // High level email sending functions
 export async function sendBookingConfirmationEmail(booking: any, tour: any, customerEmail: string, customerName: string) {

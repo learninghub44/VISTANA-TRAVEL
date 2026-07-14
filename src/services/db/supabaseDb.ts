@@ -1,39 +1,73 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-// This adapter only ever runs server-side (server actions / server
-// components — verified no "use client" file imports it), so it's safe to
-// use the service-role key here, which bypasses Row Level Security. This is
-// required once RLS is enabled (see supabase/migrations) since the app does
-// its own auth checks in src/app/actions/index.ts rather than relying on
-// Supabase Auth / auth.uid(). Falls back to the anon key with a loud warning
-// so existing setups don't silently break, but that fallback only works if
-// RLS is left disabled on the project — not recommended for production.
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabaseKey = supabaseServiceKey || supabaseAnonKey;
-
-if (supabaseUrl && supabaseAnonKey && !supabaseServiceKey) {
-  console.warn(
-    "[Vistana DB Service] SUPABASE_SERVICE_ROLE_KEY is not set — falling back to the anon key for server-side database access. " +
-    "This only works if Row Level Security is left disabled on your Supabase tables, which also means the same anon key " +
-    "(public by design) can read/write your data directly via the Supabase REST API. Set SUPABASE_SERVICE_ROLE_KEY and " +
-    "run supabase/migrations/*_enable_rls.sql to close that off."
-  );
-}
-
+// NOTE ON INITIALIZATION TIMING: this client used to be built once at module
+// top-level, reading process.env at import time. On Cloudflare Workers (via
+// the OpenNext adapter) that is risky — module-level code can run before
+// per-request env population has happened for a given isolate, silently
+// falling back to the anon key. RLS is enabled with zero policies (see
+// supabase/migrations/20260714000001_enable_rls.sql), so an anon-key client
+// can SELECT (returns empty rows, no error) but every INSERT/UPDATE fails
+// with 42501 "new row violates row-level security policy" — exactly the
+// register/login failure this was causing. Building the client lazily, on
+// first use inside a request, removes that ordering risk entirely: env vars
+// are always read at call time, never at import time.
 let supabase: SupabaseClient | null = null;
-if (supabaseUrl && supabaseKey) {
+let warnedAboutFallback = false;
+let loggedKeySource = false;
+
+function getSupabaseClient(): SupabaseClient {
+  if (supabase) return supabase;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  // This adapter only ever runs server-side (server actions / server
+  // components — verified no "use client" file imports it), so it's safe to
+  // use the service-role key here, which bypasses Row Level Security. This is
+  // required once RLS is enabled (see supabase/migrations) since the app does
+  // its own auth checks in src/app/actions/index.ts rather than relying on
+  // Supabase Auth / auth.uid(). Falls back to the anon key with a loud warning
+  // so existing setups don't silently break, but that fallback only works if
+  // RLS is left disabled on the project — not recommended for production.
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const supabaseKey = supabaseServiceKey || supabaseAnonKey;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and either " +
+      "SUPABASE_SERVICE_ROLE_KEY (recommended) or NEXT_PUBLIC_SUPABASE_ANON_KEY as runtime " +
+      "secrets/vars in Cloudflare (wrangler secret put ..., not just wrangler.jsonc `vars`)."
+    );
+  }
+
+  if (!loggedKeySource) {
+    // Safe diagnostic: confirms which key was actually picked up at runtime
+    // without ever printing the key itself. Check `wrangler tail` for this
+    // line after a deploy to instantly see whether the service key landed.
+    console.log(
+      `[Vistana DB Service] Supabase client using ${supabaseServiceKey ? "SERVICE ROLE" : "ANON"} key ` +
+      `(service key present: ${Boolean(supabaseServiceKey)}, length: ${supabaseServiceKey.length || 0}).`
+    );
+    loggedKeySource = true;
+  }
+
+  if (!supabaseServiceKey && !warnedAboutFallback) {
+    console.warn(
+      "[Vistana DB Service] SUPABASE_SERVICE_ROLE_KEY is not set (or not visible at runtime) — falling back to the " +
+      "anon key for server-side database access. With RLS enabled and zero policies (the current setup), this means " +
+      "every read will silently return empty results and every write will fail with 42501 'row-level security policy' " +
+      "errors. Run `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY` against the correct environment and redeploy."
+    );
+    warnedAboutFallback = true;
+  }
+
   supabase = createClient(supabaseUrl, supabaseKey);
+  return supabase;
 }
 
 class SupabaseDbAdapter implements DatabaseAdapter {
   private get client(): SupabaseClient {
-    if (!supabase) {
-      throw new Error("Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-    }
-    return supabase;
+    return getSupabaseClient();
   }
 
   // Destinations
@@ -460,4 +494,3 @@ class SupabaseDbAdapter implements DatabaseAdapter {
 }
 
 export const supabaseDb = new SupabaseDbAdapter();
-export { supabase };
