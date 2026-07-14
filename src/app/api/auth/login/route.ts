@@ -7,7 +7,7 @@ import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { ensureAdminSeeded } from "@/services/auth/bootstrap";
 import { verifyOrigin } from "@/services/auth/csrf";
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });

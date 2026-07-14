@@ -5,7 +5,7 @@ import { hashPassword } from "@/services/auth/password";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 
-const schema = z.object({
+export const schema = z.object({
   token: z.string().min(10),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });

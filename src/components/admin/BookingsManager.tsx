@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { updateBookingStatusAction } from "@/app/actions";
+import { downloadCsv } from "@/lib/csv";
 import { ClipboardList, Users, Search, Download, Printer, UserCheck, Car, RefreshCw, Info, Edit3, X } from "lucide-react";
 import { Booking, Tour, Guide, Vehicle, Profile } from "@/services/db/types";
 
@@ -103,17 +104,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
       ];
     });
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((r) => r.map((val) => `"${val}"`).join(","))].join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Vistana_Bookings_Report_${Date.now()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadCsv("Vistana_Bookings_Report", headers, rows);
   };
 
   const printBookingSheet = (b: Booking) => {

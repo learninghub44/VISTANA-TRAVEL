@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { updateReviewStatusAction, deleteReviewAction } from "@/app/actions";
-import { Search, Trash2, Check, X, Info, Star } from "lucide-react";
+import { Search, Trash2, Check, X, Info, Star, Download } from "lucide-react";
 import { Review, Tour } from "@/services/db/types";
+import { downloadCsv } from "@/lib/csv";
 
 interface ReviewsManagerProps {
   reviews: Review[];
@@ -46,6 +47,15 @@ export default function ReviewsManager({ reviews, tours }: ReviewsManagerProps) 
     if (!res.success) alert(res.error || "Failed to delete.");
   };
 
+  const exportToCSV = () => {
+    const headers = ["Customer Name", "Tour", "Rating", "Status", "Content", "Submitted"];
+    const rows = filtered.map((r) => {
+      const tour = tours.find((t) => t.id === r.tour_id);
+      return [r.customer_name, tour?.title || "Unknown", r.rating, r.status, r.content, r.created_at];
+    });
+    downloadCsv("Vistana_Reviews_Report", headers, rows);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/40 dark:border-slate-855 shadow-sm">
@@ -74,6 +84,13 @@ export default function ReviewsManager({ reviews, tours }: ReviewsManagerProps) 
               {s}
             </button>
           ))}
+          <button
+            onClick={exportToCSV}
+            className="bg-slate-100 dark:bg-slate-850 hover:bg-slate-150 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 px-3 rounded-xl text-xs flex items-center space-x-1.5 transition-colors cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span>Export</span>
+          </button>
         </div>
       </div>
 

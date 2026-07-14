@@ -4,7 +4,7 @@ import { db } from "@/services/db";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 
-const schema = z.object({ email: z.string().email() });
+export const schema = z.object({ email: z.string().email() });
 
 export async function POST(req: NextRequest) {
   try {

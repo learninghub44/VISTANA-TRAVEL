@@ -43,3 +43,6 @@ next-env.d.ts
 
 # local database backups (contain customer data — never commit)
 /backups/
+
+# local JSON dev database (created automatically when Supabase env vars are unset)
+/src/data/local_db.json

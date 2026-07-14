@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Mail, Phone, ShieldCheck, ShieldAlert, ClipboardList } from "lucide-react";
+import { Search, Mail, Phone, ShieldCheck, ShieldAlert, ClipboardList, Download } from "lucide-react";
 import { Profile, Booking } from "@/services/db/types";
+import { downloadCsv } from "@/lib/csv";
 
 interface CustomersManagerProps {
   customers: Profile[];
@@ -20,6 +21,22 @@ export default function CustomersManager({ customers, bookings }: CustomersManag
 
   const bookingCount = (customerId: string) => bookings.filter((b) => b.customer_id === customerId).length;
 
+  // Deliberately excludes password_hash/verification_token/reset_token —
+  // this file gets downloaded to someone's disk, so it should never carry
+  // anything more sensitive than what's already shown in the table above.
+  const exportToCSV = () => {
+    const headers = ["Name", "Email", "Phone", "Verified", "Bookings", "Joined"];
+    const rows = filtered.map((c) => [
+      c.name,
+      c.email,
+      c.phone || "",
+      c.email_verified ? "Yes" : "No",
+      bookingCount(c.id),
+      c.created_at,
+    ]);
+    downloadCsv("Vistana_Customers_Report", headers, rows);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/40 dark:border-slate-855 shadow-sm">
@@ -36,6 +53,13 @@ export default function CustomersManager({ customers, bookings }: CustomersManag
         <span className="text-xs font-bold text-slate-450 dark:text-slate-500 shrink-0">
           {filtered.length} customer{filtered.length !== 1 ? "s" : ""}
         </span>
+        <button
+          onClick={exportToCSV}
+          className="bg-slate-100 dark:bg-slate-850 hover:bg-slate-150 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 transition-colors shrink-0 cursor-pointer"
+        >
+          <Download className="h-3.5 w-3.5" />
+          <span>Export Report</span>
+        </button>
       </div>
 
       {filtered.length === 0 ? (

@@ -8,7 +8,7 @@ import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { sendVerificationEmail } from "@/services/email";
 import { verifyOrigin } from "@/services/auth/csrf";
 
-const registerSchema = z.object({
+export const registerSchema = z.object({
   name: z.string().min(2).max(120),
   email: z.string().email(),
   phone: z.string().optional(),

@@ -138,9 +138,9 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   canonical URLs, JSON-LD, `sitemap.ts`/`robots.ts`).
 - [x] Custom `not-found.tsx`, `error.tsx`, and `loading.tsx` added at
   `src/app/`.
-- [x] Bookings CSV export exists (`BookingsManager` → "Export Report").
-  Still no PDF/Excel export, and no export for other admin lists
-  (customers, reviews, etc.) — open if needed.
+- [x] Bookings CSV export exists (`BookingsManager` → "Export Report"), now
+  extracted into a shared `src/lib/csv.ts` helper. Customers and Reviews
+  admin lists also have CSV export. Still no PDF/Excel export anywhere.
 - [x] CSRF: raw API routes under `src/app/api/auth/*` and `/api/newsletter`
   now verify Origin/Referer against Host via `src/services/auth/csrf.ts`
   (Server Actions already get Next.js's built-in Origin/Host check for
@@ -171,14 +171,21 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   (`scripts/backup-db.mjs`), a plain Node script (not tied to any CI
   provider) that dumps every table to timestamped JSON via the
   service-role key, optionally uploading to Cloudflare R2 if its env vars
-  are set. No automated restore script yet, and nothing schedules this
-  script for you yet — run it manually or wire it into a cron/scheduled
-  task on whatever host you use.
-- [~] Automated tests: started. Vitest configured (`vitest.config.ts`,
-  `npm test`) with unit tests for `src/services/auth/password.ts` and
-  `src/services/auth/rateLimit.ts`. Still no coverage for session/JWT
-  logic, zod-validated API routes, server actions, or any component/UI
-  tests.
+  are set. Also added `npm run restore` (`scripts/restore-db.mjs`, upserts
+  a backup back in — does not delete rows added since) and
+  `npm run backup:scheduler` (`scripts/backup-scheduler.mjs`), a small
+  always-on worker process for hosts without native scheduled tasks —
+  prefer a real Render/Railway Cron Job pointed at `npm run backup`
+  instead if your host has one. No GitHub Actions used, per instruction.
+- [~] Automated tests: substantially expanded. Vitest configured
+  (`vitest.config.ts`, `npm test`), 63 passing tests covering:
+  `password.ts`, `rateLimit.ts`, JWT session creation/verification
+  (`session.ts`), every Zod schema used by the auth/newsletter API routes,
+  and a regression suite asserting all ~25 admin-gated server actions
+  reject unauthenticated calls (plus the customer-gated ones). Still no
+  coverage for: the API routes' HTTP handlers themselves (only their zod
+  schemas are tested), the "happy path" of server actions with a real
+  session, or any component/UI tests.
 
 ## Local dev
 

@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "backup": "node scripts/backup-db.mjs"
+    "backup": "node scripts/backup-db.mjs",
+    "backup:scheduler": "node scripts/backup-scheduler.mjs",
+    "restore": "node scripts/restore-db.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1086.0",
