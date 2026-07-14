@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vistana-tours",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-07-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Non-secret config can live here as plain vars, for server-side runtime
+  // access. Set actual secrets (SESSION_SECRET, SUPABASE_SERVICE_ROLE_KEY,
+  // RESEND_API_KEY, R2 keys, ADMIN_PASSWORD, GROQ_API_KEY) with
+  // `wrangler secret put <NAME>` instead of committing them here.
+  //
+  // NOTE: NEXT_PUBLIC_* values get inlined into the client bundle at BUILD
+  // time, so setting them here alone isn't enough — they must also be
+  // present as env vars in whatever environment runs `npm run deploy`
+  // (CI secrets, or a local .env.production).
+  "vars": {
+    "NEXT_PUBLIC_APP_URL": "https://vistanatours.co.ke",
+    "NEXT_PUBLIC_SUPABASE_URL": "",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": ""
+  },
+  "observability": {
+    "enabled": true
+  }
+}

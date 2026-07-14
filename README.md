@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vistana Tours & Travel
 
-## Getting Started
+Booking and management platform for a tours company operating in Kenya and
+Tanzania: public marketing site, customer booking portal, and admin
+dashboard. Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4,
+Supabase (Postgres), Cloudflare R2 for file storage.
 
-First, run the development server:
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` set, the
+app falls back to a local JSON file at `src/data/local_db.json` — fine for
+local dev, not for production.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Required:
+- `SESSION_SECRET` — 32+ random chars (`openssl rand -base64 32`), signs auth session JWTs
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase project
+- `SUPABASE_SERVICE_ROLE_KEY` — server-side DB access bypassing RLS; without it the app falls back to the anon key, which is only safe with RLS disabled (not recommended — see `supabase/migrations/20260714000001_enable_rls.sql`)
+- `NEXT_PUBLIC_APP_URL` — production URL, used to build email links
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD` — seeds the first admin account on boot
 
-## Learn More
+Recommended (feature degrades gracefully without it):
+- `RESEND_API_KEY` — emails are console-logged instead of sent if unset
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN` — falls back to local filesystem storage, which does not persist on Workers/Pages
+- `GROQ_API_KEY`, `GROQ_MODEL` — AI assistant feature is disabled without a key
 
-To learn more about Next.js, take a look at the following resources:
+Not wired up yet (safe to leave unset): `STRIPE_SECRET_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER` — payments and WhatsApp integration are future-ready abstraction layers only, per the original spec.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+First-time setup: run `supabase/migrations/*.sql` in order against your
+Supabase project (SQL editor, or `supabase db push`). Add one new numbered
+migration file per schema change going forward — don't edit the baseline.
 
-## Deploy on Vercel
+## Deploying
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Recommended target: **Cloudflare Workers via the OpenNext adapter**
+(`@opennextjs/cloudflare`) — Cloudflare's currently-recommended way to run
+Next.js, with full Node.js runtime support (needed here for bcryptjs,
+custom JWT sessions, and Server Actions). Cloudflare Pages via
+`next-on-pages` is deprecated and Edge-runtime-only; don't use it for this
+app.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run preview   # builds and runs locally against the Workers runtime
+npm run deploy     # builds and deploys to Cloudflare Workers
+```
+
+Config lives in `wrangler.jsonc` and `open-next.config.ts`. Set secrets with:
+
+```bash
+npx wrangler secret put SESSION_SECRET
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put ADMIN_PASSWORD
+npx wrangler secret put R2_ACCESS_KEY_ID
+npx wrangler secret put R2_SECRET_ACCESS_KEY
+npx wrangler secret put GROQ_API_KEY
+# ...etc for any other secret values
+```
+
+Non-secret vars (`NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SUPABASE_URL`,
+`NEXT_PUBLIC_SUPABASE_ANON_KEY`) are set in `wrangler.jsonc` under `vars` —
+but note `NEXT_PUBLIC_*` values are inlined into the client bundle at
+**build** time, so they must also be present as env vars wherever
+`npm run deploy` actually runs (CI secrets or a local `.env.production`),
+not just in `wrangler.jsonc`.
+
+`ADMIN_EMAIL`, `R2_ACCOUNT_ID`, `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN`, and
+`GROQ_MODEL` aren't secret and can go in `wrangler.jsonc`'s `vars` too.

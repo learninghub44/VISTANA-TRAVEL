@@ -46,3 +46,8 @@ next-env.d.ts
 
 # local JSON dev database (created automatically when Supabase env vars are unset)
 /src/data/local_db.json
+
+# Cloudflare / OpenNext build output and local wrangler state
+.open-next/
+.wrangler/
+cloudflare-env.d.ts
