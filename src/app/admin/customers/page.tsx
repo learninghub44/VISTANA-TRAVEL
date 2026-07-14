@@ -11,8 +11,8 @@ export default async function AdminCustomersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Customer Directory</h1>
-        <p className="text-xs text-slate-450 dark:text-slate-500 mt-1">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">Customer Directory</h1>
+        <p className="text-xs text-slate-450 mt-1">
           View registered customer accounts and their booking activity.
         </p>
       </div>

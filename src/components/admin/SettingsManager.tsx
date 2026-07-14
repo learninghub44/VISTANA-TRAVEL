@@ -63,16 +63,16 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm space-y-6 max-w-2xl">
       <div>
-        <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">Social Media Links</h3>
+        <h3 className="font-serif font-bold text-lg text-slate-900">Social Media Links</h3>
         <p className="text-[10px] text-slate-400 mt-0.5">
           These links power the icons in the site footer. Leave a field blank to hide that icon.
         </p>
       </div>
 
       {error && (
-        <div className="text-xs text-red-600 bg-red-50 dark:bg-red-950/20 dark:text-red-400 border border-red-200/40 dark:border-red-900/40 rounded-xl px-4 py-2.5">
+        <div className="text-xs text-red-600 bg-red-50 border border-red-200/40 rounded-xl px-4 py-2.5">
           {error}
         </div>
       )}
@@ -80,8 +80,8 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
       <div className="space-y-4">
         {FIELDS.map(({ key, label, placeholder, icon: Icon }) => (
           <div key={key} className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Icon className="h-3.5 w-3.5 text-gold-600 dark:text-gold-400" />
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <Icon className="h-3.5 w-3.5 text-gold-600" />
               {label}
             </label>
             <input
@@ -89,7 +89,7 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
               value={(form[key] as string) || ""}
               onChange={(e) => handleChange(key, e.target.value)}
               placeholder={placeholder}
-              className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
+              className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
             />
           </div>
         ))}
@@ -105,7 +105,7 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
           {loading ? "Saving..." : "Save Settings"}
         </button>
         {saved && (
-          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
             <CheckCircle2 className="h-4 w-4" /> Saved
           </span>
         )}

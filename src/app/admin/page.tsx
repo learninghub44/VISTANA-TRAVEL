@@ -90,12 +90,12 @@ export default async function AdminDashboardPage() {
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      Pending: "text-amber-600 bg-amber-50 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200/20",
-      Confirmed: "text-blue-650 bg-blue-50 dark:bg-blue-950/20 dark:text-blue-400 border-blue-205/20",
-      "Awaiting Payment": "text-purple-650 bg-purple-50 dark:bg-purple-950/20 dark:text-purple-400 border-purple-205/20",
-      Paid: "text-emerald-650 bg-emerald-50 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-205/20",
-      Completed: "text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-350 border-slate-700/20",
-      Cancelled: "text-red-650 bg-red-50 dark:bg-red-950/20 dark:text-red-400 border-red-205/20",
+      Pending: "text-amber-600 bg-amber-50 border-amber-200/20",
+      Confirmed: "text-blue-650 bg-blue-50 border-blue-205/20",
+      "Awaiting Payment": "text-purple-650 bg-purple-50 border-purple-205/20",
+      Paid: "text-emerald-650 bg-emerald-50 border-emerald-205/20",
+      Completed: "text-slate-600 bg-slate-50 border-slate-700/20",
+      Cancelled: "text-red-650 bg-red-50 border-red-205/20",
     };
     return colors[status] || "text-slate-500 bg-slate-50 border-slate-200/20";
   };
@@ -104,8 +104,8 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Page Title */}
       <div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Dashboard Overview</h1>
-        <p className="text-xs text-slate-450 dark:text-slate-500 mt-1">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">Dashboard Overview</h1>
+        <p className="text-xs text-slate-450 mt-1">
           Real-time metrics, booking trends, and East African operations.
         </p>
       </div>
@@ -113,11 +113,11 @@ export default async function AdminDashboardPage() {
       {/* Metrics Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Bookings */}
-        <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="relative overflow-hidden bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gold-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Bookings</span>
-            <span className="block font-serif text-2xl font-bold text-slate-900 dark:text-white">{totalBookings}</span>
+            <span className="block font-serif text-2xl font-bold text-slate-900">{totalBookings}</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center text-white shadow-lg shadow-gold-500/20 relative">
             <ClipboardList className="h-6 w-6" />
@@ -125,11 +125,11 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Pending Action */}
-        <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="relative overflow-hidden bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-amber-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Awaiting Confirmation</span>
-            <span className="block font-serif text-2xl font-bold text-amber-600 dark:text-amber-500">{pendingBookings}</span>
+            <span className="block font-serif text-2xl font-bold text-amber-600">{pendingBookings}</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-amber-500/20 relative">
             <Calendar className="h-6 w-6" />
@@ -137,11 +137,11 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Confirmed Trips */}
-        <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="relative overflow-hidden bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Confirmed Safaris</span>
-            <span className="block font-serif text-2xl font-bold text-blue-600 dark:text-blue-500">{confirmedBookings}</span>
+            <span className="block font-serif text-2xl font-bold text-blue-600">{confirmedBookings}</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 relative">
             <Compass className="h-6 w-6" />
@@ -149,11 +149,11 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Revenue */}
-        <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="relative overflow-hidden bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gold-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Realized Revenue</span>
-            <span className="block font-serif text-2xl font-bold text-gold-600 dark:text-gold-400">${totalRevenue.toLocaleString()}</span>
+            <span className="block font-serif text-2xl font-bold text-gold-600">${totalRevenue.toLocaleString()}</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center text-white shadow-lg shadow-gold-500/20 relative">
             <DollarSign className="h-6 w-6" />
@@ -163,28 +163,28 @@ export default async function AdminDashboardPage() {
 
       {/* Secondary Metrics Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-black p-6 rounded-3xl shadow-sm flex items-center justify-between">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-3xl shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pipeline Value</span>
             <span className="block font-serif text-xl font-bold text-white">${projectedRevenue.toLocaleString()}</span>
           </div>
           <TrendingUp className="h-8 w-8 text-gold-400" />
         </div>
-        <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Avg. Booking Value</span>
-            <span className="block font-serif text-xl font-bold text-purple-600 dark:text-purple-400">${avgBookingValue.toLocaleString()}</span>
+            <span className="block font-serif text-xl font-bold text-purple-600">${avgBookingValue.toLocaleString()}</span>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400">
+          <div className="w-11 h-11 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600">
             <Wallet className="h-5 w-5" />
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
+        <div className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Registered Customers</span>
-            <span className="block font-serif text-xl font-bold text-pink-600 dark:text-pink-400">{customerCount}</span>
+            <span className="block font-serif text-xl font-bold text-pink-600">{customerCount}</span>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
+          <div className="w-11 h-11 rounded-2xl bg-pink-500/10 flex items-center justify-center text-pink-600">
             <Users className="h-5 w-5" />
           </div>
         </div>
@@ -203,15 +203,15 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Recent Activity Bookings list */}
-      <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm space-y-6">
-        <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-850">
+      <div className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm space-y-6">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
           <div>
-            <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">Recent Booking Requests</h3>
+            <h3 className="font-serif font-bold text-lg text-slate-900">Recent Booking Requests</h3>
             <p className="text-[10px] text-slate-400 mt-0.5">Manage and check pending passenger entries.</p>
           </div>
           <Link
             href="/admin/bookings"
-            className="text-xs bg-gold-600/10 text-gold-700 hover:bg-gold-600 hover:text-white font-bold py-1.5 px-4 rounded-full transition-all dark:text-gold-400 dark:bg-gold-950/20"
+            className="text-xs bg-gold-600/10 text-gold-700 hover:bg-gold-600 hover:text-white font-bold py-1.5 px-4 rounded-full transition-all"
           >
             Manage Bookings
           </Link>
@@ -220,7 +220,7 @@ export default async function AdminDashboardPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="text-slate-400 border-b border-slate-100 dark:border-slate-800">
+              <tr className="text-slate-400 border-b border-slate-100">
                 <th className="pb-3.5 pl-2 font-bold uppercase tracking-wider">Booking ID</th>
                 <th className="pb-3.5 font-bold uppercase tracking-wider">Customer</th>
                 <th className="pb-3.5 font-bold uppercase tracking-wider">Tour</th>
@@ -235,16 +235,16 @@ export default async function AdminDashboardPage() {
                 return (
                   <tr
                     key={booking.id}
-                    className="border-b border-slate-100 dark:border-slate-850 hover:bg-slate-50/50 dark:hover:bg-slate-850/20"
+                    className="border-b border-slate-100 hover:bg-slate-50/50"
                   >
                     <td className="py-3.5 pl-2 font-mono font-bold">{booking.id}</td>
-                    <td className="py-3.5 font-medium text-slate-700 dark:text-slate-300">
+                    <td className="py-3.5 font-medium text-slate-700">
                       {cust ? cust.name : "Guest Explorer"}
                     </td>
-                    <td className="py-3.5 max-w-[150px] truncate text-slate-700 dark:text-slate-300" title={tour?.title}>
+                    <td className="py-3.5 max-w-[150px] truncate text-slate-700" title={tour?.title}>
                       {tour ? tour.title : "Unknown Tour"}
                     </td>
-                    <td className="py-3.5 font-bold text-amber-700 dark:text-amber-500">
+                    <td className="py-3.5 font-bold text-amber-700">
                       ${booking.total_price.toLocaleString()}
                     </td>
                     <td className="py-3.5">

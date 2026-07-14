@@ -38,9 +38,9 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm">
+    <div className="bg-white p-6 rounded-3xl border border-slate-200/40 shadow-sm">
       <div className="mb-4">
-        <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="font-serif font-bold text-lg text-slate-900">{title}</h3>
         <p className="text-[10px] text-slate-400 mt-0.5">{subtitle}</p>
       </div>
       {children}
@@ -78,7 +78,7 @@ export function RevenueTrendChart({ data }: { data: { month: string; revenue: nu
               <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-slate-800" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100" vertical={false} />
           <XAxis
             dataKey="month"
             tick={{ fontSize: 11, fill: "#94a3b8" }}
@@ -130,7 +130,7 @@ export function BookingStatusChart({ data }: { data: { name: string; value: numb
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="font-serif text-2xl font-bold text-slate-900 dark:text-white">{total}</span>
+          <span className="font-serif text-2xl font-bold text-slate-900">{total}</span>
           <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Total</span>
         </div>
       </div>
@@ -141,8 +141,8 @@ export function BookingStatusChart({ data }: { data: { name: string; value: numb
               className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{ background: STATUS_COLORS[d.name] || DEST_COLORS[i % DEST_COLORS.length] }}
             />
-            <span className="text-slate-600 dark:text-slate-400 truncate">{d.name}</span>
-            <span className="ml-auto font-bold text-slate-800 dark:text-slate-200">{d.value}</span>
+            <span className="text-slate-600 truncate">{d.name}</span>
+            <span className="ml-auto font-bold text-slate-800">{d.value}</span>
           </div>
         ))}
       </div>
@@ -155,7 +155,7 @@ export function DestinationsBarChart({ data }: { data: { name: string; count: nu
     <ChartCard title="Popular Destinations" subtitle="Most booked destinations across East Africa.">
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={data} layout="vertical" margin={{ top: 5, right: 20, left: 5, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-slate-800" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100" horizontal={false} />
           <XAxis type="number" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
           <YAxis
             type="category"
@@ -182,7 +182,7 @@ export function BookingsVolumeChart({ data }: { data: { month: string; bookings:
     <ChartCard title="Booking Volume" subtitle="New bookings created per month.">
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100 dark:text-slate-800" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-100" vertical={false} />
           <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(148,163,184,0.08)" }} />

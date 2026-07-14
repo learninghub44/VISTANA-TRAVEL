@@ -71,7 +71,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
   return (
     <div className="space-y-6">
       {/* Search Header */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/40 dark:border-slate-855 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/40 shadow-sm">
         <div className="relative flex items-center w-full sm:max-w-xs">
           <Search className="absolute left-3 h-4 w-4 text-slate-400" />
           <input
@@ -79,7 +79,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search testimonials..."
-            className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-850 dark:text-slate-200"
+            className="w-full bg-slate-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-850"
           />
         </div>
 
@@ -94,7 +94,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl p-10 text-center text-xs text-slate-450 dark:text-slate-500">
+        <div className="bg-white border border-slate-200/40 rounded-2xl p-10 text-center text-xs text-slate-450">
           No testimonials yet. Add one to feature it on the homepage.
         </div>
       ) : (
@@ -102,13 +102,13 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
           {filtered.map((t) => (
             <div
               key={t.id}
-              className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm"
+              className="bg-white border border-slate-200/40 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm"
             >
               <div className="p-5 space-y-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">{t.customer_name}</h3>
+                  <h3 className="font-serif font-bold text-lg text-slate-900">{t.customer_name}</h3>
                   {t.featured && (
-                    <span className="text-[10px] font-bold text-gold-700 dark:text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-gold-700 bg-gold-500/10 px-2 py-0.5 rounded-full">
                       Featured
                     </span>
                   )}
@@ -121,22 +121,22 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                     <Star key={i} className="h-3.5 w-3.5 fill-current" />
                   ))}
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 leading-relaxed italic">
+                <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed italic">
                   "{t.content}"
                 </p>
               </div>
 
-              <div className="flex bg-slate-50/50 dark:bg-slate-955/10 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="flex bg-slate-50/50 border-t border-slate-100">
                 <button
                   onClick={() => handleOpenEdit(t)}
-                  className="w-1/2 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center space-x-1 transition-colors border-r border-slate-100 dark:border-slate-800/80 cursor-pointer"
+                  className="w-1/2 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center justify-center space-x-1 transition-colors border-r border-slate-100 cursor-pointer"
                 >
                   <Edit3 className="h-3.5 w-3.5" />
                   <span>Edit</span>
                 </button>
                 <button
                   onClick={() => handleDelete(t.id)}
-                  className="w-1/2 py-2 text-xs font-bold text-red-650 hover:bg-red-50 dark:hover:bg-red-955/20 flex items-center justify-center space-x-1 transition-colors cursor-pointer"
+                  className="w-1/2 py-2 text-xs font-bold text-red-650 hover:bg-red-50 flex items-center justify-center space-x-1 transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span>Delete</span>
@@ -150,16 +150,16 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
       {/* Modal Editor */}
       {editItem && (
         <div className="fixed inset-0 bg-slate-955/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-150 dark:border-slate-850 shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-lg bg-white rounded-3xl p-6 border border-slate-150 shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
 
             <button
               onClick={() => setEditItem(null)}
-              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 dark:hover:text-white rounded-full hover:bg-slate-105 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 rounded-full hover:bg-slate-105 transition-all cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <h3 className="font-serif text-lg font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="font-serif text-lg font-bold text-slate-900 mb-6">
               {editItem.id ? "Edit Testimonial" : "Create Testimonial"}
             </h3>
 
@@ -173,7 +173,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                   value={editItem.customer_name || ""}
                   onChange={(e) => setEditItem({ ...editItem, customer_name: e.target.value })}
                   placeholder="e.g. Arthur & Elena Rostova"
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                  className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                 />
               </div>
 
@@ -184,7 +184,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                   value={editItem.customer_location || ""}
                   onChange={(e) => setEditItem({ ...editItem, customer_location: e.target.value })}
                   placeholder="e.g. Switzerland"
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                  className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                 />
               </div>
 
@@ -195,7 +195,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                   value={editItem.avatar_url || ""}
                   onChange={(e) => setEditItem({ ...editItem, avatar_url: e.target.value })}
                   placeholder="https://..."
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                  className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                 />
               </div>
 
@@ -206,7 +206,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                   value={editItem.content || ""}
                   onChange={(e) => setEditItem({ ...editItem, content: e.target.value })}
                   placeholder="What the guest said..."
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none text-slate-800 dark:text-slate-205 h-24 resize-none"
+                  className="bg-slate-50 border-none rounded-xl py-2.5 px-3 text-xs outline-none text-slate-800 h-24 resize-none"
                 />
               </div>
 
@@ -219,7 +219,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                     max={5}
                     value={editItem.rating ?? 5}
                     onChange={(e) => setEditItem({ ...editItem, rating: Math.min(5, Math.max(1, parseInt(e.target.value) || 1)) })}
-                    className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                    className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                   />
                 </div>
                 <div className="flex flex-col space-y-1 justify-center">
@@ -231,13 +231,13 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                       onChange={(e) => setEditItem({ ...editItem, featured: e.target.checked })}
                       className="h-4 w-4 accent-gold-600"
                     />
-                    <span className="text-xs text-slate-600 dark:text-slate-400">Show on homepage</span>
+                    <span className="text-xs text-slate-600">Show on homepage</span>
                   </label>
                 </div>
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-400 rounded-xl text-xs flex items-center space-x-1 border border-red-500/10">
+                <div className="p-3 bg-red-50 text-red-800 rounded-xl text-xs flex items-center space-x-1 border border-red-500/10">
                   <Info className="h-4 w-4 shrink-0" />
                   <span>{error}</span>
                 </div>

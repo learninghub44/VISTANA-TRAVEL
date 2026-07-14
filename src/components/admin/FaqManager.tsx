@@ -68,7 +68,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
   return (
     <div className="space-y-6">
       {/* Search Header */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/40 dark:border-slate-850 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/40 shadow-sm">
         <div className="relative flex items-center w-full sm:max-w-xs">
           <Search className="absolute left-3 h-4 w-4 text-slate-400" />
           <input
@@ -76,7 +76,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search FAQs..."
-            className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-850 dark:text-slate-200"
+            className="w-full bg-slate-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-850"
           />
         </div>
 
@@ -91,7 +91,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl p-10 text-center text-xs text-slate-450 dark:text-slate-500">
+        <div className="bg-white border border-slate-200/40 rounded-2xl p-10 text-center text-xs text-slate-450">
           No FAQs yet. Add one to show it on the homepage.
         </div>
       ) : (
@@ -99,20 +99,20 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
           {filtered.map((f) => (
             <div
               key={f.id}
-              className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm flex items-start justify-between p-5"
+              className="bg-white border border-slate-200/40 rounded-2xl overflow-hidden shadow-sm flex items-start justify-between p-5"
             >
               <div className="flex items-start space-x-3 flex-1 min-w-0">
-                <HelpCircle className="h-4 w-4 text-gold-600 dark:text-gold-400 mt-0.5 shrink-0" />
+                <HelpCircle className="h-4 w-4 text-gold-600 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-serif font-bold text-sm text-slate-900 dark:text-white">{f.question}</h3>
+                    <h3 className="font-serif font-bold text-sm text-slate-900">{f.question}</h3>
                     {f.category && (
-                      <span className="text-[10px] font-bold text-gold-700 dark:text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded-full shrink-0">
+                      <span className="text-[10px] font-bold text-gold-700 bg-gold-500/10 px-2 py-0.5 rounded-full shrink-0">
                         {f.category}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2">
                     {f.answer}
                   </p>
                 </div>
@@ -121,13 +121,13 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
               <div className="flex space-x-1 ml-4 shrink-0">
                 <button
                   onClick={() => handleOpenEdit(f)}
-                  className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                  className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                 >
                   <Edit3 className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(f.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors cursor-pointer"
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -140,16 +140,16 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
       {/* Modal Editor */}
       {editItem && (
         <div className="fixed inset-0 bg-slate-955/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-150 dark:border-slate-850 shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
+          <div className="w-full max-w-lg bg-white rounded-3xl p-6 border border-slate-150 shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
 
             <button
               onClick={() => setEditItem(null)}
-              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 dark:hover:text-white rounded-full hover:bg-slate-105 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 rounded-full hover:bg-slate-105 transition-all cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <h3 className="font-serif text-lg font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="font-serif text-lg font-bold text-slate-900 mb-6">
               {editItem.id ? "Edit FAQ" : "Create FAQ"}
             </h3>
 
@@ -163,7 +163,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
                   value={editItem.question || ""}
                   onChange={(e) => setEditItem({ ...editItem, question: e.target.value })}
                   placeholder="e.g. Do I need a visa to visit Kenya?"
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                  className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                 />
               </div>
 
@@ -174,7 +174,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
                   value={editItem.answer || ""}
                   onChange={(e) => setEditItem({ ...editItem, answer: e.target.value })}
                   placeholder="Provide a clear, helpful answer..."
-                  className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none text-slate-800 dark:text-slate-205 h-28 resize-none"
+                  className="bg-slate-50 border-none rounded-xl py-2.5 px-3 text-xs outline-none text-slate-800 h-28 resize-none"
                 />
               </div>
 
@@ -186,7 +186,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
                     value={editItem.category || ""}
                     onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}
                     placeholder="e.g. Booking"
-                    className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                    className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                   />
                 </div>
                 <div className="flex flex-col space-y-1">
@@ -196,13 +196,13 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
                     min={0}
                     value={editItem.order ?? 0}
                     onChange={(e) => setEditItem({ ...editItem, order: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800 dark:text-slate-205"
+                    className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                   />
                 </div>
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-400 rounded-xl text-xs flex items-center space-x-1 border border-red-500/10">
+                <div className="p-3 bg-red-50 text-red-800 rounded-xl text-xs flex items-center space-x-1 border border-red-500/10">
                   <Info className="h-4 w-4 shrink-0" />
                   <span>{error}</span>
                 </div>

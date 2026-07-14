@@ -9,8 +9,8 @@ export default async function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Settings</h1>
-        <p className="text-xs text-slate-450 dark:text-slate-500 mt-1">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">Settings</h1>
+        <p className="text-xs text-slate-450 mt-1">
           Manage site-wide configuration, including social media links.
         </p>
       </div>

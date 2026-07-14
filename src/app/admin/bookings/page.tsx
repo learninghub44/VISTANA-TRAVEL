@@ -13,8 +13,8 @@ export default async function AdminBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Booking Management</h1>
-        <p className="text-xs text-slate-450 dark:text-slate-500 mt-1">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">Booking Management</h1>
+        <p className="text-xs text-slate-450 mt-1">
           Allocate guides, assign vehicles, print confirmations, and update booking states.
         </p>
       </div>

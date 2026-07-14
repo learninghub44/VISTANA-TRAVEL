@@ -45,12 +45,12 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
-      Pending: "text-amber-700 bg-amber-50 dark:bg-amber-955/20 border-amber-500/10",
-      Confirmed: "text-blue-700 bg-blue-50 dark:bg-blue-955/20 border-blue-500/10",
-      "Awaiting Payment": "text-purple-700 bg-purple-50 dark:bg-purple-955/20 border-purple-500/10",
-      Paid: "text-emerald-700 bg-emerald-50 dark:bg-emerald-955/20 border-emerald-500/10",
-      Completed: "text-slate-700 bg-slate-50 dark:bg-slate-800/40 border-slate-700/10",
-      Cancelled: "text-red-700 bg-red-50 dark:bg-red-955/20 border-red-500/10",
+      Pending: "text-amber-700 bg-amber-50 border-amber-500/10",
+      Confirmed: "text-blue-700 bg-blue-50 border-blue-500/10",
+      "Awaiting Payment": "text-purple-700 bg-purple-50 border-purple-500/10",
+      Paid: "text-emerald-700 bg-emerald-50 border-emerald-500/10",
+      Completed: "text-slate-700 bg-slate-50 border-slate-700/10",
+      Cancelled: "text-red-700 bg-red-50 border-red-500/10",
     };
     return colors[status] || "text-slate-500 bg-slate-50 border-slate-200/20";
   };
@@ -215,7 +215,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
   return (
     <div className="space-y-6">
       {/* Top Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200/40 dark:border-slate-850 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/40 shadow-sm">
         
         {/* Search */}
         <div className="relative flex items-center w-full sm:max-w-xs">
@@ -225,7 +225,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by ID, customer or tour..."
-            className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-805 dark:text-slate-200"
+            className="w-full bg-slate-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs outline-none text-slate-805"
           />
         </div>
 
@@ -234,7 +234,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-slate-50 dark:bg-slate-950 border-none text-slate-700 dark:text-slate-300 py-2 px-4 rounded-xl text-xs outline-none font-semibold cursor-pointer"
+            className="bg-slate-50 border-none text-slate-700 py-2 px-4 rounded-xl text-xs outline-none font-semibold cursor-pointer"
           >
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -257,11 +257,11 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
       </div>
 
       {/* Bookings Table List */}
-      <div className="bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-200/40 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
             <thead>
-              <tr className="text-slate-400 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20">
+              <tr className="text-slate-400 border-b border-slate-100 bg-slate-50/50">
                 <th className="py-4 pl-4 font-bold uppercase tracking-wider">Ref ID</th>
                 <th className="py-4 font-bold uppercase tracking-wider">Customer</th>
                 <th className="py-4 font-bold uppercase tracking-wider">Tour details</th>
@@ -282,13 +282,13 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 return (
                   <tr
                     key={b.id}
-                    className="border-b border-slate-100 dark:border-slate-850 hover:bg-slate-50/40 dark:hover:bg-slate-850/10"
+                    className="border-b border-slate-100 hover:bg-slate-50/40"
                   >
                     <td className="py-4 pl-4 font-mono font-bold">{b.id}</td>
                     <td className="py-4">
                       {cust ? (
                         <div>
-                          <span className="font-bold text-slate-850 dark:text-slate-200 block">{cust.name}</span>
+                          <span className="font-bold text-slate-850 block">{cust.name}</span>
                           <span className="text-[10px] text-slate-400 block">{cust.email}</span>
                         </div>
                       ) : (
@@ -298,7 +298,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                     <td className="py-4">
                       {tour ? (
                         <div>
-                          <span className="font-semibold text-slate-800 dark:text-slate-300 block max-w-[150px] truncate">{tour.title}</span>
+                          <span className="font-semibold text-slate-800 block max-w-[150px] truncate">{tour.title}</span>
                           <span className="text-[10px] text-slate-400 block">{b.adults} Ad, {b.children} Ch</span>
                         </div>
                       ) : (
@@ -306,19 +306,19 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                       )}
                     </td>
                     <td className="py-4">
-                      <span className="font-medium text-slate-700 dark:text-slate-350 block">{b.start_date}</span>
+                      <span className="font-medium text-slate-700 block">{b.start_date}</span>
                       <span className="text-[10px] text-slate-400 block">to {b.end_date}</span>
                     </td>
                     <td className="py-4">
                       <div className="space-y-0.5 text-[10px] text-slate-500">
                         {guide && (
-                          <span className="flex items-center text-gold-600 dark:text-gold-400">
+                          <span className="flex items-center text-gold-600">
                             <UserCheck className="h-3 w-3 mr-1" />
                             <span className="truncate max-w-[100px]">{guide.name}</span>
                           </span>
                         )}
                         {vehicle && (
-                          <span className="flex items-center text-blue-600 dark:text-blue-400">
+                          <span className="flex items-center text-blue-600">
                             <Car className="h-3 w-3 mr-1" />
                             <span className="truncate max-w-[100px]">{vehicle.license_plate}</span>
                           </span>
@@ -326,7 +326,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                         {!guide && !vehicle && <span className="italic text-slate-400">Unallocated</span>}
                       </div>
                     </td>
-                    <td className="py-4 font-bold text-amber-700 dark:text-amber-500">
+                    <td className="py-4 font-bold text-amber-700">
                       ${b.total_price.toLocaleString()}
                     </td>
                     <td className="py-4">
@@ -338,14 +338,14 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                       <div className="flex items-center justify-center space-x-2">
                         <button
                           onClick={() => handleOpenEdit(b)}
-                          className="p-1.5 bg-slate-100 hover:bg-gold-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-500 hover:text-gold-600 dark:text-slate-400 dark:hover:text-gold-400 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 bg-slate-100 hover:bg-gold-50 text-slate-500 hover:text-gold-600 rounded-lg transition-colors cursor-pointer"
                           title="Edit booking parameters"
                         >
                           <Edit3 className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => printBookingSheet(b)}
-                          className="p-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg transition-colors cursor-pointer"
                           title="Print sheet"
                         >
                           <Printer className="h-3.5 w-3.5" />
@@ -370,16 +370,16 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
       {/* Edit booking side modal */}
       {editBooking && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-150 dark:border-slate-850 shadow-2xl relative">
+          <div className="w-full max-w-lg bg-white rounded-3xl p-6 border border-slate-150 shadow-2xl relative">
             
             <button
               onClick={() => setEditBooking(null)}
-              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 dark:hover:text-white rounded-full hover:bg-slate-105 dark:hover:bg-slate-800 transition-all cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 text-slate-450 hover:text-slate-800 rounded-full hover:bg-slate-105 transition-all cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <h3 className="font-serif text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center space-x-1.5">
+            <h3 className="font-serif text-lg font-bold text-slate-900 mb-2 flex items-center space-x-1.5">
               <ClipboardList className="h-5 w-5 text-gold-500" />
               <span>Update Booking Logistics ({editBooking.id})</span>
             </h3>
@@ -399,7 +399,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs bg-slate-50 dark:bg-slate-950 hover:bg-gold-50 dark:hover:bg-gold-950/20 text-gold-700 dark:text-gold-400 rounded-lg py-1.5 px-3 border border-slate-150 dark:border-slate-850 transition-colors"
+                      className="text-xs bg-slate-50 hover:bg-gold-50 text-gold-700 rounded-lg py-1.5 px-3 border border-slate-150 transition-colors"
                     >
                       Document {i + 1}
                     </a>
@@ -416,7 +416,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as Booking["status"])}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 cursor-pointer"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Confirmed">Confirmed (Logistics Set)</option>
@@ -433,7 +433,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editGuideId}
                   onChange={(e) => setEditGuideId(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 cursor-pointer"
                 >
                   <option value="">No Guide Allocated</option>
                   {guides.map((g) => (
@@ -450,7 +450,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editVehicleId}
                   onChange={(e) => setEditVehicleId(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 cursor-pointer"
                 >
                   <option value="">No Vehicle Allocated</option>
                   {vehicles.map((v) => (
@@ -465,8 +465,8 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <div
                   className={`p-3 rounded-xl text-xs flex items-center space-x-1.5 border ${
                     message.type === "success"
-                      ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-500/10"
-                      : "bg-red-50 text-red-800 dark:bg-red-950/20 dark:text-red-400 border-red-500/10"
+                      ? "bg-emerald-50 text-emerald-800 border-emerald-500/10"
+                      : "bg-red-50 text-red-800 border-red-500/10"
                   }`}
                 >
                   <Info className="h-4 w-4 shrink-0" />
