@@ -247,7 +247,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
 
           <button
             onClick={exportToCSV}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+            className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
             title="Export csv data"
           >
             <Download className="h-4 w-4" />
@@ -312,7 +312,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                     <td className="py-4">
                       <div className="space-y-0.5 text-[10px] text-slate-500">
                         {guide && (
-                          <span className="flex items-center text-emerald-600 dark:text-emerald-400">
+                          <span className="flex items-center text-gold-600 dark:text-gold-400">
                             <UserCheck className="h-3 w-3 mr-1" />
                             <span className="truncate max-w-[100px]">{guide.name}</span>
                           </span>
@@ -338,7 +338,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                       <div className="flex items-center justify-center space-x-2">
                         <button
                           onClick={() => handleOpenEdit(b)}
-                          className="p-1.5 bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 rounded-lg transition-colors cursor-pointer"
+                          className="p-1.5 bg-slate-100 hover:bg-gold-50 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-500 hover:text-gold-600 dark:text-slate-400 dark:hover:text-gold-400 rounded-lg transition-colors cursor-pointer"
                           title="Edit booking parameters"
                         >
                           <Edit3 className="h-3.5 w-3.5" />
@@ -380,7 +380,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
             </button>
 
             <h3 className="font-serif text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center space-x-1.5">
-              <ClipboardList className="h-5 w-5 text-emerald-500" />
+              <ClipboardList className="h-5 w-5 text-gold-500" />
               <span>Update Booking Logistics ({editBooking.id})</span>
             </h3>
             <p className="text-[10px] text-slate-400 mb-6">
@@ -399,7 +399,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs bg-slate-50 dark:bg-slate-950 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 rounded-lg py-1.5 px-3 border border-slate-150 dark:border-slate-850 transition-colors"
+                      className="text-xs bg-slate-50 dark:bg-slate-950 hover:bg-gold-50 dark:hover:bg-gold-950/20 text-gold-700 dark:text-gold-400 rounded-lg py-1.5 px-3 border border-slate-150 dark:border-slate-850 transition-colors"
                     >
                       Document {i + 1}
                     </a>
@@ -416,7 +416,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as Booking["status"])}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
                 >
                   <option value="Pending">Pending</option>
                   <option value="Confirmed">Confirmed (Logistics Set)</option>
@@ -433,7 +433,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editGuideId}
                   onChange={(e) => setEditGuideId(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
                 >
                   <option value="">No Guide Allocated</option>
                   {guides.map((g) => (
@@ -450,7 +450,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
                 <select
                   value={editVehicleId}
                   onChange={(e) => setEditVehicleId(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-emerald-500 text-slate-800 dark:text-slate-205 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border-none rounded-xl py-2.5 px-3 text-xs outline-none focus:ring-1 focus:ring-gold-500 text-slate-800 dark:text-slate-205 cursor-pointer"
                 >
                   <option value="">No Vehicle Allocated</option>
                   {vehicles.map((v) => (
@@ -477,7 +477,7 @@ export default function BookingsManager({ bookings, tours, guides, vehicles, pro
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-xs flex items-center justify-center cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-xs flex items-center justify-center cursor-pointer"
               >
                 {loading ? "Saving Changes..." : "Save Updates & Dispatch Alert"}
               </button>

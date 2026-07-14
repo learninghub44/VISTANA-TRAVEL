@@ -102,7 +102,7 @@ export default function DestinationsManager({ destinations }: DestinationsManage
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Destination</span>
@@ -250,7 +250,7 @@ export default function DestinationsManager({ destinations }: DestinationsManage
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Destination..." : "Save Destination Details"}
               </button>

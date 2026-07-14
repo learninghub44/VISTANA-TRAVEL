@@ -66,7 +66,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/* Brand */}
         <div className="p-6 border-b border-slate-150 dark:border-slate-800 flex items-center justify-between shrink-0">
           <Link href="/admin" className="flex items-center space-x-2">
-            <Compass className="h-6 w-6 text-emerald-600 dark:text-emerald-450" />
+            <Compass className="h-6 w-6 text-gold-600 dark:text-gold-400" />
             <span className="font-serif text-lg font-bold tracking-wider text-slate-900 dark:text-white">
               Vistana Admin
             </span>
@@ -81,7 +81,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-650 hover:bg-slate-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-emerald-400 transition-colors"
+                className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-650 hover:bg-slate-50 hover:text-gold-600 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-gold-400 transition-colors"
               >
                 <Icon className="h-4.5 w-4.5 shrink-0" />
                 <span>{item.name}</span>
@@ -117,7 +117,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Vistana Tours & Travel Operations Control
           </span>
           <div className="flex items-center space-x-3.5 text-xs text-slate-600 dark:text-slate-350">
-            <span className="font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-450 px-3 py-1 rounded-full">
+            <span className="font-bold bg-gold-500/10 text-gold-700 dark:text-gold-400 px-3 py-1 rounded-full">
               Super Admin Active
             </span>
           </div>

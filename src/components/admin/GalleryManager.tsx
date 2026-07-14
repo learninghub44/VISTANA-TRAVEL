@@ -94,7 +94,7 @@ export default function GalleryManager({ images, destinations }: GalleryManagerP
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Image</span>
@@ -151,7 +151,7 @@ export default function GalleryManager({ images, destinations }: GalleryManagerP
                 {editItem.image_url ? (
                   <img src={editItem.image_url} alt="Preview" className="w-full h-40 object-cover rounded-xl" />
                 ) : (
-                  <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-emerald-400 transition-colors">
+                  <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-gold-400 transition-colors">
                     <Upload className="h-5 w-5 text-slate-400 mb-1" />
                     <span className="text-xs text-slate-450">{uploading ? "Uploading..." : "Click to upload"}</span>
                     <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" disabled={uploading} />
@@ -206,7 +206,7 @@ export default function GalleryManager({ images, destinations }: GalleryManagerP
               <button
                 type="submit"
                 disabled={loading || uploading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Image..." : "Save Image"}
               </button>

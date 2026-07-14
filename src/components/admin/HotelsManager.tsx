@@ -118,7 +118,7 @@ export default function HotelsManager({ hotels }: HotelsManagerProps) {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Hotel</span>
@@ -139,7 +139,7 @@ export default function HotelsManager({ hotels }: HotelsManagerProps) {
               <div className="p-5 space-y-2">
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white flex items-center space-x-2">
-                    <HotelIcon className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <HotelIcon className="h-4 w-4 text-gold-600 dark:text-gold-400" />
                     <span>{h.name}</span>
                   </h3>
                 </div>
@@ -245,7 +245,7 @@ export default function HotelsManager({ hotels }: HotelsManagerProps) {
                   <button
                     type="button"
                     onClick={addRoomType}
-                    className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1 cursor-pointer"
+                    className="text-[10px] font-bold text-gold-600 dark:text-gold-400 flex items-center space-x-1 cursor-pointer"
                   >
                     <PlusCircle className="h-3.5 w-3.5" />
                     <span>Add Room Type</span>
@@ -341,7 +341,7 @@ export default function HotelsManager({ hotels }: HotelsManagerProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Hotel..." : "Save Hotel"}
               </button>

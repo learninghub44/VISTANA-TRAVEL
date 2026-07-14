@@ -82,7 +82,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add FAQ</span>
@@ -102,12 +102,12 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
               className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl overflow-hidden shadow-sm flex items-start justify-between p-5"
             >
               <div className="flex items-start space-x-3 flex-1 min-w-0">
-                <HelpCircle className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <HelpCircle className="h-4 w-4 text-gold-600 dark:text-gold-400 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-serif font-bold text-sm text-slate-900 dark:text-white">{f.question}</h3>
                     {f.category && (
-                      <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full shrink-0">
+                      <span className="text-[10px] font-bold text-gold-700 dark:text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded-full shrink-0">
                         {f.category}
                       </span>
                     )}
@@ -211,7 +211,7 @@ export default function FaqManager({ faqs }: FaqManagerProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving FAQ..." : "Save FAQ"}
               </button>

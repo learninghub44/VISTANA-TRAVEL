@@ -77,7 +77,7 @@ export default function ReviewsManager({ reviews, tours }: ReviewsManagerProps) 
               onClick={() => setStatusFilter(s)}
               className={`text-xs font-bold py-2 px-3 rounded-xl transition-colors cursor-pointer ${
                 statusFilter === s
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-gold-600 text-white"
                   : "bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400"
               }`}
             >

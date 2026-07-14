@@ -114,12 +114,12 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Bookings */}
         <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-emerald-500/5" />
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gold-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Bookings</span>
             <span className="block font-serif text-2xl font-bold text-slate-900 dark:text-white">{totalBookings}</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 relative">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center text-white shadow-lg shadow-gold-500/20 relative">
             <ClipboardList className="h-6 w-6" />
           </div>
         </div>
@@ -150,12 +150,12 @@ export default async function AdminDashboardPage() {
 
         {/* Revenue */}
         <div className="relative overflow-hidden bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-emerald-500/5" />
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gold-500/5" />
           <div className="space-y-1 relative">
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Realized Revenue</span>
-            <span className="block font-serif text-2xl font-bold text-emerald-600 dark:text-emerald-450">${totalRevenue.toLocaleString()}</span>
+            <span className="block font-serif text-2xl font-bold text-gold-600 dark:text-gold-400">${totalRevenue.toLocaleString()}</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 relative">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 flex items-center justify-center text-white shadow-lg shadow-gold-500/20 relative">
             <DollarSign className="h-6 w-6" />
           </div>
         </div>
@@ -168,7 +168,7 @@ export default async function AdminDashboardPage() {
             <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Pipeline Value</span>
             <span className="block font-serif text-xl font-bold text-white">${projectedRevenue.toLocaleString()}</span>
           </div>
-          <TrendingUp className="h-8 w-8 text-emerald-400" />
+          <TrendingUp className="h-8 w-8 text-gold-400" />
         </div>
         <div className="bg-white dark:bg-slate-900/60 p-6 rounded-3xl border border-slate-200/40 dark:border-slate-850 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
@@ -211,7 +211,7 @@ export default async function AdminDashboardPage() {
           </div>
           <Link
             href="/admin/bookings"
-            className="text-xs bg-emerald-600/10 text-emerald-700 hover:bg-emerald-600 hover:text-white font-bold py-1.5 px-4 rounded-full transition-all dark:text-emerald-450 dark:bg-emerald-950/20"
+            className="text-xs bg-gold-600/10 text-gold-700 hover:bg-gold-600 hover:text-white font-bold py-1.5 px-4 rounded-full transition-all dark:text-gold-400 dark:bg-gold-950/20"
           >
             Manage Bookings
           </Link>

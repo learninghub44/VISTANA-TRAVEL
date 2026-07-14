@@ -86,7 +86,7 @@ export default function BlogManager({ blogs }: BlogManagerProps) {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Blog Post</span>
@@ -105,7 +105,7 @@ export default function BlogManager({ blogs }: BlogManagerProps) {
               className="bg-white dark:bg-slate-900/60 border border-slate-200/40 dark:border-slate-850 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm"
             >
               <div className="p-5 space-y-2">
-                <span className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-450 px-2 py-0.5 rounded font-bold uppercase">
+                <span className="text-[10px] bg-gold-500/10 text-gold-700 dark:text-gold-400 px-2 py-0.5 rounded font-bold uppercase">
                   {b.category}
                 </span>
                 <h3 className="font-serif font-bold text-slate-900 dark:text-white line-clamp-2">{b.title}</h3>
@@ -216,7 +216,7 @@ export default function BlogManager({ blogs }: BlogManagerProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Post..." : "Save Blog Post"}
               </button>

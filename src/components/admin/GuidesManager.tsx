@@ -86,7 +86,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Guide</span>
@@ -227,7 +227,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
                   type="checkbox"
                   checked={editItem.availability ?? true}
                   onChange={(e) => setEditItem({ ...editItem, availability: e.target.checked })}
-                  className="h-4 w-4 accent-emerald-600"
+                  className="h-4 w-4 accent-gold-600"
                 />
                 <span className="text-xs text-slate-600 dark:text-slate-400">Currently available for bookings</span>
               </label>
@@ -242,7 +242,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Guide..." : "Save Guide"}
               </button>

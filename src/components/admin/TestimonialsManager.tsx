@@ -85,7 +85,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
 
         <button
           onClick={handleOpenAdd}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
+          className="bg-gold-600 hover:bg-gold-700 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center space-x-1.5 shadow transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           <span>Add Testimonial</span>
@@ -108,7 +108,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">{t.customer_name}</h3>
                   {t.featured && (
-                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-gold-700 dark:text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded-full">
                       Featured
                     </span>
                   )}
@@ -229,7 +229,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
                       type="checkbox"
                       checked={editItem.featured ?? true}
                       onChange={(e) => setEditItem({ ...editItem, featured: e.target.checked })}
-                      className="h-4 w-4 accent-emerald-600"
+                      className="h-4 w-4 accent-gold-600"
                     />
                     <span className="text-xs text-slate-600 dark:text-slate-400">Show on homepage</span>
                   </label>
@@ -246,7 +246,7 @@ export default function TestimonialsManager({ testimonials }: TestimonialsManage
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
+                className="w-full bg-gold-600 hover:bg-gold-700 text-white font-bold py-3 px-6 rounded-xl shadow transition-all text-xs cursor-pointer"
               >
                 {loading ? "Saving Testimonial..." : "Save Testimonial"}
               </button>

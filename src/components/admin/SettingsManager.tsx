@@ -81,7 +81,7 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
         {FIELDS.map(({ key, label, placeholder, icon: Icon }) => (
           <div key={key} className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Icon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-450" />
+              <Icon className="h-3.5 w-3.5 text-gold-600 dark:text-gold-400" />
               {label}
             </label>
             <input
@@ -89,7 +89,7 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
               value={(form[key] as string) || ""}
               onChange={(e) => handleChange(key, e.target.value)}
               placeholder={placeholder}
-              className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="w-full text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold-500/40"
             />
           </div>
         ))}
@@ -99,7 +99,7 @@ export default function SettingsManager({ settings }: SettingsManagerProps) {
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-xs font-bold py-2.5 px-6 rounded-full transition-all"
+          className="flex items-center gap-2 bg-gold-600 hover:bg-gold-700 disabled:opacity-60 text-white text-xs font-bold py-2.5 px-6 rounded-full transition-all"
         >
           <Save className="h-4 w-4" />
           {loading ? "Saving..." : "Save Settings"}
