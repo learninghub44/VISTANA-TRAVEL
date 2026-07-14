@@ -10,6 +10,7 @@ export interface Destination {
   latitude: number;
   longitude: number;
   travel_tips: { title: string; content: string }[];
+  faqs: { question: string; answer: string }[];
   created_at: string;
 }
 

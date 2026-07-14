@@ -308,6 +308,51 @@ export default function ToursManager({ tours, destinations }: ToursManagerProps)
                 />
               </div>
 
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-bold text-slate-405">Frequently Asked Questions</label>
+                  <button
+                    type="button"
+                    onClick={() => setEditTour({ ...editTour, faqs: [...(editTour.faqs || []), { question: "", answer: "" }] })}
+                    className="text-[10px] font-bold text-gold-700 hover:text-gold-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="h-3 w-3" /> Add FAQ
+                  </button>
+                </div>
+                {(editTour.faqs || []).map((faq, idx) => (
+                  <div key={idx} className="bg-slate-50 rounded-xl p-3 space-y-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => setEditTour({ ...editTour, faqs: (editTour.faqs || []).filter((_, i) => i !== idx) })}
+                      className="absolute top-2 right-2 text-slate-400 hover:text-red-600 cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                    <input
+                      type="text"
+                      value={faq.question}
+                      onChange={(e) => {
+                        const next = [...(editTour.faqs || [])];
+                        next[idx] = { ...next[idx], question: e.target.value };
+                        setEditTour({ ...editTour, faqs: next });
+                      }}
+                      placeholder="Question"
+                      className="w-full bg-white border-none rounded-lg py-2 px-3 text-xs outline-none text-slate-800 pr-6"
+                    />
+                    <textarea
+                      value={faq.answer}
+                      onChange={(e) => {
+                        const next = [...(editTour.faqs || [])];
+                        next[idx] = { ...next[idx], answer: e.target.value };
+                        setEditTour({ ...editTour, faqs: next });
+                      }}
+                      placeholder="Answer"
+                      className="w-full bg-white border-none rounded-lg py-2 px-3 text-xs outline-none text-slate-800 h-16 resize-none"
+                    />
+                  </div>
+                ))}
+              </div>
+
               {error && (
                 <div className="p-3 bg-red-50 text-red-800 rounded-xl text-xs flex items-center space-x-1 border border-red-500/10">
                   <Info className="h-4 w-4 shrink-0" />

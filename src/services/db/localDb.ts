@@ -53,6 +53,10 @@ const initialData: LocalDbSchema = {
         { title: "Clothing", content: "Pack neutral colors (khakis, browns) and a warm jacket for morning game drives." },
         { title: "Health", content: "Yellow fever certification is recommended, and consult a doctor for malaria prophylactics." }
       ],
+      faqs: [
+        { question: "When is the wildebeest migration in the Maasai Mara?", answer: "The dramatic Mara River crossings typically happen between July and October, though resident wildlife can be seen year-round." },
+        { question: "How far is the Maasai Mara from Nairobi?", answer: "It's about a 5-6 hour drive, or a 45-minute scheduled flight from Nairobi's Wilson Airport." }
+      ],
       created_at: new Date().toISOString()
     },
     {
@@ -72,6 +76,9 @@ const initialData: LocalDbSchema = {
       travel_tips: [
         { title: "Wildlife Tips", content: "Always follow your guide's safety guidelines and never step out of the safari cruiser except in designated areas." },
         { title: "Park Entry", content: "Keep your electronic payment cards ready, as cash is not accepted at the park entry gates." }
+      ],
+      faqs: [
+        { question: "Is the Serengeti combined with the Maasai Mara on one trip?", answer: "Yes, many of our itineraries link both parks via the Isebania border crossing, letting you follow the migration across both countries." }
       ],
       created_at: new Date().toISOString()
     },
@@ -93,6 +100,9 @@ const initialData: LocalDbSchema = {
         { title: "Cultural Respect", content: "Stone Town is predominantly conservative. Please dress modestly, covering shoulders and knees when exploring the town." },
         { title: "Currency", content: "Tanzanian Shillings and US Dollars are widely accepted. Carry cash as card services can be rare in local villages." }
       ],
+      faqs: [
+        { question: "Is Zanzibar good for a beach-only holiday?", answer: "Yes — Zanzibar works well both as a standalone beach getaway or as a relaxing add-on after a mainland safari." }
+      ],
       created_at: new Date().toISOString()
     },
     {
@@ -111,6 +121,9 @@ const initialData: LocalDbSchema = {
       longitude: 39.5947,
       travel_tips: [
         { title: "Getting There", content: "You can fly directly to Ukunda (Diani) Airstrip from Nairobi, or take a flight to Mombasa and drive (approx. 2 hours via ferry/bypass)." }
+      ],
+      faqs: [
+        { question: "What's the best way to get to Diani Beach?", answer: "A direct flight to Ukunda Airstrip is fastest; alternatively fly into Mombasa and continue by road and ferry." }
       ],
       created_at: new Date().toISOString()
     }
@@ -441,7 +454,14 @@ const initialData: LocalDbSchema = {
   ],
   testimonials: [],
   partners: [],
-  faqs: [],
+  faqs: [
+    { id: "faq-001", question: "How do I book a safari or tour?", answer: "Browse tours on the site, select your dates and group size, and submit a booking request. Our team will confirm availability and follow up with payment details via email or WhatsApp.", order: 1, created_at: new Date().toISOString() },
+    { id: "faq-002", question: "What payment methods do you accept?", answer: "We accept M-Pesa, major credit/debit cards, and bank transfer. A deposit secures your booking, with the balance due before departure.", order: 2, created_at: new Date().toISOString() },
+    { id: "faq-003", question: "Do I need a visa to travel to Kenya or Tanzania?", answer: "Most visitors need a visa or eTA for Kenya and Tanzania. Requirements vary by nationality, so check with the relevant embassy or apply online in advance of your trip.", order: 3, created_at: new Date().toISOString() },
+    { id: "faq-004", question: "What is your cancellation and refund policy?", answer: "Refund terms depend on how far in advance you cancel. See our Refund Policy page for full details, or contact us directly for your specific booking.", order: 4, created_at: new Date().toISOString() },
+    { id: "faq-005", question: "What should I pack for a safari?", answer: "Neutral-colored lightweight clothing, a warm layer for early mornings and evenings, sturdy closed shoes, sun protection, and any personal medication. We will send a detailed packing list once your trip is confirmed.", order: 5, created_at: new Date().toISOString() },
+    { id: "faq-006", question: "Is travel insurance required?", answer: "We strongly recommend comprehensive travel insurance covering medical evacuation, trip cancellation, and lost luggage for all safari and travel bookings.", order: 6, created_at: new Date().toISOString() }
+  ],
   subscribers: [],
   gallery: [
     {
@@ -577,7 +597,8 @@ class LocalDbAdapter implements DatabaseAdapter {
           images: destination.images || [],
           attractions: destination.attractions || [],
           activities: destination.activities || [],
-          travel_tips: destination.travel_tips || []
+          travel_tips: destination.travel_tips || [],
+          faqs: destination.faqs || []
         } as Destination;
         db.destinations[index] = record;
       } else {

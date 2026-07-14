@@ -31,6 +31,7 @@ export default function DestinationsManager({ destinations }: DestinationsManage
       latitude: 0,
       longitude: 0,
       travel_tips: [{ title: "", content: "" }],
+      faqs: [{ question: "", answer: "" }],
     });
     setError("");
   };
@@ -62,6 +63,7 @@ export default function DestinationsManager({ destinations }: DestinationsManage
     const cleanedAttractions = (editDest.attractions || []).filter((v) => !!v.trim());
     const cleanedActivities = (editDest.activities || []).filter((v) => !!v.trim());
     const cleanedTips = (editDest.travel_tips || []).filter((t) => !!t.title.trim() && !!t.content.trim());
+    const cleanedFaqs = (editDest.faqs || []).filter((f) => !!f.question.trim() && !!f.answer.trim());
 
     const res = await saveDestinationAction({
       name: editDest.name || "",
@@ -74,6 +76,7 @@ export default function DestinationsManager({ destinations }: DestinationsManage
       latitude: editDest.latitude || 0,
       longitude: editDest.longitude || 0,
       travel_tips: cleanedTips,
+      faqs: cleanedFaqs,
       id: editDest.id,
     } as any);
 
@@ -238,6 +241,51 @@ export default function DestinationsManager({ destinations }: DestinationsManage
                   placeholder="Warm during day (25-30°C)..."
                   className="bg-slate-50 border-none rounded-xl py-2 px-3 text-xs outline-none text-slate-800"
                 />
+              </div>
+
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] uppercase font-bold text-slate-405">Frequently Asked Questions</label>
+                  <button
+                    type="button"
+                    onClick={() => setEditDest({ ...editDest, faqs: [...(editDest.faqs || []), { question: "", answer: "" }] })}
+                    className="text-[10px] font-bold text-gold-700 hover:text-gold-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    <Plus className="h-3 w-3" /> Add FAQ
+                  </button>
+                </div>
+                {(editDest.faqs || []).map((faq, idx) => (
+                  <div key={idx} className="bg-slate-50 rounded-xl p-3 space-y-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => setEditDest({ ...editDest, faqs: (editDest.faqs || []).filter((_, i) => i !== idx) })}
+                      className="absolute top-2 right-2 text-slate-400 hover:text-red-600 cursor-pointer"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                    <input
+                      type="text"
+                      value={faq.question}
+                      onChange={(e) => {
+                        const next = [...(editDest.faqs || [])];
+                        next[idx] = { ...next[idx], question: e.target.value };
+                        setEditDest({ ...editDest, faqs: next });
+                      }}
+                      placeholder="Question"
+                      className="w-full bg-white border-none rounded-lg py-2 px-3 text-xs outline-none text-slate-800 pr-6"
+                    />
+                    <textarea
+                      value={faq.answer}
+                      onChange={(e) => {
+                        const next = [...(editDest.faqs || [])];
+                        next[idx] = { ...next[idx], answer: e.target.value };
+                        setEditDest({ ...editDest, faqs: next });
+                      }}
+                      placeholder="Answer"
+                      className="w-full bg-white border-none rounded-lg py-2 px-3 text-xs outline-none text-slate-800 h-16 resize-none"
+                    />
+                  </div>
+                ))}
               </div>
 
               {error && (

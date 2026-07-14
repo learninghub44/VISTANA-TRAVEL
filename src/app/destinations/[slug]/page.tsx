@@ -3,8 +3,10 @@ import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import TourCard from "@/components/ui/TourCard";
+import FaqAccordion from "@/components/ui/FaqAccordion";
+import BlogCard from "@/components/ui/BlogCard";
 import { notFound } from "next/navigation";
-import { Compass, CloudSun, MapPin, Compass as CompassIcon, Info, HelpCircle } from "lucide-react";
+import { Compass, CloudSun, MapPin, Compass as CompassIcon, Info, HelpCircle, BookOpen } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -46,6 +48,8 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
 
   const allTours = await cachedDb.getTours();
   const matchingTours = allTours.filter((t) => t.destination_id === destination.id);
+  const blogs = await cachedDb.getBlogs();
+  const latestBlogs = blogs.slice(0, 3);
 
   return (
     <>
@@ -150,6 +154,17 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
                 )}
               </div>
 
+              {/* FAQ */}
+              {destination.faqs && destination.faqs.length > 0 && (
+                <div className="space-y-6">
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-950 dark:text-white flex items-center gap-2">
+                    <HelpCircle className="h-5 w-5 text-navy-500 shrink-0" />
+                    <span>Frequently Asked Questions</span>
+                  </h3>
+                  <FaqAccordion faqs={destination.faqs.map((f, idx) => ({ id: `${destination.id}-faq-${idx}`, question: f.question, answer: f.answer, order: idx, created_at: destination.created_at }))} />
+                </div>
+              )}
+
             </div>
 
             {/* Right sidebar info */}
@@ -188,6 +203,28 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
 
         </div>
       </section>
+
+      {/* From the Journal */}
+      {latestBlogs.length > 0 && (
+        <section className="py-16 bg-white dark:bg-slate-950 transition-colors">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-950 dark:text-white flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-navy-500 shrink-0" />
+                <span>From the Journal</span>
+              </h2>
+              <Link href="/blog" className="text-xs font-bold text-navy-600 dark:text-navy-400 hover:text-navy-705 transition-colors">
+                View All
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+              {latestBlogs.map((blog) => (
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </>

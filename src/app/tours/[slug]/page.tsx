@@ -5,10 +5,11 @@ import Footer from "@/components/layout/Footer";
 import BookingForm from "@/components/tours/BookingForm";
 import ReviewForm from "@/components/tours/ReviewForm";
 import { notFound } from "next/navigation";
-import { Clock, MapPin, Star, Shield, HelpCircle, Check, X, User } from "lucide-react";
+import { Clock, MapPin, Star, Shield, HelpCircle, Check, X, User, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { getSession } from "@/services/auth/session";
 import FavoriteButton from "@/components/ui/FavoriteButton";
+import BlogCard from "@/components/ui/BlogCard";
 import type { Metadata } from "next";
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -51,6 +52,8 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
   const guides = await cachedDb.getGuides();
   const guide = tour.guide_id ? guides.find((g) => g.id === tour.guide_id) : null;
   const approvedReviews = await cachedDb.getApprovedReviews(tour.id);
+  const blogs = await cachedDb.getBlogs();
+  const latestBlogs = blogs.slice(0, 3);
 
   const session = await getSession();
   const profile = session ? await db.getProfileById(session.sub) : null;
@@ -336,6 +339,28 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
 
         </div>
       </section>
+
+      {/* From the Journal */}
+      {latestBlogs.length > 0 && (
+        <section className="py-16 bg-white dark:bg-slate-950 transition-colors">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-950 dark:text-white flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-navy-500 shrink-0" />
+                <span>From the Journal</span>
+              </h2>
+              <Link href="/blog" className="text-xs font-bold text-navy-600 dark:text-navy-400 hover:text-navy-705 transition-colors">
+                View All
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+              {latestBlogs.map((blog) => (
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </>
