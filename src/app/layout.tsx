@@ -4,6 +4,13 @@ import "./globals.css";
 import { SITE_URL, SITE_NAME, DEFAULT_DESCRIPTION, DEFAULT_OG_IMAGE } from "@/services/seo/constants";
 import AssistantWidgetServer from "@/components/ai/AssistantWidgetServer";
 
+// Pages read live data (tours, blog, settings) from Supabase. Rendering them at
+// BUILD time made every deploy depend on the database being reachable at that
+// moment — one outage or a deleted project and the whole build failed — and it
+// baked a snapshot of the data into the deploy. Render per request instead; the
+// resilience layer and 5-minute data cache keep that fast and fault-tolerant.
+export const dynamic = "force-dynamic";
+
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],

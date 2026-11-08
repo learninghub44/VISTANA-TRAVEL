@@ -2,6 +2,9 @@ import type { MetadataRoute } from "next";
 import { db } from "@/services/db";
 import { SITE_URL } from "@/services/seo/constants";
 
+// Generated per request, never at build time (needs the live database).
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // A database outage must not turn the sitemap into a 500 (search engines
   // would drop it): fall back to the static routes alone.
