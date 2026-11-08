@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, Globe, Camera, AtSign, Music2, Play, Briefcase, MessageCircle } from "lucide-react";
 import { cachedDb } from "@/services/db/cached";
+import type { SiteSettings } from "@/services/db/types";
 import NewsletterForm from "@/components/layout/NewsletterForm";
 
 const SOCIAL_LINKS_CONFIG = [
@@ -14,7 +15,11 @@ const SOCIAL_LINKS_CONFIG = [
 ];
 
 export default async function Footer() {
-  const settings = await cachedDb.getSiteSettings();
+  // The footer renders on every page, so it must never throw: if settings can't
+  // be loaded, show the footer without optional contact links instead of a 500.
+  const settings: SiteSettings = await cachedDb
+    .getSiteSettings()
+    .catch(() => ({ id: "site-settings", updated_at: "" }));
   const activeSocialLinks = SOCIAL_LINKS_CONFIG.filter((s) => settings[s.key]);
   const whatsappHref = settings.whatsapp_number
     ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}`

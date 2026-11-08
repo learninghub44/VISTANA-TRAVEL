@@ -3,10 +3,12 @@ import { db } from "@/services/db";
 import { SITE_URL } from "@/services/seo/constants";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // A database outage must not turn the sitemap into a 500 (search engines
+  // would drop it): fall back to the static routes alone.
   const [tours, destinations, blogs] = await Promise.all([
-    db.getTours(),
-    db.getDestinations(),
-    db.getBlogs(),
+    db.getTours().catch(() => []),
+    db.getDestinations().catch(() => []),
+    db.getBlogs().catch(() => []),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [
