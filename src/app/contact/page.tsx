@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ContactForm from "@/components/contact/ContactForm";
 import { cachedDb } from "@/services/db/cached";
+import type { SiteSettings } from "@/services/db/types";
 import { Mail, MapPin, Compass, MessageSquare, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const settings = await cachedDb.getSiteSettings();
+  // Falls back to the defaults below if settings are unreachable, so the contact page still loads.
+  const settings = await cachedDb.getSiteSettings().catch(() => ({ id: "site-settings", updated_at: "" } as SiteSettings));
   const officeAddress = settings.office_address || "Nairobi, Kenya";
   const officePhone = settings.office_phone;
   const officeEmail = settings.office_email || "info@vistanatours.com";

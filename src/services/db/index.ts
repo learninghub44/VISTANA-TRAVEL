@@ -26,7 +26,7 @@ const unavailable: DatabaseAdapter = new Proxy({} as DatabaseAdapter, {
 export const db: DatabaseAdapter = missingDbInProduction
   ? unavailable
   : useSupabase
-    ? withResilience(supabaseDb)
+    ? withResilience(supabaseDb, process.env.NEXT_PHASE === "phase-production-build" ? { timeoutMs: 3000, retries: 0 } : {})
     : localDb;
 
 console.log(`[Vistana DB Service] Active database provider: ${useSupabase ? "Supabase (PostgreSQL)" : "Local JSON persistent file"}`);
