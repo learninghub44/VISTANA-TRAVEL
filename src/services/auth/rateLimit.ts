@@ -1,4 +1,5 @@
-// In-memory rate limiter. IMPORTANT LIMITATION on Cloudflare Workers: this
+// In-memory FALLBACK limiter (used by rateLimitShared when the database is
+// unreachable; the primary limiter is database-backed). Limitation: this
 // module-level Map is scoped to a single isolate. Workers run many isolates
 // in parallel across edge locations and recycle them freely, so this only
 // throttles requests that happen to land on the same warm isolate — it does
@@ -54,6 +55,25 @@ export function rateLimit(key: string, limit: number, windowMs: number): { ok: b
 // `x-forwarded-for` is client-controllable — its FIRST entry is whatever the
 // caller sent — so trusting it let anyone dodge every limiter by rotating a
 // fake header. It is only used as a last-resort fallback for local dev.
+/**
+ * Preferred limiter: the counter lives in the database, so it is one global
+ * count across every Cloudflare isolate and survives restarts. If the database
+ * can't be reached it degrades to the per-isolate in-memory limiter rather than
+ * blocking (or un-throttling) requests.
+ */
+export async function rateLimitShared(
+  key: string,
+  limit: number,
+  windowMs: number
+): Promise<{ ok: boolean; remaining: number }> {
+  try {
+    const { db } = await import("@/services/db");
+    return await db.hitRateLimit(key, limit, windowMs);
+  } catch {
+    return rateLimit(key, limit, windowMs);
+  }
+}
+
 export function getClientIpFromHeaders(h: Pick<Headers, "get">): string {
   const cf = h.get("cf-connecting-ip");
   if (cf) return cf.trim();

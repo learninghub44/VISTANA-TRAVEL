@@ -8,7 +8,7 @@ import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profil
 import { getVerifiedSession } from "@/services/auth/session";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/services/db/cached";
-import { rateLimit, getClientIpFromHeaders } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIpFromHeaders } from "@/services/auth/rateLimit";
 import { sniffFileType, extensionFor } from "@/lib/fileSniff";
 import { headers } from "next/headers";
 import { z } from "zod";
@@ -74,7 +74,7 @@ export async function uploadImageAction(formData: FormData): Promise<{ url: stri
   const admin = await getAdminSession();
   if (!admin) throw new Error("Unauthorized. Admin permissions required.");
 
-  const limited = rateLimit(`upload-image:${admin.id}`, 30, 60 * 60 * 1000);
+  const limited = await rateLimitShared(`upload-image:${admin.id}`, 30, 60 * 60 * 1000);
   if (!limited.ok) throw new Error("Too many uploads. Please try again later.");
 
   const file = formData.get("file") as File | null;
@@ -124,7 +124,7 @@ export async function createBookingAction(data: {
       return { success: false, error: "Please log in to make a booking." };
     }
 
-    const limited = rateLimit(`create-booking:${customer.id}`, 20, 60 * 60 * 1000);
+    const limited = await rateLimitShared(`create-booking:${customer.id}`, 20, 60 * 60 * 1000);
     if (!limited.ok) {
       return { success: false, error: "Too many booking requests. Please try again later." };
     }
@@ -436,7 +436,7 @@ const submitReviewSchema = z.object({
 export async function submitReviewAction(review: Omit<Review, "id" | "created_at" | "status">): Promise<{ success: boolean; review?: Review; error?: string }> {
   try {
     const ip = await getActionClientIp();
-    const limited = rateLimit(`submit-review:${ip}`, 10, 60 * 60 * 1000);
+    const limited = await rateLimitShared(`submit-review:${ip}`, 10, 60 * 60 * 1000);
     if (!limited.ok) {
       return { success: false, error: "Too many reviews submitted. Please try again later." };
     }

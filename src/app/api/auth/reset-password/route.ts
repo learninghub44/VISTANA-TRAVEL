@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
 import { hashPassword, hashToken, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
 
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = rateLimit(`reset-confirm:${ip}`, 10, 15 * 60 * 1000);
+    const { ok } = await rateLimitShared(`reset-confirm:${ip}`, 10, 15 * 60 * 1000);
     if (!ok) {
       return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
     }

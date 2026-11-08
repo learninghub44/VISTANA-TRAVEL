@@ -4,7 +4,7 @@ import { db } from "@/services/db";
 import { Profile } from "@/services/db/types";
 import { hashPassword, generateToken, hashToken, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { setSessionCookie } from "@/services/auth/session";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { sendVerificationEmail } from "@/services/email";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = rateLimit(`register:${ip}`, 5, 15 * 60 * 1000); // 5 registrations / 15 min per IP
+    const { ok } = await rateLimitShared(`register:${ip}`, 5, 15 * 60 * 1000); // 5 registrations / 15 min per IP
     if (!ok) {
       return NextResponse.json(
         { error: "Too many registration attempts. Please try again later." },

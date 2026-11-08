@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -975,6 +975,17 @@ class LocalDbAdapter implements DatabaseAdapter {
   }
   async getProfileByEmail(email: string): Promise<Profile | null> {
     return this.readDb().profiles.find((p) => p.email.toLowerCase() === email.toLowerCase()) || null;
+  }
+  private rateBuckets = new Map<string, { count: number; resetAt: number }>();
+  async hitRateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+    const now = Date.now();
+    const b = this.rateBuckets.get(key);
+    if (!b || b.resetAt <= now) {
+      this.rateBuckets.set(key, { count: 1, resetAt: now + windowMs });
+      return { ok: 1 <= limit, remaining: Math.max(limit - 1, 0) };
+    }
+    b.count += 1;
+    return { ok: b.count <= limit, remaining: Math.max(limit - b.count, 0) };
   }
   async getProfileByResetTokenHash(hash: string): Promise<Profile | null> {
     return this.readDb().profiles.find((p) => p.reset_token === hash) || null;

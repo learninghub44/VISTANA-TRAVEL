@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
 import { sendInquiryNotificationEmail } from "@/services/email";
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    if (!rateLimit(`contact:${ip}`, 5, 60 * 60 * 1000).ok) {
+    if (!(await rateLimitShared(`contact:${ip}`, 5, 60 * 60 * 1000)).ok) {
       return NextResponse.json(
         { error: "Too many messages from your connection. Please try again later or reach us on WhatsApp." },
         { status: 429 }
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    if (!rateLimit(`contact-email:${parsed.data.email}`, 3, 60 * 60 * 1000).ok) {
+    if (!(await rateLimitShared(`contact-email:${parsed.data.email}`, 3, 60 * 60 * 1000)).ok) {
       return NextResponse.json({ error: "We already have your recent messages — we'll reply soon." }, { status: 429 });
     }
 

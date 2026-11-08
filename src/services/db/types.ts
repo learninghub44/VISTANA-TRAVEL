@@ -222,7 +222,15 @@ export interface SiteSettings {
   updated_at: string;
 }
 
+export interface RateLimitResult {
+  ok: boolean;
+  remaining: number;
+}
+
 export interface DatabaseAdapter {
+  // Atomic, globally shared counter (see migration 20260715000002).
+  hitRateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult>;
+
   // Destinations
   getDestinations(): Promise<Destination[]>;
   getDestinationBySlug(slug: string): Promise<Destination | null>;

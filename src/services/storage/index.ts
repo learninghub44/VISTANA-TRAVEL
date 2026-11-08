@@ -66,6 +66,10 @@ function resolveStorageProvider(): StorageProvider {
 
   const useSupabase = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
+  if (!useSupabase && process.env.NODE_ENV === "production" && process.env.NEXT_PHASE !== "phase-production-build") {
+    throw new Error("Supabase Storage is not configured in production; refusing to write uploads to a local disk.");
+  }
+
   if (!useSupabase) {
     console.warn(
       "[Vistana Storage] NEXT_PUBLIC_SUPABASE_URL not set — using LocalStorageProvider, which writes to the local " +

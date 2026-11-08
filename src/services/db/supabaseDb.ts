@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "./supabaseClient";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 class SupabaseDbAdapter implements DatabaseAdapter {
   private get client(): SupabaseClient {
@@ -280,6 +280,16 @@ class SupabaseDbAdapter implements DatabaseAdapter {
     const { data, error } = await this.client.from("profiles").upsert(profile).select().single();
     if (error) throw error;
     return data;
+  }
+  async hitRateLimit(key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
+    const { data, error } = await this.client.rpc("rate_limit_hit", {
+      p_key: key,
+      p_limit: limit,
+      p_window_ms: windowMs,
+    });
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    return { ok: Boolean(row?.out_allowed), remaining: Number(row?.out_remaining ?? 0) };
   }
   async getProfileByResetTokenHash(hash: string): Promise<Profile | null> {
     const { data, error } = await this.client.from("profiles").select("*").eq("reset_token", hash).maybeSingle();

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/services/db";
 import { verifyPasswordConstantTime, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { setSessionCookie } from "@/services/auth/session";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { ensureAdminSeeded } from "@/services/auth/bootstrap";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = rateLimit(`login:${ip}`, 10, 15 * 60 * 1000); // 10 attempts / 15 min per IP
+    const { ok } = await rateLimitShared(`login:${ip}`, 10, 15 * 60 * 1000); // 10 attempts / 15 min per IP
     if (!ok) {
       return NextResponse.json(
         { error: "Too many login attempts. Please try again in a few minutes." },
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     // Second limiter keyed on the account, so a botnet rotating IPs can't
     // brute-force one customer's password (the per-IP limit alone can't stop that).
-    const perAccount = rateLimit(`login-email:${email}`, 8, 15 * 60 * 1000);
+    const perAccount = await rateLimitShared(`login-email:${email}`, 8, 15 * 60 * 1000);
     if (!perAccount.ok) {
       return NextResponse.json(
         { error: "Too many login attempts for this account. Please try again later or reset your password." },

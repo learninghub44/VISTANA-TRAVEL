@@ -208,6 +208,15 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   stores an `Inquiry` and emails the office; admins triage at `/admin/inquiries`.
 - **Required migration:** `supabase/migrations/20260715000000_security_hardening_and_inquiries.sql`.
 
+## Data lives in the database
+
+- Production uses Supabase for everything: records, rate-limit counters
+  (`rate_limit_hit` RPC, migration `20260715000002`), and uploaded images
+  (Supabase Storage, URL saved on the DB row). No local JSON/file fallback in
+  production — `db` and `storage` throw if Supabase isn't configured.
+- Only disposable caches (Next data cache, `withResilience` stale copies) and
+  the stateless signed session cookie live outside the DB.
+
 ## Local dev
 
 ```bash

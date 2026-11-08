@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/services/db";
 import { hashToken } from "@/services/auth/password";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { appOrigin } from "@/services/auth/http";
 
 export async function GET(req: NextRequest) {
-  const { ok } = rateLimit(`verify-email:${getClientIp(req)}`, 20, 15 * 60 * 1000);
+  const { ok } = await rateLimitShared(`verify-email:${getClientIp(req)}`, 20, 15 * 60 * 1000);
   if (!ok) {
     return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
   }

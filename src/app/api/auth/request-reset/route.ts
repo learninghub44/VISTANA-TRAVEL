@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
 import { generateToken, hashToken } from "@/services/auth/password";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { sendPasswordResetEmail } from "@/services/email";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = rateLimit(`reset:${ip}`, 5, 15 * 60 * 1000);
+    const { ok } = await rateLimitShared(`reset:${ip}`, 5, 15 * 60 * 1000);
     if (!ok) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Per-address cap so nobody can use this endpoint to mail-bomb a victim.
-    const perAccount = rateLimit(`reset-email:${parsed.data.email}`, 3, 60 * 60 * 1000);
+    const perAccount = await rateLimitShared(`reset-email:${parsed.data.email}`, 3, 60 * 60 * 1000);
     if (!perAccount.ok) return generic;
 
     const profile = await db.getProfileByEmail(parsed.data.email);

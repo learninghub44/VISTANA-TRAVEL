@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
+import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson } from "@/services/auth/http";
 import { runAssistant } from "@/services/ai/assistant";
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = rateLimit(`assistant:${ip}`, 20, 10 * 60 * 1000);
+    const { ok } = await rateLimitShared(`assistant:${ip}`, 20, 10 * 60 * 1000);
     if (!ok) {
       return NextResponse.json(
         { error: "Too many messages. Please wait a moment or reach us on WhatsApp." },
