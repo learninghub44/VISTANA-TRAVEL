@@ -14,7 +14,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https:",
+      "connect-src 'self'", // the browser never talks to Supabase/Resend directly — everything is server-side
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -27,6 +27,15 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
+];
+
+// Account, admin and auth responses must never be stored by browsers, shared
+// proxies or the CDN — they contain per-user data.
+const privateNoStore = [
+  { key: "Cache-Control", value: "private, no-store, max-age=0" },
+  { key: "X-Robots-Tag", value: "noindex, nofollow" },
 ];
 
 const nextConfig: NextConfig = {
@@ -36,6 +45,9 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      { source: "/admin/:path*", headers: privateNoStore },
+      { source: "/portal/:path*", headers: privateNoStore },
+      { source: "/api/auth/:path*", headers: privateNoStore },
     ];
   },
 };

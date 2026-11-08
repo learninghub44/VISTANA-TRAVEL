@@ -4,6 +4,7 @@ import { loginSchema } from "@/app/api/auth/login/route";
 import { schema as requestResetSchema } from "@/app/api/auth/request-reset/route";
 import { schema as resetPasswordSchema } from "@/app/api/auth/reset-password/route";
 import { schema as newsletterSchema } from "@/app/api/newsletter/route";
+import { contactSchema } from "@/app/api/contact/route";
 
 describe("registerSchema", () => {
   it("accepts a valid registration payload", () => {
@@ -101,5 +102,41 @@ describe("newsletterSchema", () => {
 
   it("rejects an invalid email", () => {
     expect(newsletterSchema.safeParse({ email: "nope" }).success).toBe(false);
+  });
+});
+
+describe("email normalisation", () => {
+  it("lower-cases and trims emails so case variants are one account", () => {
+    const r = loginSchema.safeParse({ email: "  Jane@Example.COM ", password: "x" });
+    expect(r.success && r.data.email).toBe("jane@example.com");
+  });
+});
+
+describe("password length caps (scrypt DoS guard)", () => {
+  it("rejects absurdly long passwords on register, login and reset", () => {
+    const long = "a".repeat(129);
+    expect(registerSchema.safeParse({ name: "Jane Doe", email: "j@x.com", password: long }).success).toBe(false);
+    expect(loginSchema.safeParse({ email: "j@x.com", password: long }).success).toBe(false);
+    expect(resetPasswordSchema.safeParse({ token: "t".repeat(20), password: long }).success).toBe(false);
+  });
+});
+
+describe("contactSchema", () => {
+  const valid = { name: "Amina Wanjiru", email: "amina@example.com", subject: "Maasai Mara honeymoon", message: "We'd like a 5-day safari in July for two." };
+
+  it("accepts a valid inquiry", () => {
+    expect(contactSchema.safeParse(valid).success).toBe(true);
+  });
+  it("rejects too-short messages and bad emails", () => {
+    expect(contactSchema.safeParse({ ...valid, message: "hi" }).success).toBe(false);
+    expect(contactSchema.safeParse({ ...valid, email: "nope" }).success).toBe(false);
+  });
+  it("rejects oversized fields", () => {
+    expect(contactSchema.safeParse({ ...valid, message: "x".repeat(3001) }).success).toBe(false);
+    expect(contactSchema.safeParse({ ...valid, subject: "s".repeat(151) }).success).toBe(false);
+  });
+  it("rejects non-phone characters", () => {
+    expect(contactSchema.safeParse({ ...valid, phone: "<script>" }).success).toBe(false);
+    expect(contactSchema.safeParse({ ...valid, phone: "+254 700 000 000" }).success).toBe(true);
   });
 });

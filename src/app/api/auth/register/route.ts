@@ -2,17 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
 import { Profile } from "@/services/db/types";
-import { hashPassword, generateToken, isStrongEnough } from "@/services/auth/password";
+import { hashPassword, generateToken, hashToken, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { setSessionCookie } from "@/services/auth/session";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { sendVerificationEmail } from "@/services/email";
 import { verifyOrigin } from "@/services/auth/csrf";
+import { readJson, badRequest } from "@/services/auth/http";
 
 export const registerSchema = z.object({
-  name: z.string().min(2).max(120),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().trim().min(2).max(120),
+  email: z.string().trim().toLowerCase().email().max(254),
+  phone: z.string().trim().max(24).regex(/^[0-9+()\-\s]*$/, "Invalid phone number").optional(),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(MAX_PASSWORD_LENGTH, "Password is too long"),
 });
 
 export async function POST(req: NextRequest) {
@@ -29,19 +33,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
+    const body = await readJson(req);
     const parsed = registerSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || "Invalid registration details" },
-        { status: 400 }
-      );
+      return badRequest(parsed.error.issues[0]?.message || "Invalid registration details");
     }
     const { name, email, phone, password } = parsed.data;
-
-    if (!isStrongEnough(password)) {
-      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
-    }
 
     const existing = await db.getProfileByEmail(email);
     if (existing) {
@@ -55,12 +52,13 @@ export async function POST(req: NextRequest) {
     const newProfile: Profile = {
       id: newId,
       name,
-      email: email.toLowerCase(),
+      email,
       phone,
       role: "customer",
       password_hash: passwordHash,
       email_verified: false,
-      verification_token: verificationToken,
+      // Only the hash is stored; the raw token goes in the email.
+      verification_token: hashToken(verificationToken),
       created_at: new Date().toISOString(),
     };
 
@@ -69,6 +67,7 @@ export async function POST(req: NextRequest) {
 
     await setSessionCookie({ sub: newId, role: "customer", email: newProfile.email });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, reset_token, verification_token: _vt, ...safeProfile } = newProfile;
 
     return NextResponse.json({ success: true, user: safeProfile });

@@ -86,11 +86,6 @@ export interface Booking {
   vehicle_id?: string;
   total_price: number;
   created_at: string;
-  // Optional customer-uploaded documents (passport scans, visa letters, etc.)
-  // required for some cross-border tours. Populated via
-  // uploadBookingDocumentAction at booking time.
-  // Supabase: `alter table bookings add column document_urls jsonb;`
-  document_urls?: string[];
 }
 
 export interface Review {
@@ -128,6 +123,19 @@ export interface Profile {
   reset_token?: string | null;
   reset_token_expires?: string | null;
   favorite_tour_ids?: string[];
+  // Set whenever the password changes; sessions issued before this are rejected.
+  password_changed_at?: string | null;
+  created_at: string;
+}
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  status: "New" | "Replied" | "Archived";
   created_at: string;
 }
 
@@ -267,6 +275,16 @@ export interface DatabaseAdapter {
   getProfileById(id: string): Promise<Profile | null>;
   getProfileByEmail(email: string): Promise<Profile | null>;
   saveProfile(profile: Profile): Promise<Profile>;
+  // Tokens are stored hashed (sha256) — pass the hash, not the raw emailed token.
+  getProfileByResetTokenHash(hash: string): Promise<Profile | null>;
+  getProfileByVerificationTokenHash(hash: string): Promise<Profile | null>;
+  getTourById(id: string): Promise<Tour | null>;
+
+  // Contact inquiries
+  getInquiries(): Promise<Inquiry[]>;
+  saveInquiry(inquiry: Omit<Inquiry, "id" | "created_at" | "status"> & { id?: string; status?: Inquiry["status"] }): Promise<Inquiry>;
+  updateInquiryStatus(id: string, status: Inquiry["status"]): Promise<void>;
+  deleteInquiry(id: string): Promise<boolean>;
 
   // Testimonials
   getTestimonials(featuredOnly?: boolean): Promise<Testimonial[]>;

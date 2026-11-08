@@ -40,21 +40,28 @@ describe("rateLimit", () => {
 });
 
 describe("getClientIp", () => {
-  it("prefers x-forwarded-for and takes the first address", () => {
+  it("prefers Cloudflare's cf-connecting-ip over any client-supplied header", () => {
     const req = new Request("https://example.com", {
-      headers: { "x-forwarded-for": "203.0.113.5, 10.0.0.1" },
+      headers: { "cf-connecting-ip": "203.0.113.5", "x-forwarded-for": "6.6.6.6, 10.0.0.1" },
     });
     expect(getClientIp(req)).toBe("203.0.113.5");
   });
 
-  it("falls back to x-real-ip when x-forwarded-for is absent", () => {
+  it("does not trust the first x-forwarded-for entry (client-controlled); uses the last proxy hop", () => {
+    const req = new Request("https://example.com", {
+      headers: { "x-forwarded-for": "6.6.6.6, 203.0.113.5" },
+    });
+    expect(getClientIp(req)).toBe("203.0.113.5");
+  });
+
+  it("falls back to x-real-ip when cf-connecting-ip is absent", () => {
     const req = new Request("https://example.com", {
       headers: { "x-real-ip": "198.51.100.7" },
     });
     expect(getClientIp(req)).toBe("198.51.100.7");
   });
 
-  it("returns 'unknown' when neither header is present", () => {
+  it("returns 'unknown' when no IP header is present", () => {
     const req = new Request("https://example.com");
     expect(getClientIp(req)).toBe("unknown");
   });

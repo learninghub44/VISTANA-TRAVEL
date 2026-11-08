@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
-import { verifyPassword } from "@/services/auth/password";
+import { verifyPasswordConstantTime, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { setSessionCookie } from "@/services/auth/session";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { ensureAdminSeeded } from "@/services/auth/bootstrap";
 import { verifyOrigin } from "@/services/auth/csrf";
+import { readJson, badRequest } from "@/services/auth/http";
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  email: z.string().trim().toLowerCase().email().max(254),
+  password: z.string().min(1).max(MAX_PASSWORD_LENGTH),
 });
 
 export async function POST(req: NextRequest) {
@@ -26,33 +27,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
+    const body = await readJson(req);
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "A valid email and password are required" }, { status: 400 });
+      return badRequest("A valid email and password are required");
     }
     const { email, password } = parsed.data;
+
+    // Second limiter keyed on the account, so a botnet rotating IPs can't
+    // brute-force one customer's password (the per-IP limit alone can't stop that).
+    const perAccount = rateLimit(`login-email:${email}`, 8, 15 * 60 * 1000);
+    if (!perAccount.ok) {
+      return NextResponse.json(
+        { error: "Too many login attempts for this account. Please try again later or reset your password." },
+        { status: 429 }
+      );
+    }
 
     await ensureAdminSeeded();
 
     const profile = await db.getProfileByEmail(email);
 
-    // Generic error message regardless of whether the account exists — avoids
-    // leaking which emails are registered (user enumeration).
-    const genericError = () =>
-      NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-
-    if (!profile || !profile.password_hash) {
-      return genericError();
-    }
-
-    const validPassword = await verifyPassword(password, profile.password_hash);
-    if (!validPassword) {
-      return genericError();
+    // Always run a full password hash (against a dummy when the account is
+    // missing) and return one generic error, so neither the message nor the
+    // response time reveals whether an email is registered.
+    const validPassword = await verifyPasswordConstantTime(password, profile?.password_hash);
+    if (!profile || !validPassword) {
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
 
     await setSessionCookie({ sub: profile.id, role: profile.role, email: profile.email });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, reset_token, verification_token, ...safeProfile } = profile;
 
     return NextResponse.json({ success: true, user: safeProfile });

@@ -36,6 +36,16 @@ export function getSupabaseClient(): SupabaseClient {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
   const supabaseKey = supabaseServiceKey || supabaseAnonKey;
 
+  // In production the app MUST run with the service-role key. Silently falling
+  // back to the public anon key is exactly what produced blank pages and
+  // "row-level security" 500s after a Supabase switch, so fail loudly instead.
+  if (process.env.NODE_ENV === "production" && supabaseUrl && !supabaseServiceKey) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is not set. Run `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY` " +
+      "against the correct environment and redeploy. Refusing to start on the public anon key in production."
+    );
+  }
+
   if (!supabaseUrl || !supabaseKey) {
     throw new Error(
       "Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and either " +

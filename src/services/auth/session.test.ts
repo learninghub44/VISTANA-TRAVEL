@@ -12,7 +12,8 @@ describe("session tokens", () => {
   it("creates a token that verifies back to the same payload", async () => {
     const token = await createSessionToken(payload);
     const verified = await verifySessionToken(token);
-    expect(verified).toEqual(payload);
+    expect(verified).toMatchObject(payload);
+    expect(typeof verified?.iat).toBe("number");
   });
 
   it("preserves the admin role distinctly from customer", async () => {
@@ -36,5 +37,25 @@ describe("session tokens", () => {
     const token = await createSessionToken(payload);
     const tampered = token.slice(0, -2) + (token.slice(-2) === "aa" ? "bb" : "aa");
     await expect(verifySessionToken(tampered)).resolves.toBeNull();
+  });
+
+  it("rejects a token signed with a different algorithm", async () => {
+    const { SignJWT } = await import("jose");
+    const forged = await new SignJWT({ role: "admin", email: "a@b.com" })
+      .setProtectedHeader({ alg: "HS512" })
+      .setSubject("profile-123")
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.SESSION_SECRET!));
+    await expect(verifySessionToken(forged)).resolves.toBeNull();
+  });
+
+  it("rejects a token carrying an unknown role", async () => {
+    const { SignJWT } = await import("jose");
+    const odd = await new SignJWT({ role: "superuser", email: "a@b.com" })
+      .setProtectedHeader({ alg: "HS256" })
+      .setSubject("profile-123")
+      .setExpirationTime("1h")
+      .sign(new TextEncoder().encode(process.env.SESSION_SECRET!));
+    await expect(verifySessionToken(odd)).resolves.toBeNull();
   });
 });

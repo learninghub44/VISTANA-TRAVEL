@@ -43,3 +43,25 @@ describe("password service", () => {
     expect(isStrongEnough("a-much-longer-passphrase")).toBe(true);
   });
 });
+
+import { hashToken, verifyPasswordConstantTime, hashPassword as _hp } from "./password";
+
+describe("hashToken", () => {
+  it("is deterministic, hex, and never equals the raw token", () => {
+    const t = "abc123";
+    expect(hashToken(t)).toBe(hashToken(t));
+    expect(hashToken(t)).toMatch(/^[0-9a-f]{64}$/);
+    expect(hashToken(t)).not.toBe(t);
+  });
+});
+
+describe("verifyPasswordConstantTime", () => {
+  it("returns false (not throw) when the account has no hash", async () => {
+    await expect(verifyPasswordConstantTime("whatever", undefined)).resolves.toBe(false);
+  });
+  it("still verifies a real hash correctly", async () => {
+    const h = await _hp("correct-horse");
+    await expect(verifyPasswordConstantTime("correct-horse", h)).resolves.toBe(true);
+    await expect(verifyPasswordConstantTime("wrong-horse", h)).resolves.toBe(false);
+  });
+});

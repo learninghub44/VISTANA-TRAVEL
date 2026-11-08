@@ -151,13 +151,7 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   `src/app/actions/index.ts` is called from every admin create/update/delete
   action (tours, destinations, guides, vehicles, hotels, reviews, blog,
   testimonials, partners, faqs, gallery, site settings, booking status).
-- [x] Booking flow document upload step — done. `Booking.document_urls`
-  (see `src/services/db/types.ts`) is populated via the new
-  `uploadBookingDocumentAction` (customer-session-gated, PDF/JPG/PNG/WEBP
-  only, 8MB cap, rate-limited per customer) called from `BookingForm.tsx`
-  before `createBookingAction`. Uploaded docs are visible to admins in
-  `BookingsManager`'s edit modal. Supabase: run
-  `alter table bookings add column document_urls jsonb;`.
+- [x] Booking document uploads were REMOVED on purpose: we do not collect passport/visa/ID scans online (sensitive data). Do not re-add them.
 - [x] No Prisma/migrations — this project still doesn't use an ORM/migration
   tool, but there is now a real, versioned schema: `supabase/migrations/`
   has a baseline SQL file for every table matching
@@ -188,6 +182,31 @@ pages, `BlogPosting` on blog posts), and `src/app/sitemap.ts` /
   coverage for: the API routes' HTTP handlers themselves (only their zod
   schemas are tested), the "happy path" of server actions with a real
   session, or any component/UI tests.
+
+## Security hardening pass (latest)
+
+- Sessions: `getVerifiedSession()` (`src/services/auth/session.ts`) re-checks the
+  live profile on every admin/customer action — deleted, demoted, or
+  password-reset accounts lose access immediately. JWT algorithm pinned to HS256.
+- Reset/verification tokens are stored as SHA-256 hashes (`hashToken`) and looked
+  up via `getProfileByResetTokenHash` / `getProfileByVerificationTokenHash` —
+  never `getProfiles().find(...)`. Password reset sets `password_changed_at`,
+  which invalidates older sessions.
+- Emails are lower-cased/trimmed everywhere (`normalizeEmail`, zod transforms);
+  Supabase lookup is case-insensitive; migration adds a unique `lower(email)` index.
+- Login runs a constant-time hash check (no user-enumeration timing leak) and is
+  rate-limited per IP **and** per account. Password length capped at 128.
+- `getClientIp` trusts `cf-connecting-ip`, not the spoofable first
+  `x-forwarded-for` entry.
+- Admin image uploads are validated by magic bytes (`src/lib/fileSniff.ts`), not client MIME. No customer document uploads exist — passport/visa/ID scans are never collected.
+- Bookings: dates validated (not past, <= 2 years), group size enforced against the
+  tour's min/max, price computed server-side and rounded.
+- All HTML emails escape user-controlled strings (`escapeHtml`).
+- Production refuses to run on the public anon key (missing
+  `SUPABASE_SERVICE_ROLE_KEY` throws instead of silently degrading).
+- The contact form is real: `POST /api/contact` (zod, CSRF, rate limits, honeypot)
+  stores an `Inquiry` and emails the office; admins triage at `/admin/inquiries`.
+- **Required migration:** `supabase/migrations/20260715000000_security_hardening_and_inquiries.sql`.
 
 ## Local dev
 

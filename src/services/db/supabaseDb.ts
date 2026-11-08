@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "./supabaseClient";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 class SupabaseDbAdapter implements DatabaseAdapter {
   private get client(): SupabaseClient {
@@ -272,17 +272,50 @@ class SupabaseDbAdapter implements DatabaseAdapter {
     return data;
   }
   async getProfileByEmail(email: string): Promise<Profile | null> {
-    const { data, error } = await this.client.from("profiles").select("*").eq("email", email).single();
-    if (error) {
-      if (error.code === "PGRST116") return null;
-      throw error;
-    }
+    const { data, error } = await this.client.from("profiles").select("*").ilike("email", email.trim().replace(/[%_\\]/g, (c) => "\\" + c)).maybeSingle();
+    if (error) throw error;
     return data;
   }
   async saveProfile(profile: Profile): Promise<Profile> {
     const { data, error } = await this.client.from("profiles").upsert(profile).select().single();
     if (error) throw error;
     return data;
+  }
+  async getProfileByResetTokenHash(hash: string): Promise<Profile | null> {
+    const { data, error } = await this.client.from("profiles").select("*").eq("reset_token", hash).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+  async getProfileByVerificationTokenHash(hash: string): Promise<Profile | null> {
+    const { data, error } = await this.client.from("profiles").select("*").eq("verification_token", hash).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+  async getTourById(id: string): Promise<Tour | null> {
+    const { data, error } = await this.client.from("tours").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  // Inquiries
+  async getInquiries(): Promise<Inquiry[]> {
+    const { data, error } = await this.client.from("inquiries").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+  async saveInquiry(i: Omit<Inquiry, "id" | "created_at" | "status"> & { id?: string; status?: Inquiry["status"] }): Promise<Inquiry> {
+    const { data, error } = await this.client.from("inquiries").insert({ ...i, status: i.status ?? "New" }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async updateInquiryStatus(id: string, status: Inquiry["status"]): Promise<void> {
+    const { error } = await this.client.from("inquiries").update({ status }).eq("id", id);
+    if (error) throw error;
+  }
+  async deleteInquiry(id: string): Promise<boolean> {
+    const { error } = await this.client.from("inquiries").delete().eq("id", id);
+    if (error) throw error;
+    return true;
   }
 
   // Testimonials

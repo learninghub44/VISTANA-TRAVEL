@@ -26,7 +26,10 @@ vi.mock("next/cache", () => ({
 
 process.env.SESSION_SECRET = "test-session-secret-at-least-32-chars-long";
 
+import { db } from "@/services/db";
 import {
+  updateInquiryStatusAction,
+  deleteInquiryAction,
   updateBookingStatusAction,
   saveTourAction,
   deleteTourAction,
@@ -54,7 +57,6 @@ import {
   deleteSocialPostAction,
   createBookingAction,
   submitReviewAction,
-  uploadBookingDocumentAction,
   toggleFavoriteTourAction,
 } from "./index";
 
@@ -97,7 +99,6 @@ describe("admin-gated actions reject unauthenticated calls", () => {
 describe("customer-gated actions reject unauthenticated calls", () => {
   const cases: [string, () => Promise<{ success: boolean; error?: string }>][] = [
     ["createBookingAction", () => createBookingAction({} as any)],
-    ["uploadBookingDocumentAction", () => uploadBookingDocumentAction(new FormData())],
     ["toggleFavoriteTourAction", () => toggleFavoriteTourAction("dummy-tour-id")],
   ];
 
@@ -109,13 +110,41 @@ describe("customer-gated actions reject unauthenticated calls", () => {
 
 describe("submitReviewAction (intentionally allows guest submissions)", () => {
   it("accepts a review with no session, defaulting to Anonymous Traveler, always Pending", async () => {
+    const [realTour] = await db.getTours();
     const result = await submitReviewAction({
-      tour_id: "dummy-tour-id",
+      tour_id: realTour.id,
       customer_name: "",
       rating: 5,
       content: "Great trip!",
     } as any);
     expect(result.success).toBe(true);
     expect(result.review?.status).toBe("Pending");
+  });
+});
+
+describe("submitReviewAction tour validation", () => {
+  it("rejects a review for a tour that does not exist", async () => {
+    const result = await submitReviewAction({
+      tour_id: "no-such-tour",
+      customer_name: "",
+      rating: 5,
+      content: "Great trip!",
+    } as any);
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("new admin/customer-gated actions reject unauthenticated callers", () => {
+  it("updateInquiryStatusAction", async () => {
+    const r = await updateInquiryStatusAction("x", "Replied");
+    expect(r.success).toBe(false);
+  });
+  it("deleteInquiryAction", async () => {
+    const r = await deleteInquiryAction("x");
+    expect(r.success).toBe(false);
+  });
+  it("createBookingAction", async () => {
+    const r = await createBookingAction({ tourId: "x", startDate: "2030-01-01", endDate: "2030-01-05", adults: 1, children: 0 });
+    expect(r.success).toBe(false);
   });
 });

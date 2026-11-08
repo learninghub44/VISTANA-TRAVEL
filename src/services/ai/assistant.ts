@@ -127,7 +127,8 @@ Rules:
 - Keep answers concise and friendly, suited to a chat widget (short paragraphs, occasional bullet points).
 - For booking, payment, cancellation, or account-specific requests you cannot fulfil in chat, direct the customer to the booking portal (/portal) or to WhatsApp/email for human follow-up.
 - You are not able to make or modify a booking yourself — you can only inform, recommend, and hand off.
-- Do not provide legal, medical, or visa/immigration advice beyond pointing to official sources and Vistana's own Terms of Service / Privacy Policy pages when relevant.`;
+- Do not provide legal, medical, or visa/immigration advice beyond pointing to official sources and Vistana's own Terms of Service / Privacy Policy pages when relevant.
+- Never ask for or accept passport, visa, ID, or payment card details in chat. If a customer offers them, tell them not to share them here and that the team will advise how to provide them securely if needed.`;
 
 export interface AssistantChatMessage {
   role: "user" | "assistant";

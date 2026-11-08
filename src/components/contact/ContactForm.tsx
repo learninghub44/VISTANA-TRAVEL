@@ -8,22 +8,39 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot — real visitors never see or fill this
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
-    // Simulate sending message
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setLoading(false);
-    setSuccess(true);
-    setName("");
-    setEmail("");
-    setSubject("");
-    setMessage("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone: phone || undefined, subject, message, website }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "We couldn't send your message. Please try again or contact us on WhatsApp.");
+        return;
+      }
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setSubject("");
+      setMessage("");
+    } catch {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (success) {
@@ -54,6 +71,7 @@ export default function ContactForm() {
           <input
             type="text"
             required
+            maxLength={120}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Jane Doe"
@@ -74,6 +92,26 @@ export default function ContactForm() {
       </div>
 
       <div className="flex flex-col space-y-1">
+        <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 pl-1">Phone / WhatsApp (optional)</label>
+        <input
+          type="tel"
+          value={phone}
+          maxLength={24}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="+254 700 000 000"
+          className="w-full bg-slate-50 dark:bg-slate-900/40 border border-transparent focus:border-navy-600/30 rounded-xl py-3 px-4 text-xs outline-none text-slate-805 dark:text-slate-200"
+        />
+      </div>
+
+      {/* Honeypot: off-screen, skipped by keyboard/screen readers; bots fill it. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>
+          Website
+          <input type="text" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+        </label>
+      </div>
+
+      <div className="flex flex-col space-y-1">
         <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 pl-1">Subject</label>
         <input
           type="text"
@@ -89,6 +127,8 @@ export default function ContactForm() {
         <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 pl-1">How can we help?</label>
         <textarea
           required
+          minLength={10}
+          maxLength={3000}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us about your travel dates, preferred locations, budget, and group size..."
@@ -96,10 +136,20 @@ export default function ContactForm() {
         />
       </div>
 
+      <p className="text-[11px] text-slate-400 leading-relaxed">
+        Please don&apos;t include passport, ID or card numbers in your message.
+      </p>
+
+      {error && (
+        <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-xl py-2.5 px-4">
+          {error}
+        </p>
+      )}
+
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-navy-600 hover:bg-navy-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
+        className="w-full bg-navy-600 hover:bg-navy-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all text-xs flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <span>{loading ? "Sending..." : "Send Message"}</span>
         <Send className="h-4 w-4 shrink-0" />

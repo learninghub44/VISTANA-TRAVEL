@@ -49,8 +49,25 @@ export function rateLimit(key: string, limit: number, windowMs: number): { ok: b
   return { ok: true, remaining: limit - bucket.count };
 }
 
+// Behind Cloudflare the only trustworthy client IP is `cf-connecting-ip`
+// (set by Cloudflare itself and overwritten if a client tries to spoof it).
+// `x-forwarded-for` is client-controllable — its FIRST entry is whatever the
+// caller sent — so trusting it let anyone dodge every limiter by rotating a
+// fake header. It is only used as a last-resort fallback for local dev.
+export function getClientIpFromHeaders(h: Pick<Headers, "get">): string {
+  const cf = h.get("cf-connecting-ip");
+  if (cf) return cf.trim();
+  const real = h.get("x-real-ip");
+  if (real) return real.trim();
+  const forwarded = h.get("x-forwarded-for");
+  if (forwarded) {
+    // Last hop is the one appended by the nearest proxy, not the client.
+    const parts = forwarded.split(",").map((x) => x.trim()).filter(Boolean);
+    if (parts.length) return parts[parts.length - 1];
+  }
+  return "unknown";
+}
+
 export function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return req.headers.get("x-real-ip") || "unknown";
+  return getClientIpFromHeaders(req.headers);
 }

@@ -45,3 +45,25 @@ export function generateToken(): string {
 export function isStrongEnough(password: string): boolean {
   return typeof password === "string" && password.length >= 8;
 }
+
+export const MAX_PASSWORD_LENGTH = 128; // scrypt on unbounded input is a cheap DoS
+
+/**
+ * One-way hash for single-use emailed tokens (verification / password reset).
+ * Only the hash is stored, so a database leak or backup can't be replayed as
+ * working reset links. Tokens are 256-bit random, so plain SHA-256 is enough.
+ */
+export function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+// Pre-computed scrypt hash of a random string. Verified against when the
+// account doesn't exist so "unknown email" and "wrong password" cost the same
+// time — otherwise response timing reveals which emails are registered.
+let dummyHashPromise: Promise<string> | null = null;
+export async function verifyPasswordConstantTime(plain: string, hash: string | undefined | null): Promise<boolean> {
+  if (!dummyHashPromise) dummyHashPromise = hashPassword(crypto.randomBytes(16).toString("hex"));
+  const dummy = await dummyHashPromise;
+  const ok = await verifyPassword(plain, hash || dummy);
+  return Boolean(hash) && ok;
+}

@@ -87,7 +87,7 @@ export default function DPAPage() {
           <li>Row Level Security enabled at the database layer with default-deny policies for anonymous and authenticated roles.</li>
           <li>Rate-limiting on public-facing write endpoints (authentication, contact form, newsletter) to reduce automated abuse.</li>
           <li>Audit logging of admin create/update/delete actions.</li>
-          <li>Restricted file types and size caps on customer document uploads, with access gated to authenticated sessions.</li>
+          <li>No collection of passport, visa or identity-document scans through the platform.</li>
           <li>Scheduled encrypted backups with a tested restore process.</li>
         </ul>
       </section>

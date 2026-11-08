@@ -70,33 +70,46 @@ export const email: EmailProvider = {
     (process.env.RESEND_API_KEY ? new ResendEmailProvider() : new ConsoleEmailProvider()).sendEmail(options),
 };
 
+// User-controlled strings (names, tour titles, messages) are interpolated into
+// HTML emails below. Without escaping, a customer registering with a name like
+// `<a href="https://evil">Click to confirm</a>` gets that markup injected into
+// mail sent from OUR domain — a ready-made phishing vector.
+export function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 // High level email sending functions
 export async function sendBookingConfirmationEmail(booking: any, tour: any, customerEmail: string, customerName: string) {
   const subject = `Booking Confirmation - Vistana Tours & Travel (${booking.id})`;
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
       <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
-      <p>Dear <strong>${customerName}</strong>,</p>
-      <p>Thank you for booking with Vistana. Your booking request for <strong>${tour.title}</strong> has been received!</p>
+      <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
+      <p>Thank you for booking with Vistana. Your booking request for <strong>${escapeHtml(tour.title)}</strong> has been received!</p>
       
       <div style="background-color: #f0fdf4; padding: 15px; border-radius: 6px; margin: 20px 0;">
         <h3 style="margin-top: 0; color: #166534;">Booking Details</h3>
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 4px 0; color: #666;">Booking ID:</td>
-            <td style="padding: 4px 0; font-weight: bold;">${booking.id}</td>
+            <td style="padding: 4px 0; font-weight: bold;">${escapeHtml(booking.id)}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #666;">Tour:</td>
-            <td style="padding: 4px 0;">${tour.title}</td>
+            <td style="padding: 4px 0;">${escapeHtml(tour.title)}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #666;">Travel Date:</td>
-            <td style="padding: 4px 0;">${booking.start_date} to ${booking.end_date}</td>
+            <td style="padding: 4px 0;">${escapeHtml(booking.start_date)} to ${escapeHtml(booking.end_date)}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #666;">Travelers:</td>
-            <td style="padding: 4px 0;">${booking.adults} Adults, ${booking.children} Children</td>
+            <td style="padding: 4px 0;">${escapeHtml(booking.adults)} Adults, ${escapeHtml(booking.children)} Children</td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: #666;">Total Price:</td>
@@ -120,12 +133,12 @@ export async function sendBookingConfirmationEmail(booking: any, tour: any, cust
 }
 
 export async function sendVerificationEmail(customerEmail: string, customerName: string, token: string) {
-  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/api/auth/verify-email?token=${token}`;
+  const verifyUrl = `${(process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "")}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
   const subject = "Verify your email - Vistana Tours & Travel";
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
       <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
-      <p>Dear <strong>${customerName}</strong>,</p>
+      <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
       <p>Thanks for creating an account with Vistana. Please confirm your email address to activate your account.</p>
       <p style="margin: 24px 0;">
         <a href="${verifyUrl}" style="background-color: #064e3b; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Verify Email Address</a>
@@ -139,12 +152,12 @@ export async function sendVerificationEmail(customerEmail: string, customerName:
 }
 
 export async function sendPasswordResetEmail(customerEmail: string, customerName: string, token: string) {
-  const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || ""}/portal/reset-password?token=${token}`;
+  const resetUrl = `${(process.env.NEXT_PUBLIC_APP_URL || "").replace(/\/$/, "")}/portal/reset-password?token=${encodeURIComponent(token)}`;
   const subject = "Reset your password - Vistana Tours & Travel";
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
       <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
-      <p>Dear <strong>${customerName}</strong>,</p>
+      <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
       <p>We received a request to reset your password. This link expires in 1 hour.</p>
       <p style="margin: 24px 0;">
         <a href="${resetUrl}" style="background-color: #064e3b; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Reset Password</a>
@@ -170,12 +183,12 @@ export async function sendBookingStatusUpdateEmail(booking: any, tour: any, cust
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
       <h2 style="color: #064e3b; margin-top: 0;">Vistana Tours & Travel</h2>
-      <p>Dear <strong>${customerName}</strong>,</p>
-      <p>Your booking for <strong>${tour.title}</strong> has been updated.</p>
+      <p>Dear <strong>${escapeHtml(customerName)}</strong>,</p>
+      <p>Your booking for <strong>${escapeHtml(tour.title)}</strong> has been updated.</p>
       
       <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid ${color};">
-        <p style="margin: 0; font-size: 16px;">New Status: <strong style="color: ${color};">${booking.status}</strong></p>
-        <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">Booking ID: ${booking.id}</p>
+        <p style="margin: 0; font-size: 16px;">New Status: <strong style="color: ${color};">${escapeHtml(booking.status)}</strong></p>
+        <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">Booking ID: ${escapeHtml(booking.id)}</p>
       </div>
 
       ${booking.status === "Confirmed" ? `
@@ -189,4 +202,27 @@ export async function sendBookingStatusUpdateEmail(booking: any, tour: any, cust
   `;
   
   return email.sendEmail({ to: customerEmail, subject, html });
+}
+
+
+export async function sendInquiryNotificationEmail(
+  officeEmail: string,
+  inquiry: { name: string; email: string; phone?: string; subject: string; message: string }
+) {
+  // Strip CR/LF so a crafted subject can never inject extra mail headers.
+  const cleanSubject = inquiry.subject.replace(/[\r\n]+/g, " ").slice(0, 150);
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <h2 style="color: #064e3b; margin-top: 0;">New website inquiry</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 4px 0; color: #666;">Name:</td><td style="padding: 4px 0; font-weight: bold;">${escapeHtml(inquiry.name)}</td></tr>
+        <tr><td style="padding: 4px 0; color: #666;">Email:</td><td style="padding: 4px 0;">${escapeHtml(inquiry.email)}</td></tr>
+        <tr><td style="padding: 4px 0; color: #666;">Phone:</td><td style="padding: 4px 0;">${escapeHtml(inquiry.phone || "—")}</td></tr>
+        <tr><td style="padding: 4px 0; color: #666;">Subject:</td><td style="padding: 4px 0;">${escapeHtml(cleanSubject)}</td></tr>
+      </table>
+      <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0; white-space: pre-wrap;">${escapeHtml(inquiry.message)}</div>
+      <p style="font-size: 12px; color: #999;">Reply directly to the customer at the address above, and mark it Replied in the admin inbox.</p>
+    </div>
+  `;
+  return email.sendEmail({ to: officeEmail, subject: `New inquiry: ${cleanSubject}`, html });
 }

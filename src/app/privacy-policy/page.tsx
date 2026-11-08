@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
         <ul>
           <li>Identity and contact details: name, email, phone/WhatsApp number, nationality.</li>
           <li>Booking details: travel dates, tour/destination selections, number of travelers, dietary or accessibility requirements.</li>
-          <li>Travel documents you choose to upload for a booking (e.g. passport photo page, visa, travel insurance certificate, vaccination proof).</li>
+          <li>We do not collect passport, visa, national ID or similar identity-document scans through this website. If such details are needed for a park, lodge or airline, our team will tell you and arrange a secure way to share them directly.</li>
           <li>Account credentials for the customer portal.</li>
           <li>Payment-related information at the point a live payment method is enabled (we do not store full card or mobile money PINs &mdash; see Section 4).</li>
           <li>Content you submit voluntarily: contact form messages, reviews, testimonials, newsletter sign-up.</li>
@@ -45,7 +45,6 @@ export default function PrivacyPolicyPage() {
         <ul>
           <li>To create and manage bookings, process payments, and communicate booking status.</li>
           <li>To operate your customer portal account, including saved favorite tours.</li>
-          <li>To verify identity and travel documents required by parks, lodges, airlines, or immigration authorities.</li>
           <li>To respond to enquiries submitted via the contact form or WhatsApp.</li>
           <li>To send booking-related transactional emails, and, only with your consent, marketing newsletters (you may unsubscribe at any time).</li>
           <li>To maintain security logs and audit trails of account and admin activity, and to detect fraud or abuse of public-facing forms.</li>
@@ -94,9 +93,7 @@ export default function PrivacyPolicyPage() {
           Booking and financial records are retained for the period required by Tanzanian and
           Kenyan tax and immigration law (generally up to 7 years). Portal account data is retained
           while your account is active and for a reasonable period after closure to resolve
-          disputes. Uploaded travel documents are retained only as long as needed for the
-          associated booking and any statutory retention period, after which they are deleted or
-          anonymized.
+          disputes.
         </p>
       </section>
 
@@ -118,8 +115,7 @@ export default function PrivacyPolicyPage() {
         <h2>8. Security</h2>
         <p>
           Passwords are hashed (bcrypt) and never stored in plain text; portal sessions use signed,
-          time-limited tokens. Uploaded documents are size- and type-restricted and access-gated to
-          authenticated customers and admins. Admin actions are recorded in an audit log. Public
+          time-limited tokens. Admin actions are recorded in an audit log. Public
           write endpoints (login, contact form, newsletter) are rate-limited to reduce abuse. No
           system is perfectly secure, and we encourage you to use a strong, unique password for
           your portal account.

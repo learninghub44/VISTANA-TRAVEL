@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -22,6 +22,7 @@ interface LocalDbSchema {
   gallery: GalleryImage[];
   social_posts: SocialPost[];
   audit_logs: AuditLog[];
+  inquiries: Inquiry[];
   settings: SiteSettings;
 }
 
@@ -530,6 +531,7 @@ const initialData: LocalDbSchema = {
   ],
   social_posts: [],
   audit_logs: [],
+  inquiries: [],
   settings: {
     id: "site-settings",
     office_address: "Vistana Plaza, 4th Floor, Ngong Road, Nairobi, Kenya",
@@ -562,6 +564,7 @@ class LocalDbAdapter implements DatabaseAdapter {
         gallery: parsed.gallery || [],
         social_posts: parsed.social_posts || [],
         audit_logs: parsed.audit_logs || [],
+        inquiries: parsed.inquiries || [],
         settings: parsed.settings || initialData.settings,
       };
     } catch (e) {
@@ -973,6 +976,15 @@ class LocalDbAdapter implements DatabaseAdapter {
   async getProfileByEmail(email: string): Promise<Profile | null> {
     return this.readDb().profiles.find((p) => p.email.toLowerCase() === email.toLowerCase()) || null;
   }
+  async getProfileByResetTokenHash(hash: string): Promise<Profile | null> {
+    return this.readDb().profiles.find((p) => p.reset_token === hash) || null;
+  }
+  async getProfileByVerificationTokenHash(hash: string): Promise<Profile | null> {
+    return this.readDb().profiles.find((p) => p.verification_token === hash) || null;
+  }
+  async getTourById(id: string): Promise<Tour | null> {
+    return this.readDb().tours.find((t) => t.id === id) || null;
+  }
   async saveProfile(profile: Profile): Promise<Profile> {
     const db = this.readDb();
     const index = db.profiles.findIndex((p) => p.id === profile.id || p.email.toLowerCase() === profile.email.toLowerCase());
@@ -1148,6 +1160,30 @@ class LocalDbAdapter implements DatabaseAdapter {
     db.audit_logs.push(newItem);
     this.writeDb(db);
     return newItem;
+  }
+
+  // Inquiries
+  async getInquiries(): Promise<Inquiry[]> {
+    return [...(this.readDb().inquiries || [])].reverse();
+  }
+  async saveInquiry(i: Omit<Inquiry, "id" | "created_at" | "status"> & { id?: string; status?: Inquiry["status"] }): Promise<Inquiry> {
+    const db = this.readDb();
+    const item: Inquiry = { ...i, id: i.id || generateId(), status: i.status ?? "New", created_at: new Date().toISOString() };
+    db.inquiries = [...(db.inquiries || []), item];
+    this.writeDb(db);
+    return item;
+  }
+  async updateInquiryStatus(id: string, status: Inquiry["status"]): Promise<void> {
+    const db = this.readDb();
+    db.inquiries = (db.inquiries || []).map((q) => (q.id === id ? { ...q, status } : q));
+    this.writeDb(db);
+  }
+  async deleteInquiry(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = (db.inquiries || []).length;
+    db.inquiries = (db.inquiries || []).filter((q) => q.id !== id);
+    this.writeDb(db);
+    return db.inquiries.length < len;
   }
 
   // Site Settings

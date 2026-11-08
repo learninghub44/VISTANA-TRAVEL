@@ -5,10 +5,11 @@ import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
 import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage, SocialPost } from "@/services/db/types";
-import { getSession } from "@/services/auth/session";
+import { getVerifiedSession } from "@/services/auth/session";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/services/db/cached";
-import { rateLimit } from "@/services/auth/rateLimit";
+import { rateLimit, getClientIpFromHeaders } from "@/services/auth/rateLimit";
+import { sniffFileType, extensionFor } from "@/lib/fileSniff";
 import { headers } from "next/headers";
 import { z } from "zod";
 
@@ -17,30 +18,23 @@ import { z } from "zod";
 // API routes. Used to rate-limit actions reachable without authentication
 // (e.g. anonymous review submission).
 async function getActionClientIp(): Promise<string> {
-  const h = await headers();
-  const forwarded = h.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return h.get("x-real-ip") || "unknown";
+  return getClientIpFromHeaders(await headers());
 }
 
 const uuidLike = z.string().min(1).max(100);
 
-// Auth helper for server actions
+// Auth helpers for server actions. Both go through getVerifiedSession(), which
+// re-checks the live profile (exists, role unchanged, password not reset since
+// login) instead of trusting the JWT's claims alone.
 async function getAdminSession(): Promise<Profile | null> {
-  const session = await getSession();
-  if (!session || session.role !== "admin") return null;
-
-  const profile = await db.getProfileById(session.sub);
-  if (!profile || profile.role !== "admin") return null;
-  return profile;
+  const verified = await getVerifiedSession();
+  if (!verified || verified.profile.role !== "admin") return null;
+  return verified.profile;
 }
 
 async function getCustomerSession(): Promise<Profile | null> {
-  const session = await getSession();
-  if (!session) return null;
-
-  const profile = await db.getProfileById(session.sub);
-  return profile || null;
+  const verified = await getVerifiedSession();
+  return verified ? verified.profile : null;
 }
 
 // Fire-and-forget audit trail for admin mutations. Never blocks or fails
@@ -92,46 +86,14 @@ export async function uploadImageAction(formData: FormData): Promise<{ url: stri
     throw new Error("File is too large. Maximum size is 8MB.");
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const url = await storage.uploadImage(buffer, file.name, file.type);
-  return { url };
-}
-
-// Documents customers attach to a booking (passport scans, visa letters, etc.)
-// for tours that require them. Separate from uploadImageAction so we can
-// enforce customer-only auth, a stricter mime allowlist, and a size cap.
-const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
-const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024; // 8MB
-
-export async function uploadBookingDocumentAction(
-  formData: FormData
-): Promise<{ success: boolean; url?: string; error?: string }> {
-  try {
-    const customer = await getCustomerSession();
-    if (!customer) return { success: false, error: "Please log in to upload documents." };
-
-    const limited = rateLimit(`upload-doc:${customer.id}`, 20, 60 * 60 * 1000);
-    if (!limited.ok) {
-      return { success: false, error: "Too many uploads. Please try again later." };
-    }
-
-    const file = formData.get("file") as File | null;
-    if (!file) return { success: false, error: "No file provided." };
-    if (!ALLOWED_DOCUMENT_TYPES.has(file.type)) {
-      return { success: false, error: "Unsupported file type. Please upload a PDF, JPG, PNG, or WEBP." };
-    }
-    if (file.size > MAX_DOCUMENT_BYTES) {
-      return { success: false, error: "File is too large. Maximum size is 8MB." };
-    }
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const url = await storage.uploadImage(buffer, file.name, file.type);
-    return { success: true, url };
-  } catch (e: any) {
-    return { success: false, error: e.message || "Failed to upload document." };
+  const buffer = Buffer.from(await file.arrayBuffer());
+  // Trust the file's bytes, not the client-supplied Content-Type.
+  const sniffed = sniffFileType(buffer);
+  if (!sniffed || !ALLOWED_IMAGE_TYPES.has(sniffed)) {
+    throw new Error("That file isn't a valid JPG, PNG, WEBP, or GIF image.");
   }
+  const url = await storage.uploadImage(buffer, `upload.${extensionFor(sniffed)}`, sniffed);
+  return { url };
 }
 
 // ----------------------------------------------------
@@ -139,13 +101,14 @@ export async function uploadBookingDocumentAction(
 // ----------------------------------------------------
 const createBookingSchema = z.object({
   tourId: uuidLike,
-  startDate: z.string().min(1),
-  endDate: z.string().min(1),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid start date"),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid end date"),
   adults: z.number().int().min(1).max(50),
   children: z.number().int().min(0).max(50),
   specialRequests: z.string().max(2000).optional(),
-  documentUrls: z.array(z.string().url()).max(10).optional(),
 });
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export async function createBookingAction(data: {
   tourId: string;
@@ -154,7 +117,6 @@ export async function createBookingAction(data: {
   adults: number;
   children: number;
   specialRequests?: string;
-  documentUrls?: string[];
 }): Promise<{ success: boolean; bookingId?: string; error?: string }> {
   try {
     const customer = await getCustomerSession();
@@ -173,20 +135,42 @@ export async function createBookingAction(data: {
     }
     data = parsed.data;
 
-    if (new Date(data.endDate) < new Date(data.startDate)) {
+    const start = new Date(`${data.startDate}T00:00:00Z`);
+    const end = new Date(`${data.endDate}T00:00:00Z`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return { success: false, error: "Invalid travel dates." };
+    }
+    const today = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z");
+    if (start < today) {
+      return { success: false, error: "Start date cannot be in the past." };
+    }
+    if (end < start) {
       return { success: false, error: "End date cannot be before start date." };
     }
+    if (start.getTime() - today.getTime() > 730 * DAY_MS) {
+      return { success: false, error: "Bookings can only be made up to 2 years in advance." };
+    }
 
-    const tours = await db.getTours();
-    const tour = tours.find((t) => t.id === data.tourId);
+    const tour = await db.getTourById(data.tourId);
     if (!tour) {
       return { success: false, error: "Selected tour package not found." };
     }
 
-    // Simple pricing: full price for adults, 50% for children
+    // Enforce the tour's own group-size limits server-side — the form's
+    // constraints are only a UX hint and can be bypassed by calling the action directly.
+    const guests = data.adults + data.children;
+    if (tour.max_guests > 0 && guests > tour.max_guests) {
+      return { success: false, error: `This tour accepts at most ${tour.max_guests} guests. Please contact us for larger groups.` };
+    }
+    if (tour.min_guests > 0 && guests < tour.min_guests) {
+      return { success: false, error: `This tour requires at least ${tour.min_guests} guests.` };
+    }
+
+    // Price is always computed here from the database — never taken from the client.
+    // Full price for adults, 50% for children; rounded to cents.
     const pricePerAdult = tour.price_usd;
     const pricePerChild = tour.price_usd * 0.5;
-    const totalPrice = data.adults * pricePerAdult + data.children * pricePerChild;
+    const totalPrice = Math.round((data.adults * pricePerAdult + data.children * pricePerChild) * 100) / 100;
 
     const newBooking: Omit<Booking, "id" | "created_at"> = {
       tour_id: data.tourId,
@@ -198,7 +182,6 @@ export async function createBookingAction(data: {
       special_requests: data.specialRequests,
       status: "Pending",
       total_price: totalPrice,
-      document_urls: data.documentUrls && data.documentUrls.length > 0 ? data.documentUrls : undefined,
     };
 
     const saved = await db.saveBooking(newBooking);
@@ -228,11 +211,15 @@ export async function updateBookingStatusAction(
     const admin = await getAdminSession();
     if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
 
+    const validStatus = z.enum(["Pending", "Confirmed", "Awaiting Payment", "Paid", "Completed", "Cancelled", "Refunded"]);
+    if (!uuidLike.safeParse(bookingId).success || !validStatus.safeParse(updates?.status).success) {
+      return { success: false, error: "Invalid booking update." };
+    }
+
     const booking = await db.getBookingById(bookingId);
     if (!booking) return { success: false, error: "Booking not found." };
 
-    const tours = await db.getTours();
-    const tour = tours.find((t) => t.id === booking.tour_id);
+    const tour = await db.getTourById(booking.tour_id);
     if (!tour) return { success: false, error: "Associated tour not found." };
 
     const updatedBooking: Booking = {
@@ -441,7 +428,7 @@ const submitReviewSchema = z.object({
   customer_name: z.string().max(120).optional(),
   rating: z.number().int().min(1).max(5),
   content: z.string().min(1).max(3000),
-  images: z.array(z.string().url()).max(10).optional(),
+  images: z.array(z.string().url().refine((v) => /^https:\/\//i.test(v), "Images must use https")).max(10).optional(),
 });
 
 // Reachable without authentication by design (anonymous reviews are
@@ -457,6 +444,11 @@ export async function submitReviewAction(review: Omit<Review, "id" | "created_at
     const parsed = submitReviewSchema.safeParse(review);
     if (!parsed.success) {
       return { success: false, error: "Invalid review — please check the rating and content." };
+    }
+
+    // Reviews may only target a real tour.
+    if (!(await db.getTourById(parsed.data.tour_id))) {
+      return { success: false, error: "Tour not found." };
     }
 
     const customer = await getCustomerSession();
@@ -817,8 +809,7 @@ export async function cancelBookingAction(bookingId: string): Promise<{ success:
     await db.saveBooking(updatedBooking);
 
     // Notify email
-    const tours = await db.getTours();
-    const tour = tours.find((t) => t.id === booking.tour_id);
+    const tour = await db.getTourById(booking.tour_id);
     if (tour) {
       sendBookingStatusUpdateEmail(updatedBooking, tour, customer.email, customer.name).catch(console.error);
     }
@@ -827,5 +818,39 @@ export async function cancelBookingAction(bookingId: string): Promise<{ success:
     return { success: true };
   } catch (e: any) {
     return { success: false, error: e.message || "Failed to cancel booking." };
+  }
+}
+
+
+// ----------------------------------------------------
+// Contact inquiries — admin only
+// ----------------------------------------------------
+export async function updateInquiryStatusAction(id: string, status: "New" | "Replied" | "Archived"): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    if (!uuidLike.safeParse(id).success || !z.enum(["New", "Replied", "Archived"]).safeParse(status).success) {
+      return { success: false, error: "Invalid request." };
+    }
+    await db.updateInquiryStatus(id, status);
+    await logAudit(admin, "update_status", "inquiry", id, `status → ${status}`);
+    revalidatePath("/admin/inquiries");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to update inquiry." };
+  }
+}
+
+export async function deleteInquiryAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    if (!uuidLike.safeParse(id).success) return { success: false, error: "Invalid request." };
+    await db.deleteInquiry(id);
+    await logAudit(admin, "delete", "inquiry", id);
+    revalidatePath("/admin/inquiries");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to delete inquiry." };
   }
 }

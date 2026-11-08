@@ -3,8 +3,9 @@ import { z } from "zod";
 import { db } from "@/services/db";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
+import { readJson, badRequest } from "@/services/auth/http";
 
-export const schema = z.object({ email: z.string().email() });
+export const schema = z.object({ email: z.string().trim().toLowerCase().email().max(254) });
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,10 +18,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
 
-    const body = await req.json();
+    const body = await readJson(req);
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "A valid email is required" }, { status: 400 });
+      return badRequest("A valid email is required");
     }
 
     await db.addSubscriber(parsed.data.email);

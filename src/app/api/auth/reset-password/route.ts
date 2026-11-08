@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/services/db";
-import { hashPassword } from "@/services/auth/password";
+import { hashPassword, hashToken, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { rateLimit, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
+import { readJson, badRequest } from "@/services/auth/http";
 
 export const schema = z.object({
-  token: z.string().min(10),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  token: z.string().min(10).max(200),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(MAX_PASSWORD_LENGTH, "Password is too long"),
 });
 
 export async function POST(req: NextRequest) {
@@ -21,21 +25,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
     }
 
-    const body = await req.json();
+    const body = await readJson(req);
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0]?.message || "Invalid request" },
-        { status: 400 }
-      );
+      return badRequest(parsed.error.issues[0]?.message || "Invalid request");
     }
     const { token, password } = parsed.data;
 
-    const profiles = await db.getProfiles();
-    const profile = profiles.find((p) => p.reset_token === token);
+    // Indexed lookup by token hash — previously this loaded EVERY profile
+    // (including all password hashes) into memory just to find one token.
+    const profile = await db.getProfileByResetTokenHash(hashToken(token));
 
     if (!profile || !profile.reset_token_expires || new Date(profile.reset_token_expires) < new Date()) {
-      return NextResponse.json({ error: "This reset link is invalid or has expired" }, { status: 400 });
+      return badRequest("This reset link is invalid or has expired");
     }
 
     const passwordHash = await hashPassword(password);
@@ -44,6 +46,11 @@ export async function POST(req: NextRequest) {
       password_hash: passwordHash,
       reset_token: null,
       reset_token_expires: null,
+      // Receiving the emailed link proves mailbox ownership too.
+      email_verified: true,
+      verification_token: null,
+      // Invalidates every session issued before this moment (see getVerifiedSession).
+      password_changed_at: new Date().toISOString(),
     });
 
     return NextResponse.json({ success: true });

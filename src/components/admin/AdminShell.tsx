@@ -18,6 +18,7 @@ import {
   HelpCircle,
   Images,
   Camera,
+  Inbox,
   Settings,
   Eye,
   LogOut,
@@ -28,6 +29,7 @@ import {
 const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+  { name: "Inquiries", href: "/admin/inquiries", icon: Inbox },
   { name: "Tours", href: "/admin/tours", icon: Compass },
   { name: "Destinations", href: "/admin/destinations", icon: Map },
   { name: "Hotels", href: "/admin/hotels", icon: Hotel },

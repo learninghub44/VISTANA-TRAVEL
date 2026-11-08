@@ -23,6 +23,7 @@ class LocalStorageProvider implements StorageProvider {
     fs.writeFileSync(filePath, fileBuffer);
     return `/uploads/${safeName}`;
   }
+
 }
 
 // Default bucket name; override with SUPABASE_STORAGE_BUCKET if you want a
@@ -50,6 +51,7 @@ class SupabaseStorageProvider implements StorageProvider {
     const { data } = client.storage.from(bucket).getPublicUrl(safeName);
     return data.publicUrl;
   }
+
 }
 
 // Provider is resolved lazily (per call, cached after first success) rather
