@@ -1,4 +1,5 @@
 import { Star, MapPin, Wifi, ArrowUpRight } from "lucide-react";
+import SmartImage from "@/components/ui/SmartImage";
 import { Hotel } from "@/services/db/types";
 
 interface HotelCardProps {
@@ -13,11 +14,11 @@ export default function HotelCard({ hotel }: HotelCardProps) {
   return (
     <div className="group bg-white dark:bg-slate-900/60 rounded-[2rem] border border-slate-100 dark:border-slate-800/80 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 overflow-hidden">
       <div className="relative aspect-[4/3] overflow-hidden">
-        <img
-          src={hotel.images[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"}
+        <SmartImage
+          src={hotel.images[0]}
           alt={hotel.name}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
         <div className="absolute top-4 left-4 bg-white/90 dark:bg-navy/90 backdrop-blur-md text-navy dark:text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">

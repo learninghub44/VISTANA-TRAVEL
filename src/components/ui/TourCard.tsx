@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SmartImage from "@/components/ui/SmartImage";
 import { Clock, Tag, MapPin, Star } from "lucide-react";
 import { Tour } from "@/services/db/types";
 import FavoriteButton from "@/components/ui/FavoriteButton";
@@ -17,11 +18,11 @@ export default function TourCard({ tour, destinationName, rating = 4.8, reviewCo
     <div className="group relative bg-white dark:bg-slate-900/60 rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:shadow-navy-950/10 hover:-translate-y-2 transition-all duration-500 ease-out border border-slate-100 dark:border-slate-800/80 flex flex-col h-full">
       {/* Tour Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 shrink-0">
-        <img
-          src={tour.images[0] || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=600&q=80"}
+        <SmartImage
+          src={tour.images[0]}
           alt={tour.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          loading="lazy"
+          sizes="(min-width: 1280px) 25vw, (min-width: 640px) 45vw, 100vw"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
         {/* Gradients and Tags */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />

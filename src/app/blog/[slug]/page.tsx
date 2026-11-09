@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import SmartImage from "@/components/ui/SmartImage";
 import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -108,10 +109,12 @@ export default async function BlogDetailPage(props: { params: Promise<{ slug: st
 
           {/* Featured Image */}
           <div className="relative aspect-[16/9] w-full rounded-3xl overflow-hidden shadow-md mb-10 bg-slate-200">
-            <img
+            <SmartImage
               src={blog.image_url}
               alt={blog.title}
-              className="w-full h-full object-cover"
+              priority
+              sizes="(min-width: 1024px) 896px, 100vw"
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
 

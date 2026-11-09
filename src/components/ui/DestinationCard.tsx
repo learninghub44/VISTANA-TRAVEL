@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SmartImage from "@/components/ui/SmartImage";
 import { ArrowUpRight, Navigation } from "lucide-react";
 import { Destination } from "@/services/db/types";
 
@@ -11,11 +12,11 @@ export default function DestinationCard({ destination, tourCount = 0 }: Destinat
   return (
     <Link href={`/destinations/${destination.slug}`} className="group relative block aspect-[3/4] rounded-[2rem] overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-500">
       {/* Background Image */}
-      <img
-        src={destination.images[0] || "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=600&q=80"}
+      <SmartImage
+        src={destination.images[0]}
         alt={destination.name}
+        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 100vw"
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-        loading="lazy"
       />
       
       {/* Overlay Gradients */}

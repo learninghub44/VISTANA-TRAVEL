@@ -1,4 +1,5 @@
 import { db } from "@/services/db";
+import SmartImage from "@/components/ui/SmartImage";
 import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -56,12 +57,14 @@ export default async function DestinationDetailPage(props: { params: Promise<{ s
       <Navbar />
 
       {/* Banner */}
-      <section className="relative h-[55vh] bg-slate-950 flex items-end">
+      <section className="relative h-[50vh] lg:h-[62vh] bg-slate-950 flex items-end">
         <div className="absolute inset-0 z-0">
-          <img
+          <SmartImage
             src={destination.images[0]}
             alt={destination.name}
-            className="w-full h-full object-cover opacity-75"
+            priority
+            sizes="100vw"
+            className="absolute inset-0 w-full h-full object-cover opacity-75"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
         </div>

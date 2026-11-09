@@ -1,10 +1,12 @@
 import Link from "next/link";
+import SmartImage from "@/components/ui/SmartImage";
 import { db } from "@/services/db";
 import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomeSearch from "@/components/layout/HomeSearch";
 import HeroFadeIn from "@/components/layout/HeroFadeIn";
+import HeroVideo from "@/components/layout/HeroVideo";
 import StatsCounter from "@/components/layout/StatsCounter";
 import TourCard from "@/components/ui/TourCard";
 import DestinationCard from "@/components/ui/DestinationCard";
@@ -37,23 +39,19 @@ export default async function HomePage() {
       <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden bg-navy">
         {/* Background Video (with image fallback beneath, in case video fails to load) */}
         <div className="absolute inset-0 z-0">
-          <img
+          <SmartImage
             src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1920&q=80"
             alt="Maasai Mara safari at sunset"
-            className="w-full h-full object-cover scale-105"
-          />
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="https://assets.mixkit.co/videos/11146/11146-thumb-720-0.jpg"
+            priority
+            sizes="100vw"
             className="absolute inset-0 w-full h-full object-cover scale-105"
-          >
-            <source src="https://assets.mixkit.co/videos/11146/11146-720.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-navy/40" />
+          />
+          <HeroVideo
+            src="https://assets.mixkit.co/videos/11146/11146-720.mp4"
+            poster="https://assets.mixkit.co/videos/11146/11146-thumb-720-0.jpg"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-navy/30 lg:bg-gradient-to-r lg:from-navy/80 lg:via-navy/40 lg:to-navy/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent hidden lg:block" />
         </div>
 
         {/* Content */}
@@ -281,7 +279,7 @@ export default async function HomePage() {
                     href="/tours"
                     className="group relative h-32 sm:h-36 rounded-2xl overflow-hidden border border-slate-800"
                   >
-                    <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <SmartImage src={c.img} alt={c.title} sizes="(min-width: 1024px) 20vw, 45vw" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
                     <span className="absolute bottom-3 left-3 text-sm font-bold text-white">{c.title}</span>
                   </Link>
@@ -333,10 +331,11 @@ export default async function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {galleryImages.slice(0, 8).map((g) => (
                 <div key={g.id} className="relative aspect-square rounded-2xl overflow-hidden group">
-                  <img
+                  <SmartImage
                     src={g.image_url}
                     alt={g.caption || "Vistana Tours gallery photo"}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   {g.caption && (
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -370,10 +369,11 @@ export default async function HomePage() {
               {socialPosts.slice(0, 8).map((post) => {
                 const content = (
                   <>
-                    <img
+                    <SmartImage
                       src={post.image_url}
                       alt={post.caption || "Vistana Tours social post"}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(min-width: 768px) 25vw, 50vw"
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
                       <span className="text-white text-xs font-medium line-clamp-2">
@@ -475,11 +475,11 @@ export default async function HomePage() {
             {/* Phone mockup */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative w-56 sm:w-64 aspect-[9/19] rounded-[2.5rem] border-[6px] border-slate-800 bg-slate-900 shadow-2xl overflow-hidden">
-                <img
+                <SmartImage
                   src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=500&q=80"
                   alt="Vistana mobile app preview"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                  sizes="256px"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent" />
                 <div className="absolute bottom-5 inset-x-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3">

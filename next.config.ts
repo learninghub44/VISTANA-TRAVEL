@@ -14,6 +14,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
+      "media-src 'self' https:", // hero video; without this the browser blocks it (media falls back to default-src 'self')
       "connect-src 'self'", // the browser never talks to Supabase/Resend directly — everything is server-side
       "object-src 'none'",
       "base-uri 'self'",

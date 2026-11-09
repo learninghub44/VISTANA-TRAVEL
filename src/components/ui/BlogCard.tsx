@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SmartImage from "@/components/ui/SmartImage";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import { Blog } from "@/services/db/types";
 
@@ -17,11 +18,11 @@ export default function BlogCard({ blog }: BlogCardProps) {
     <article className="group bg-white dark:bg-slate-900/60 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-500 border border-slate-100 dark:border-slate-800/80 flex flex-col h-full">
       {/* Blog Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 shrink-0">
-        <img
-          src={blog.image_url || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"}
+        <SmartImage
+          src={blog.image_url}
           alt={blog.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {/* Category Tag */}
         <span className="absolute top-4 left-4 bg-navy-600/90 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm shadow-md">

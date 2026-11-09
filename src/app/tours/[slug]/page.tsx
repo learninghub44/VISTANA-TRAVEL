@@ -1,4 +1,6 @@
 import { db } from "@/services/db";
+import SmartImage from "@/components/ui/SmartImage";
+import TourGallery from "@/components/tours/TourGallery";
 import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -100,12 +102,14 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
       <Navbar />
 
       {/* Hero Banner */}
-      <section className="relative h-[60vh] bg-slate-950 flex items-end">
+      <section className="relative h-[55vh] lg:h-[68vh] bg-slate-950 flex items-end">
         <div className="absolute inset-0 z-0">
-          <img
+          <SmartImage
             src={tour.images[0]}
             alt={tour.title}
-            className="w-full h-full object-cover opacity-70"
+            priority
+            sizes="100vw"
+            className="absolute inset-0 w-full h-full object-cover opacity-75"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent" />
         </div>
@@ -152,6 +156,9 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
             {/* Left Content Column */}
             <div className="lg:col-span-2 space-y-10">
+
+              {/* Photo gallery */}
+              <TourGallery images={tour.images} title={tour.title} />
               
               {/* Tour Overview */}
               <div className="bg-white dark:bg-slate-900/60 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm space-y-4">
