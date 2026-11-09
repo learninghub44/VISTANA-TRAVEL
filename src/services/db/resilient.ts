@@ -130,3 +130,23 @@ function isConnectivityError(e: unknown): boolean {
     msg.includes("<html")
   );
 }
+
+export type DbFailureReason = "unreachable" | "permission_denied" | "missing_tables" | "bad_key" | "unknown";
+
+/**
+ * Coarse, non-sensitive classification of a database failure — safe to expose
+ * on the health endpoint so a misconfiguration can be told apart from an outage
+ * without reading server logs. Never includes messages, hosts or keys.
+ */
+export function classifyDbError(e: unknown): DbFailureReason {
+  const obj = (e ?? {}) as { code?: unknown; message?: unknown; status?: unknown };
+  const msg = String(obj.message ?? e ?? "").toLowerCase();
+  const code = String(obj.code ?? "");
+  if (code === "42501" || msg.includes("permission denied")) return "permission_denied";
+  if (code === "42P01" || code === "PGRST205" || msg.includes("could not find the table") || msg.includes("does not exist")) {
+    return "missing_tables";
+  }
+  if (obj.status === 401 || obj.status === 403 || msg.includes("invalid api key") || msg.includes("jwt")) return "bad_key";
+  if (isConnectivityError(e)) return "unreachable";
+  return "unknown";
+}
