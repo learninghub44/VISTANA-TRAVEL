@@ -1,13 +1,18 @@
 import { cachedDb } from "@/services/db/cached";
 import AssistantWidget from "@/components/ai/AssistantWidget";
+import WhatsAppFloat from "@/components/ui/WhatsAppFloat";
+import { buildWhatsAppUrl, normalizeWhatsAppNumber } from "@/lib/whatsapp";
 
 // Rendered in the ROOT layout, so it runs on every page. It must never throw:
-// if settings can't be loaded the widget simply omits the WhatsApp shortcut.
+// if settings can't be loaded the widgets simply omit the WhatsApp shortcuts.
 export default async function AssistantWidgetServer() {
   const settings = await cachedDb.getSiteSettings().catch(() => null);
-  const whatsappHref = settings?.whatsapp_number
-    ? `https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}`
-    : null;
+  const number = normalizeWhatsAppNumber(settings?.whatsapp_number);
 
-  return <AssistantWidget whatsappHref={whatsappHref} />;
+  return (
+    <>
+      <WhatsAppFloat number={number} />
+      <AssistantWidget whatsappHref={buildWhatsAppUrl(number)} />
+    </>
+  );
 }

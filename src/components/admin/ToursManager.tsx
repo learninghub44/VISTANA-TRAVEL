@@ -4,6 +4,7 @@ import { useState } from "react";
 import { saveTourAction, deleteTourAction } from "@/app/actions";
 import { Compass, Search, Plus, Trash2, Edit3, X, Info } from "lucide-react";
 import { Tour, Destination } from "@/services/db/types";
+import TourImagesField from "@/components/admin/TourImagesField";
 
 interface ToursManagerProps {
   tours: Tour[];
@@ -26,7 +27,7 @@ export default function ToursManager({ tours, destinations }: ToursManagerProps)
       title: "",
       slug: "",
       description: "",
-      images: [""],
+      images: [],
       duration_days: 5,
       price_usd: 1500,
       category: "Safari",
@@ -64,9 +65,12 @@ export default function ToursManager({ tours, destinations }: ToursManagerProps)
     setError("");
 
     // Validate images and clean empty entries
+    // No silent stock-photo fallback any more: every package needs its own photos.
     const cleanedImages = (editTour.images || []).filter((url) => !!url.trim());
     if (cleanedImages.length === 0) {
-      cleanedImages.push("https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=600&q=80");
+      setLoading(false);
+      setError("Add at least one photo of the package before saving.");
+      return;
     }
 
     const cleanedInclusions = (editTour.inclusions || []).filter((v) => !!v.trim());
@@ -271,6 +275,12 @@ export default function ToursManager({ tours, destinations }: ToursManagerProps)
                   />
                 </div>
               </div>
+
+              {/* Photos */}
+              <TourImagesField
+                images={editTour.images || []}
+                onChange={(next) => setEditTour({ ...editTour, images: next })}
+              />
 
               {/* Description */}
               <div className="flex flex-col space-y-1">

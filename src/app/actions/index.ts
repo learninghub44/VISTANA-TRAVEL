@@ -10,6 +10,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/services/db/cached";
 import { rateLimitShared, getClientIpFromHeaders } from "@/services/auth/rateLimit";
 import { sniffFileType, extensionFor } from "@/lib/fileSniff";
+import { tourSchema, slugify, uniqueSlug } from "@/lib/tourSchema";
 import { headers } from "next/headers";
 import { z } from "zod";
 
@@ -257,16 +258,37 @@ export async function saveTourAction(tour: Omit<Tour, "id" | "created_at"> & { i
     const admin = await getAdminSession();
     if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
 
-    const slug = tour.slug || tour.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    const saved = await db.saveTour({ ...tour, slug });
-    await logAudit(admin, tour.id ? "update" : "create", "tour", saved.id, saved.title);
+    // Validate everything the admin form sends — previously this stored the raw
+    // object (no price/duration/image checks, duplicate slugs possible).
+    const parsed = tourSchema.safeParse(tour);
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0]?.message || "Please check the package details." };
+    }
+    const data = parsed.data;
 
+    if (!(await db.getDestinations()).some((d) => d.id === data.destination_id)) {
+      return { success: false, error: "The selected destination no longer exists." };
+    }
+
+    // Unique, URL-safe slug (an edited package may keep its own current slug).
+    const existing = await db.getTours();
+    const taken = new Set(existing.filter((t) => t.id !== data.id).map((t) => t.slug));
+    const slug = uniqueSlug(slugify(data.slug || data.title), taken);
+
+    const saved = await db.saveTour({ ...data, slug } as Omit<Tour, "id" | "created_at"> & { id?: string });
+    await logAudit(admin, data.id ? "update" : "create", "tour", saved.id, saved.title);
+
+    // Make the package visible everywhere right away: listing, detail page,
+    // homepage featured tours, its destination page, and the sitemap.
+    revalidatePath("/");
     revalidatePath("/tours");
     revalidatePath(`/tours/${saved.slug}`);
+    revalidatePath("/destinations");
+    revalidatePath("/sitemap.xml");
     updateTag(CACHE_TAGS.tours);
     return { success: true, tour: saved };
-  } catch (e: any) {
-    return { success: false, error: e.message || "Failed to save tour package." };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to save tour package." };
   }
 }
 
@@ -277,7 +299,9 @@ export async function deleteTourAction(id: string): Promise<{ success: boolean; 
 
     await db.deleteTour(id);
     await logAudit(admin, "delete", "tour", id);
+    revalidatePath("/");
     revalidatePath("/tours");
+    revalidatePath("/sitemap.xml");
     updateTag(CACHE_TAGS.tours);
     return { success: true };
   } catch (e: any) {
