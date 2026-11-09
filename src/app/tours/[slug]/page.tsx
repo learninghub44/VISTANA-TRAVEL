@@ -149,6 +149,16 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
         </div>
       </section>
 
+      {/* Photo gallery — full width on PC (a big-screen layout, not a phone card);
+          becomes a swipeable strip on phones */}
+      {tour.images.length > 1 && (
+        <section className="bg-slate-50 dark:bg-[#070a12] pt-8 sm:pt-10">
+          <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+            <TourGallery images={tour.images} title={tour.title} />
+          </div>
+        </section>
+      )}
+
       {/* Detail Core Grid */}
       <section className="py-16 bg-slate-50 dark:bg-[#070a12] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -156,9 +166,6 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-start">
             {/* Left Content Column */}
             <div className="lg:col-span-2 space-y-10">
-
-              {/* Photo gallery */}
-              <TourGallery images={tour.images} title={tour.title} />
               
               {/* Tour Overview */}
               <div className="bg-white dark:bg-slate-900/60 p-6 sm:p-8 rounded-3xl border border-slate-100 dark:border-slate-800/80 shadow-sm space-y-4">

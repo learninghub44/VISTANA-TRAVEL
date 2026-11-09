@@ -39,7 +39,7 @@ export default function TourGallery({ images, title }: { images: string[]; title
   return (
     <>
       {/* Desktop bento */}
-      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-3 h-[420px] lg:h-[480px] rounded-3xl overflow-hidden">
+      <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-2 h-[440px] lg:h-[560px] 2xl:h-[680px] rounded-2xl overflow-hidden">
         {grid.map((src, i) => (
           <button
             key={src + i}
