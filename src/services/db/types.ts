@@ -154,6 +154,23 @@ export interface Meeting {
   created_at: string;
 }
 
+export interface Lead {
+  id: string;
+  name?: string;
+  email: string;
+  phone?: string;
+  source: "contact" | "newsletter" | "meeting" | "quote" | "assistant";
+  interest?: string; // tour / topic they asked about
+  message?: string;
+  status: "New" | "Contacted" | "Qualified" | "Won" | "Lost";
+  notes?: string;
+  touches: number; // how many times this person has reached out
+  created_at: string;
+  updated_at: string;
+}
+
+export type LeadCapture = Pick<Lead, "email" | "source"> & Partial<Pick<Lead, "name" | "phone" | "interest" | "message">>;
+
 export interface Testimonial {
   id: string;
   customer_name: string;
@@ -302,6 +319,12 @@ export interface DatabaseAdapter {
   getProfileByResetTokenHash(hash: string): Promise<Profile | null>;
   getProfileByVerificationTokenHash(hash: string): Promise<Profile | null>;
   getTourById(id: string): Promise<Tour | null>;
+
+  // Leads: one row per person (by email), enriched each time they reach out
+  getLeads(): Promise<Lead[]>;
+  captureLead(input: LeadCapture): Promise<Lead>;
+  updateLead(id: string, updates: Partial<Pick<Lead, "status" | "notes">>): Promise<void>;
+  deleteLead(id: string): Promise<boolean>;
 
   // Meeting / consultation requests (made via the AI assistant or the site)
   getMeetings(): Promise<Meeting[]>;

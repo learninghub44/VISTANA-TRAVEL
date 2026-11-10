@@ -28,6 +28,12 @@ process.env.SESSION_SECRET = "test-session-secret-at-least-32-chars-long";
 
 import { db } from "@/services/db";
 import {
+  updateLeadAction,
+  deleteLeadAction,
+  setAdminRoleAction,
+  updateProfileAction,
+  changePasswordAction,
+  requestQuoteAction,
   updateMeetingStatusAction,
   deleteMeetingAction,
   requestMeetingAction,
@@ -167,5 +173,34 @@ describe("meeting actions", () => {
     const r = await requestMeetingAction({ name: "Bot", email: "bot@example.com", topic: "spam spam", channel: "Video call", preferred_date: "2099-01-01", preferred_time: "10:00", website: "http://spam" });
     expect(r.success).toBeDefined();
     expect((await db.getMeetings()).length).toBe(before);
+  });
+});
+
+describe("leads, team and account actions", () => {
+  it("reject unauthenticated callers", async () => {
+    expect((await updateLeadAction("x", { status: "Won" })).success).toBe(false);
+    expect((await deleteLeadAction("x")).success).toBe(false);
+    expect((await setAdminRoleAction("a@b.com", true)).success).toBe(false);
+    expect((await updateProfileAction({ name: "Jane Doe" })).success).toBe(false);
+    expect((await changePasswordAction({ current: "old-password", next: "new-password-1" })).success).toBe(false);
+  });
+  it("requestQuoteAction validates input, rejects unknown tours, and drops honeypot posts", async () => {
+    const base = { name: "Amina W", email: "amina@example.com", tour_slug: "no-such-tour", adults: 2, children: 0 };
+    expect((await requestQuoteAction({ ...base, email: "nope" })).success).toBe(false);
+    expect((await requestQuoteAction(base)).success).toBe(false);
+    const before = (await db.getLeads()).length;
+    const bot = await requestQuoteAction({ ...base, website: "http://spam" });
+    expect(bot.success).toBe(true);
+    expect((await db.getLeads()).length).toBe(before);
+  });
+  it("captures a real quote as one lead per email, counting repeat contacts", async () => {
+    const [tour] = await db.getTours();
+    const input = { name: "Lead Tester", email: `lead-${Date.now()}@example.com`, tour_slug: tour.slug, adults: 2, children: 0 };
+    expect((await requestQuoteAction(input)).success).toBe(true);
+    expect((await requestQuoteAction(input)).success).toBe(true);
+    const mine = (await db.getLeads()).filter((l) => l.email === input.email);
+    expect(mine).toHaveLength(1);
+    expect(mine[0].touches).toBe(2);
+    expect(mine[0].source).toBe("quote");
   });
 });

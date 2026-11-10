@@ -5,7 +5,8 @@ import { storage } from "@/services/storage";
 import { sendBookingConfirmationEmail, sendBookingStatusUpdateEmail } from "@/services/email";
 import { whatsapp } from "@/services/whatsapp";
 import { Booking, Tour, Destination, Guide, Vehicle, Hotel, Blog, Review, Profile, Testimonial, Partner, Faq, GalleryImage, SocialPost } from "@/services/db/types";
-import { getVerifiedSession } from "@/services/auth/session";
+import { getVerifiedSession, setSessionCookie } from "@/services/auth/session";
+import { hashPassword, verifyPasswordConstantTime, MAX_PASSWORD_LENGTH } from "@/services/auth/password";
 import { revalidatePath, updateTag } from "next/cache";
 import { CACHE_TAGS } from "@/services/db/cached";
 import { rateLimitShared, getClientIpFromHeaders } from "@/services/auth/rateLimit";
@@ -13,7 +14,10 @@ import { sniffFileType, extensionFor } from "@/lib/fileSniff";
 import { tourSchema, slugify, uniqueSlug } from "@/lib/tourSchema";
 import { computeBookingTotal } from "@/lib/pricing";
 import { meetingSchema, isValidMeetingSlot } from "@/lib/meetingSchema";
-import { sendMeetingEmails } from "@/services/email";
+import { sendMeetingEmails, sendInquiryNotificationEmail } from "@/services/email";
+import { captureLeadSafe } from "@/services/leads";
+import { quoteSchema, leadUpdateSchema } from "@/lib/leadSchema";
+import { checkRoleChange } from "@/lib/roles";
 import { headers } from "next/headers";
 import { z } from "zod";
 
@@ -886,6 +890,8 @@ export async function requestMeetingAction(
       tour_slug: data.tour_slug,
     });
 
+    await captureLeadSafe({ email: data.email, name: data.name, phone: data.phone, source: "meeting", interest: data.topic, message: data.notes });
+
     // The request is safely stored; emails are best-effort.
     try {
       const settings = await db.getSiteSettings();
@@ -898,6 +904,76 @@ export async function requestMeetingAction(
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error && e.message ? e.message : "Could not send your request." };
+  }
+}
+
+// ----------------------------------------------------
+// Quote requests ("not ready to book yet") — public lead capture
+// ----------------------------------------------------
+export async function requestQuoteAction(input: z.input<typeof quoteSchema>): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ip = await getActionClientIp();
+    if (!(await rateLimitShared(`quote:${ip}`, 5, 60 * 60 * 1000)).ok) {
+      return { success: false, error: "Too many requests. Please try again later or message us on WhatsApp." };
+    }
+    const parsed = quoteSchema.safeParse(input);
+    if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message || "Please check your details." };
+    const data = parsed.data;
+    if (data.website) return { success: true }; // honeypot
+
+    const tour = await db.getTourBySlug(data.tour_slug);
+    if (!tour) return { success: false, error: "That tour could not be found." };
+
+    const guests = `${data.adults} adult${data.adults > 1 ? "s" : ""}${data.children ? `, ${data.children} child${data.children > 1 ? "ren" : ""}` : ""}`;
+    const message = [`Quote request for "${tour.title}"`, data.start_date ? `Start: ${data.start_date}` : null, `Guests: ${guests}`, data.message].filter(Boolean).join("\n");
+
+    await db.saveInquiry({ name: data.name, email: data.email, phone: data.phone, subject: `Quote: ${tour.title}`.slice(0, 150), message });
+    await captureLeadSafe({ email: data.email, name: data.name, phone: data.phone, source: "quote", interest: tour.title, message });
+
+    try {
+      const settings = await db.getSiteSettings();
+      const to = settings.office_email || process.env.CONTACT_NOTIFY_EMAIL;
+      if (to) await sendInquiryNotificationEmail(to, { name: data.name, email: data.email, phone: data.phone, subject: `Quote: ${tour.title}`, message });
+    } catch (e) {
+      console.error("Quote notification email failed:", e);
+    }
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin/inquiries");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Could not send your request." };
+  }
+}
+
+// ----------------------------------------------------
+// Leads — admin only
+// ----------------------------------------------------
+export async function updateLeadAction(id: string, updates: { status?: string; notes?: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    const parsed = leadUpdateSchema.safeParse(updates);
+    if (!uuidLike.safeParse(id).success || !parsed.success) return { success: false, error: "Invalid request." };
+    await db.updateLead(id, parsed.data);
+    await logAudit(admin, "update", "lead", id, parsed.data.status ? `status → ${parsed.data.status}` : "notes");
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to update lead." };
+  }
+}
+
+export async function deleteLeadAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    if (!uuidLike.safeParse(id).success) return { success: false, error: "Invalid request." };
+    await db.deleteLead(id);
+    await logAudit(admin, "delete", "lead", id);
+    revalidatePath("/admin/leads");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to delete lead." };
   }
 }
 
@@ -961,5 +1037,91 @@ export async function deleteInquiryAction(id: string): Promise<{ success: boolea
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to delete inquiry." };
+  }
+}
+
+
+// ----------------------------------------------------
+// Team (admin access) — admin only
+// ----------------------------------------------------
+export async function setAdminRoleAction(email: string, makeAdmin: boolean): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized. Admin permissions required." };
+
+    const parsed = z.string().trim().toLowerCase().email().max(254).safeParse(email);
+    if (!parsed.success) return { success: false, error: "Enter a valid email address." };
+
+    const target = await db.getProfileByEmail(parsed.data);
+    const adminCount = (await db.getProfiles()).filter((p) => p.role === "admin").length;
+    const refusal = checkRoleChange({ actorId: admin.id, target, makeAdmin, adminCount });
+    if (refusal || !target) return { success: false, error: refusal || "User not found." };
+
+    await db.saveProfile({ ...target, role: makeAdmin ? "admin" : "customer" });
+    await logAudit(admin, makeAdmin ? "grant_admin" : "revoke_admin", "profile", target.id, target.email);
+    revalidatePath("/admin/team");
+    revalidatePath("/admin/customers");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Could not change access." };
+  }
+}
+
+// ----------------------------------------------------
+// Customer account
+// ----------------------------------------------------
+export async function updateProfileAction(input: { name: string; phone?: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) return { success: false, error: "Please log in." };
+    const parsed = z
+      .object({
+        name: z.string().trim().min(2, "Please enter your name").max(120),
+        phone: z.string().trim().max(24).regex(/^[0-9+()\-\s]*$/, "Invalid phone number").optional(),
+      })
+      .safeParse(input);
+    if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message || "Invalid details." };
+    if (!(await rateLimitShared(`profile:${customer.id}`, 20, 60 * 60 * 1000)).ok) {
+      return { success: false, error: "Too many changes. Please try again later." };
+    }
+    await db.saveProfile({ ...customer, name: parsed.data.name, phone: parsed.data.phone || undefined });
+    revalidatePath("/portal");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Could not save your details." };
+  }
+}
+
+export async function changePasswordAction(input: { current: string; next: string }): Promise<{ success: boolean; error?: string }> {
+  try {
+    const customer = await getCustomerSession();
+    if (!customer) return { success: false, error: "Please log in." };
+    const parsed = z
+      .object({
+        current: z.string().min(1).max(MAX_PASSWORD_LENGTH),
+        next: z.string().min(8, "New password must be at least 8 characters").max(MAX_PASSWORD_LENGTH, "New password is too long"),
+      })
+      .safeParse(input);
+    if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message || "Invalid details." };
+
+    // Guesses at the current password count against the same per-account limit as login.
+    if (!(await rateLimitShared(`change-password:${customer.id}`, 5, 15 * 60 * 1000)).ok) {
+      return { success: false, error: "Too many attempts. Please try again in a few minutes." };
+    }
+    if (!(await verifyPasswordConstantTime(parsed.data.current, customer.password_hash))) {
+      return { success: false, error: "Your current password is incorrect." };
+    }
+    if (parsed.data.current === parsed.data.next) return { success: false, error: "Choose a password different from your current one." };
+
+    await db.saveProfile({
+      ...customer,
+      password_hash: await hashPassword(parsed.data.next),
+      // Signs out every other device; this session is re-issued just below.
+      password_changed_at: new Date().toISOString(),
+    });
+    await setSessionCookie({ sub: customer.id, role: customer.role, email: customer.email });
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Could not change your password." };
   }
 }

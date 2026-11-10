@@ -5,6 +5,7 @@ import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
 import { sendInquiryNotificationEmail } from "@/services/email";
+import { captureLeadSafe } from "@/services/leads";
 
 export const contactSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
 
     const { name, email, phone, subject, message } = parsed.data;
     const saved = await db.saveInquiry({ name, email, phone, subject, message });
+    await captureLeadSafe({ email, name, phone, source: "contact", interest: subject, message });
 
     // Notify the office by email, but never fail the visitor's request over it —
     // the inquiry is already safely stored and visible in /admin/inquiries.

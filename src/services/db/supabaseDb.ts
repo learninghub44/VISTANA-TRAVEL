@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "./supabaseClient";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, Lead, LeadCapture, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 class SupabaseDbAdapter implements DatabaseAdapter {
   private get client(): SupabaseClient {
@@ -305,6 +305,60 @@ class SupabaseDbAdapter implements DatabaseAdapter {
     const { data, error } = await this.client.from("tours").select("*").eq("id", id).maybeSingle();
     if (error) throw error;
     return data;
+  }
+
+  // Leads
+  async getLeads(): Promise<Lead[]> {
+    const { data, error } = await this.client.from("leads").select("*").order("updated_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+  async captureLead(input: LeadCapture): Promise<Lead> {
+    const email = input.email.trim().toLowerCase();
+    const now = new Date().toISOString();
+    const update = async (existing: Lead): Promise<Lead> => {
+      const { data, error } = await this.client
+        .from("leads")
+        .update({
+          name: existing.name || input.name || null,
+          phone: existing.phone || input.phone || null,
+          interest: input.interest || existing.interest || null,
+          message: input.message || existing.message || null,
+          source: existing.source === "newsletter" ? input.source : existing.source, // keep the first meaningful source
+          touches: (existing.touches || 1) + 1,
+          updated_at: now,
+        })
+        .eq("id", existing.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    };
+    const { data: existing } = await this.client.from("leads").select("*").ilike("email", email.replace(/[%_\\]/g, (c) => "\\" + c)).maybeSingle();
+    if (existing) return update(existing);
+    const { data, error } = await this.client
+      .from("leads")
+      .insert({ email, name: input.name, phone: input.phone, source: input.source, interest: input.interest, message: input.message, status: "New", touches: 1, updated_at: now })
+      .select()
+      .single();
+    if (error) {
+      // Lost a race with a concurrent capture for the same email → update that row instead.
+      if (error.code === "23505") {
+        const { data: again } = await this.client.from("leads").select("*").ilike("email", email.replace(/[%_\\]/g, (c) => "\\" + c)).maybeSingle();
+        if (again) return update(again);
+      }
+      throw error;
+    }
+    return data;
+  }
+  async updateLead(id: string, updates: Partial<Pick<Lead, "status" | "notes">>): Promise<void> {
+    const { error } = await this.client.from("leads").update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id);
+    if (error) throw error;
+  }
+  async deleteLead(id: string): Promise<boolean> {
+    const { error } = await this.client.from("leads").delete().eq("id", id);
+    if (error) throw error;
+    return true;
   }
 
   // Meetings

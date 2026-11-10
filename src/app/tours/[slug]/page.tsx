@@ -5,6 +5,7 @@ import { cachedDb } from "@/services/db/cached";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BookingForm from "@/components/tours/BookingForm";
+import QuoteRequestCard from "@/components/tours/QuoteRequestCard";
 import ReviewForm from "@/components/tours/ReviewForm";
 import { notFound } from "next/navigation";
 import { Clock, MapPin, Star, Shield, HelpCircle, Check, X, User, BookOpen } from "lucide-react";
@@ -336,6 +337,7 @@ export default async function TourDetailPage(props: { params: Promise<{ slug: st
             {/* Right Sidebar - Sticky Booking Box */}
             <div className="lg:sticky lg:top-24 space-y-6">
               <BookingForm tour={tour} />
+              <div className="mt-4"><QuoteRequestCard tourSlug={tour.slug} tourTitle={tour.title} /></div>
               
               <div className="bg-slate-900 text-white rounded-3xl p-6 text-center border border-slate-850 relative overflow-hidden">
                 <div className="absolute inset-0 bg-navy-950/20" />

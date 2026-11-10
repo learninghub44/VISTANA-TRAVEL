@@ -4,6 +4,7 @@ import { db } from "@/services/db";
 import { rateLimitShared, getClientIp } from "@/services/auth/rateLimit";
 import { verifyOrigin } from "@/services/auth/csrf";
 import { readJson, badRequest } from "@/services/auth/http";
+import { captureLeadSafe } from "@/services/leads";
 
 export const schema = z.object({ email: z.string().trim().toLowerCase().email().max(254) });
 
@@ -25,6 +26,7 @@ export async function POST(req: NextRequest) {
     }
 
     await db.addSubscriber(parsed.data.email);
+    await captureLeadSafe({ email: parsed.data.email, source: "newsletter" });
 
     return NextResponse.json({ success: true, message: "You're subscribed! Watch your inbox for safari inspiration." });
   } catch (e) {

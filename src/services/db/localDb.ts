@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, Lead, LeadCapture, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -24,6 +24,7 @@ interface LocalDbSchema {
   audit_logs: AuditLog[];
   inquiries: Inquiry[];
   meetings: Meeting[];
+  leads: Lead[];
   settings: SiteSettings;
 }
 
@@ -534,6 +535,7 @@ const initialData: LocalDbSchema = {
   audit_logs: [],
   inquiries: [],
   meetings: [],
+  leads: [],
   settings: {
     id: "site-settings",
     office_address: "Vistana Plaza, 4th Floor, Ngong Road, Nairobi, Kenya",
@@ -568,6 +570,7 @@ class LocalDbAdapter implements DatabaseAdapter {
         audit_logs: parsed.audit_logs || [],
         inquiries: parsed.inquiries || [],
         meetings: parsed.meetings || [],
+        leads: parsed.leads || [],
         settings: parsed.settings || initialData.settings,
       };
     } catch (e) {
@@ -1174,6 +1177,49 @@ class LocalDbAdapter implements DatabaseAdapter {
     db.audit_logs.push(newItem);
     this.writeDb(db);
     return newItem;
+  }
+
+  // Leads
+  async getLeads(): Promise<Lead[]> {
+    return [...(this.readDb().leads || [])].sort((a, b) => b.updated_at.localeCompare(a.updated_at));
+  }
+  async captureLead(input: LeadCapture): Promise<Lead> {
+    const db = this.readDb();
+    const email = input.email.trim().toLowerCase();
+    const now = new Date().toISOString();
+    const leads = db.leads || [];
+    const existing = leads.find((l) => l.email.toLowerCase() === email);
+    let result: Lead;
+    if (existing) {
+      result = {
+        ...existing,
+        name: existing.name || input.name,
+        phone: existing.phone || input.phone,
+        interest: input.interest || existing.interest,
+        message: input.message || existing.message,
+        source: existing.source === "newsletter" ? input.source : existing.source,
+        touches: (existing.touches || 1) + 1,
+        updated_at: now,
+      };
+      db.leads = leads.map((l) => (l.id === existing.id ? result : l));
+    } else {
+      result = { id: generateId(), email, name: input.name, phone: input.phone, source: input.source, interest: input.interest, message: input.message, status: "New", touches: 1, created_at: now, updated_at: now };
+      db.leads = [...leads, result];
+    }
+    this.writeDb(db);
+    return result;
+  }
+  async updateLead(id: string, updates: Partial<Pick<Lead, "status" | "notes">>): Promise<void> {
+    const db = this.readDb();
+    db.leads = (db.leads || []).map((l) => (l.id === id ? { ...l, ...updates, updated_at: new Date().toISOString() } : l));
+    this.writeDb(db);
+  }
+  async deleteLead(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = (db.leads || []).length;
+    db.leads = (db.leads || []).filter((l) => l.id !== id);
+    this.writeDb(db);
+    return db.leads.length < len;
   }
 
   // Meetings

@@ -1,5 +1,6 @@
 import { db } from "@/services/db";
 import Link from "next/link";
+import AttentionPanel from "@/components/admin/AttentionPanel";
 import { ClipboardList, Compass, Users, DollarSign, Calendar, TrendingUp, Wallet } from "lucide-react";
 import {
   RevenueTrendChart,
@@ -15,6 +16,22 @@ export default async function AdminDashboardPage() {
   const tours = await db.getTours();
   const destinations = await db.getDestinations();
   const profiles = await db.getProfiles();
+
+  // Queues that need action. Each is optional: if a newer table isn't migrated yet,
+  // the dashboard still loads with a zero for that queue instead of failing.
+  const [leads, meetings, inquiries, reviews] = await Promise.all([
+    db.getLeads().catch(() => []),
+    db.getMeetings().catch(() => []),
+    db.getInquiries().catch(() => []),
+    db.getReviews().catch(() => []),
+  ]);
+  const attention = {
+    newLeads: leads.filter((l) => l.status === "New").length,
+    requestedMeetings: meetings.filter((m) => m.status === "Requested").length,
+    newInquiries: inquiries.filter((i) => i.status === "New").length,
+    pendingBookings: bookings.filter((b) => b.status === "Pending").length,
+    pendingReviews: reviews.filter((r) => r.status === "Pending").length,
+  };
 
   // Metrics
   const totalBookings = bookings.length;
@@ -109,6 +126,8 @@ export default async function AdminDashboardPage() {
           Real-time metrics, booking trends, and East African operations.
         </p>
       </div>
+
+      <AttentionPanel counts={attention} />
 
       {/* Metrics Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

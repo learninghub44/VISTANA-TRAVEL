@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -20,6 +21,8 @@ import {
   Camera,
   Inbox,
   CalendarCheck,
+  Target,
+  ShieldCheck,
   Settings,
   Eye,
   LogOut,
@@ -27,25 +30,47 @@ import {
   X,
 } from "lucide-react";
 
-const menuItems = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
-  { name: "Inquiries", href: "/admin/inquiries", icon: Inbox },
-  { name: "Meetings", href: "/admin/meetings", icon: CalendarCheck },
-  { name: "Tours", href: "/admin/tours", icon: Compass },
-  { name: "Destinations", href: "/admin/destinations", icon: Map },
-  { name: "Hotels", href: "/admin/hotels", icon: Hotel },
-  { name: "Vehicles", href: "/admin/vehicles", icon: Car },
-  { name: "Guides", href: "/admin/guides", icon: UserCheck },
-  { name: "Customers", href: "/admin/customers", icon: Users },
-  { name: "Reviews", href: "/admin/reviews", icon: Star },
-  { name: "Blog Posts", href: "/admin/blog", icon: FileText },
-  { name: "Testimonials", href: "/admin/testimonials", icon: Quote },
-  { name: "Partners", href: "/admin/partners", icon: Handshake },
-  { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
-  { name: "Gallery", href: "/admin/gallery", icon: Images },
-  { name: "Social Feed", href: "/admin/social", icon: Camera },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
+const menuGroups = [
+  { label: "Overview", items: [{ name: "Dashboard", href: "/admin", icon: LayoutDashboard }] },
+  {
+    label: "Sales",
+    items: [
+      { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+      { name: "Leads", href: "/admin/leads", icon: Target },
+      { name: "Meetings", href: "/admin/meetings", icon: CalendarCheck },
+      { name: "Inquiries", href: "/admin/inquiries", icon: Inbox },
+      { name: "Customers", href: "/admin/customers", icon: Users },
+    ],
+  },
+  {
+    label: "Catalogue",
+    items: [
+      { name: "Tours", href: "/admin/tours", icon: Compass },
+      { name: "Destinations", href: "/admin/destinations", icon: Map },
+      { name: "Hotels", href: "/admin/hotels", icon: Hotel },
+      { name: "Vehicles", href: "/admin/vehicles", icon: Car },
+      { name: "Guides", href: "/admin/guides", icon: UserCheck },
+    ],
+  },
+  {
+    label: "Content",
+    items: [
+      { name: "Reviews", href: "/admin/reviews", icon: Star },
+      { name: "Blog Posts", href: "/admin/blog", icon: FileText },
+      { name: "Testimonials", href: "/admin/testimonials", icon: Quote },
+      { name: "Partners", href: "/admin/partners", icon: Handshake },
+      { name: "FAQs", href: "/admin/faqs", icon: HelpCircle },
+      { name: "Gallery", href: "/admin/gallery", icon: Images },
+      { name: "Social Feed", href: "/admin/social", icon: Camera },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { name: "Team & Access", href: "/admin/team", icon: ShieldCheck },
+      { name: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
 ];
 
 export default function AdminShell({
@@ -54,6 +79,8 @@ export default function AdminShell({
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname() || "";
+  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(href + "/"));
 
   const sidebarContent = (
     <>
@@ -81,20 +108,29 @@ export default function AdminShell({
 
       {/* Navigation Menu */}
       <nav className="flex-grow p-4 overflow-y-auto space-y-1 custom-scrollbar">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-650 hover:bg-slate-50 hover:text-gold-600 transition-colors"
-            >
-              <Icon className="h-4.5 w-4.5 shrink-0" />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+        {menuGroups.map((group) => (
+          <div key={group.label} className="pb-2">
+            <p className="px-3 pt-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">{group.label}</p>
+            {group.items.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    active ? "bg-slate-900 text-white" : "text-slate-650 hover:bg-slate-50 hover:text-gold-600"
+                  }`}
+                >
+                  <Icon className="h-4.5 w-4.5 shrink-0" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* Footer Actions */}

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { db } from "@/services/db";
-import { getSession } from "@/services/auth/session";
+import { getVerifiedSession } from "@/services/auth/session";
+import AccountPanel from "@/components/portal/AccountPanel";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import BookingsList from "@/components/portal/BookingsList";
@@ -8,17 +9,12 @@ import TourCard from "@/components/ui/TourCard";
 import { User, Mail, Phone, Compass, MapPin, ClipboardList, Heart } from "lucide-react";
 
 export default async function CustomerPortalPage() {
-  const session = await getSession();
-
-  if (!session) {
+  // DB-verified: a deleted account or a session from before a password change is bounced to login.
+  const verified = await getVerifiedSession();
+  if (!verified) {
     redirect("/portal/login");
   }
-
-  const profile = await db.getProfileById(session.sub);
-
-  if (!profile) {
-    redirect("/portal/login");
-  }
+  const { profile } = verified;
 
   // Fetch lists
   const bookings = await db.getBookingsByCustomer(profile.id);
@@ -29,6 +25,19 @@ export default async function CustomerPortalPage() {
 
   const favoriteIds = profile.favorite_tour_ids || [];
   const favoriteTours = tours.filter((t) => favoriteIds.includes(t.id));
+
+  // Next upcoming, still-active trip
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const upcoming = bookings
+    .filter((b) => b.start_date >= todayISO && ["Pending", "Confirmed", "Awaiting Payment", "Paid"].includes(b.status))
+    .sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
+  const nextTrip = upcoming
+    ? {
+        title: tours.find((t) => t.id === upcoming.tour_id)?.title ?? "Your trip",
+        startDate: upcoming.start_date,
+        daysAway: Math.round((Date.parse(`${upcoming.start_date}T00:00:00Z`) - Date.parse(`${todayISO}T00:00:00Z`)) / 86_400_000),
+      }
+    : null;
 
   // Metrics
   const activeCount = bookings.filter((b) => b.status === "Confirmed" || b.status === "Paid" || b.status === "Pending").length;
@@ -75,8 +84,15 @@ export default async function CustomerPortalPage() {
         </div>
       </section>
 
+      {/* Next trip + account settings */}
+      <section className="bg-slate-50 dark:bg-[#070a12] pt-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AccountPanel name={profile.name} phone={profile.phone} nextTrip={nextTrip} />
+        </div>
+      </section>
+
       {/* Bookings & History Section */}
-      <section className="py-16 bg-slate-50 dark:bg-[#070a12] min-h-[60vh] transition-colors">
+      <section className="pt-10 pb-16 bg-slate-50 dark:bg-[#070a12] min-h-[60vh] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">

@@ -4,6 +4,9 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-07-14",
   "compatibility_flags": ["nodejs_compat"],
+  // Run the worker close to the database instead of always next to the visitor:
+  // every page makes several Supabase round-trips, so this cuts page latency.
+  "placement": { "mode": "smart" },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
