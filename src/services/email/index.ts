@@ -226,3 +226,38 @@ export async function sendInquiryNotificationEmail(
   `;
   return email.sendEmail({ to: officeEmail, subject: `New inquiry: ${cleanSubject}`, html });
 }
+
+
+export async function sendMeetingEmails(
+  officeEmail: string | undefined,
+  m: { name: string; email: string; phone?: string; topic: string; channel: string; preferred_date: string; preferred_time: string; notes?: string }
+) {
+  const when = `${escapeHtml(m.preferred_date)} at ${escapeHtml(m.preferred_time)} (East Africa Time)`;
+  const row = (k: string, v: string) =>
+    `<tr><td style="padding:4px 0;color:#666;">${k}</td><td style="padding:4px 0;font-weight:bold;">${v}</td></tr>`;
+
+  if (officeEmail) {
+    const html = `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
+        <h2 style="color:#064e3b;margin-top:0;">New meeting request</h2>
+        <table style="width:100%;border-collapse:collapse;">
+          ${row("Name", escapeHtml(m.name))}${row("Email", escapeHtml(m.email))}${row("Phone", escapeHtml(m.phone || "—"))}
+          ${row("Preferred time", when)}${row("Format", escapeHtml(m.channel))}${row("Topic", escapeHtml(m.topic))}
+        </table>
+        ${m.notes ? `<div style="background:#f8fafc;padding:15px;border-radius:6px;margin:16px 0;white-space:pre-wrap;">${escapeHtml(m.notes)}</div>` : ""}
+        <p style="font-size:12px;color:#999;">Confirm or reschedule from Admin → Meetings.</p>
+      </div>`;
+    await email.sendEmail({ to: officeEmail, subject: `New meeting request: ${m.topic.replace(/[\r\n]+/g, " ").slice(0, 100)}`, html });
+  }
+
+  const customerHtml = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
+      <h2 style="color:#064e3b;margin-top:0;">We've received your meeting request</h2>
+      <p>Hi ${escapeHtml(m.name)}, thank you — our team will confirm your request shortly.</p>
+      <table style="width:100%;border-collapse:collapse;">
+        ${row("Requested time", when)}${row("Format", escapeHtml(m.channel))}${row("Topic", escapeHtml(m.topic))}
+      </table>
+      <p style="font-size:12px;color:#999;margin-top:20px;">This is a request, not a confirmed slot. We'll email you to confirm or suggest another time.</p>
+    </div>`;
+  return email.sendEmail({ to: m.email, subject: "We've received your meeting request - Vistana Tours & Travel", html: customerHtml });
+}

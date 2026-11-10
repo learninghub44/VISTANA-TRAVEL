@@ -11,6 +11,9 @@ import { CACHE_TAGS } from "@/services/db/cached";
 import { rateLimitShared, getClientIpFromHeaders } from "@/services/auth/rateLimit";
 import { sniffFileType, extensionFor } from "@/lib/fileSniff";
 import { tourSchema, slugify, uniqueSlug } from "@/lib/tourSchema";
+import { computeBookingTotal } from "@/lib/pricing";
+import { meetingSchema, isValidMeetingSlot } from "@/lib/meetingSchema";
+import { sendMeetingEmails } from "@/services/email";
 import { headers } from "next/headers";
 import { z } from "zod";
 
@@ -169,9 +172,7 @@ export async function createBookingAction(data: {
 
     // Price is always computed here from the database — never taken from the client.
     // Full price for adults, 50% for children; rounded to cents.
-    const pricePerAdult = tour.price_usd;
-    const pricePerChild = tour.price_usd * 0.5;
-    const totalPrice = Math.round((data.adults * pricePerAdult + data.children * pricePerChild) * 100) / 100;
+    const totalPrice = computeBookingTotal(tour.price_usd, data.adults, data.children);
 
     const newBooking: Omit<Booking, "id" | "created_at"> = {
       tour_id: data.tourId,
@@ -845,6 +846,90 @@ export async function cancelBookingAction(bookingId: string): Promise<{ success:
   }
 }
 
+
+// ----------------------------------------------------
+// Meetings
+// ----------------------------------------------------
+// Public (guests can book a call), so it is rate-limited, validated and
+// honeypot-protected. Only ever called after the customer presses "Confirm"
+// on a meeting card — the AI assistant itself can never create one.
+export async function requestMeetingAction(
+  input: z.input<typeof meetingSchema>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ip = await getActionClientIp();
+    if (!(await rateLimitShared(`meeting:${ip}`, 5, 60 * 60 * 1000)).ok) {
+      return { success: false, error: "Too many requests. Please try again later or message us on WhatsApp." };
+    }
+
+    const parsed = meetingSchema.safeParse(input);
+    if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message || "Please check your details." };
+    const data = parsed.data;
+    if (data.website) return { success: true }; // honeypot: silently drop bots
+
+    const slotError = isValidMeetingSlot(data.preferred_date, data.preferred_time);
+    if (slotError) return { success: false, error: slotError };
+
+    if (!(await rateLimitShared(`meeting-email:${data.email}`, 3, 24 * 60 * 60 * 1000)).ok) {
+      return { success: false, error: "You already have recent requests with us — we'll be in touch soon." };
+    }
+
+    await db.saveMeeting({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      topic: data.topic,
+      channel: data.channel,
+      preferred_date: data.preferred_date,
+      preferred_time: data.preferred_time,
+      notes: data.notes,
+      tour_slug: data.tour_slug,
+    });
+
+    // The request is safely stored; emails are best-effort.
+    try {
+      const settings = await db.getSiteSettings();
+      await sendMeetingEmails(settings.office_email || process.env.CONTACT_NOTIFY_EMAIL, data);
+    } catch (e) {
+      console.error("Meeting notification email failed:", e);
+    }
+
+    revalidatePath("/admin/meetings");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Could not send your request." };
+  }
+}
+
+export async function updateMeetingStatusAction(id: string, status: "Requested" | "Confirmed" | "Completed" | "Cancelled"): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    if (!uuidLike.safeParse(id).success || !z.enum(["Requested", "Confirmed", "Completed", "Cancelled"]).safeParse(status).success) {
+      return { success: false, error: "Invalid request." };
+    }
+    await db.updateMeetingStatus(id, status);
+    await logAudit(admin, "update_status", "meeting", id, `status → ${status}`);
+    revalidatePath("/admin/meetings");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to update meeting." };
+  }
+}
+
+export async function deleteMeetingAction(id: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const admin = await getAdminSession();
+    if (!admin) return { success: false, error: "Unauthorized." };
+    if (!uuidLike.safeParse(id).success) return { success: false, error: "Invalid request." };
+    await db.deleteMeeting(id);
+    await logAudit(admin, "delete", "meeting", id);
+    revalidatePath("/admin/meetings");
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error && e.message ? e.message : "Failed to delete meeting." };
+  }
+}
 
 // ----------------------------------------------------
 // Contact inquiries — admin only

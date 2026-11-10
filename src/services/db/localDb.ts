@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 const DB_DIR = path.join(process.cwd(), "src/data");
 const DB_FILE = path.join(DB_DIR, "local_db.json");
@@ -23,6 +23,7 @@ interface LocalDbSchema {
   social_posts: SocialPost[];
   audit_logs: AuditLog[];
   inquiries: Inquiry[];
+  meetings: Meeting[];
   settings: SiteSettings;
 }
 
@@ -532,6 +533,7 @@ const initialData: LocalDbSchema = {
   social_posts: [],
   audit_logs: [],
   inquiries: [],
+  meetings: [],
   settings: {
     id: "site-settings",
     office_address: "Vistana Plaza, 4th Floor, Ngong Road, Nairobi, Kenya",
@@ -565,6 +567,7 @@ class LocalDbAdapter implements DatabaseAdapter {
         social_posts: parsed.social_posts || [],
         audit_logs: parsed.audit_logs || [],
         inquiries: parsed.inquiries || [],
+        meetings: parsed.meetings || [],
         settings: parsed.settings || initialData.settings,
       };
     } catch (e) {
@@ -1171,6 +1174,30 @@ class LocalDbAdapter implements DatabaseAdapter {
     db.audit_logs.push(newItem);
     this.writeDb(db);
     return newItem;
+  }
+
+  // Meetings
+  async getMeetings(): Promise<Meeting[]> {
+    return [...(this.readDb().meetings || [])].reverse();
+  }
+  async saveMeeting(m: Omit<Meeting, "id" | "created_at" | "status"> & { id?: string; status?: Meeting["status"] }): Promise<Meeting> {
+    const db = this.readDb();
+    const item: Meeting = { ...m, id: m.id || generateId(), status: m.status ?? "Requested", created_at: new Date().toISOString() };
+    db.meetings = [...(db.meetings || []), item];
+    this.writeDb(db);
+    return item;
+  }
+  async updateMeetingStatus(id: string, status: Meeting["status"]): Promise<void> {
+    const db = this.readDb();
+    db.meetings = (db.meetings || []).map((x) => (x.id === id ? { ...x, status } : x));
+    this.writeDb(db);
+  }
+  async deleteMeeting(id: string): Promise<boolean> {
+    const db = this.readDb();
+    const len = (db.meetings || []).length;
+    db.meetings = (db.meetings || []).filter((x) => x.id !== id);
+    this.writeDb(db);
+    return db.meetings.length < len;
   }
 
   // Inquiries

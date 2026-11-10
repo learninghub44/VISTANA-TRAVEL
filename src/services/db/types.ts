@@ -139,6 +139,21 @@ export interface Inquiry {
   created_at: string;
 }
 
+export interface Meeting {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  topic: string;
+  channel: "Video call" | "Phone call" | "WhatsApp call" | "Office visit";
+  preferred_date: string; // YYYY-MM-DD (East Africa Time)
+  preferred_time: string; // HH:MM (East Africa Time)
+  notes?: string;
+  tour_slug?: string;
+  status: "Requested" | "Confirmed" | "Completed" | "Cancelled";
+  created_at: string;
+}
+
 export interface Testimonial {
   id: string;
   customer_name: string;
@@ -287,6 +302,12 @@ export interface DatabaseAdapter {
   getProfileByResetTokenHash(hash: string): Promise<Profile | null>;
   getProfileByVerificationTokenHash(hash: string): Promise<Profile | null>;
   getTourById(id: string): Promise<Tour | null>;
+
+  // Meeting / consultation requests (made via the AI assistant or the site)
+  getMeetings(): Promise<Meeting[]>;
+  saveMeeting(meeting: Omit<Meeting, "id" | "created_at" | "status"> & { id?: string; status?: Meeting["status"] }): Promise<Meeting>;
+  updateMeetingStatus(id: string, status: Meeting["status"]): Promise<void>;
+  deleteMeeting(id: string): Promise<boolean>;
 
   // Contact inquiries
   getInquiries(): Promise<Inquiry[]>;

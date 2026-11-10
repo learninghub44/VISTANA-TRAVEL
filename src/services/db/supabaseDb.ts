@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "./supabaseClient";
-import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
+import { DatabaseAdapter, Destination, Tour, Hotel, Vehicle, Guide, Booking, Review, Blog, Profile, Inquiry, Meeting, RateLimitResult, Testimonial, Partner, Faq, NewsletterSubscriber, GalleryImage, SocialPost, AuditLog, SiteSettings } from "./types";
 
 class SupabaseDbAdapter implements DatabaseAdapter {
   private get client(): SupabaseClient {
@@ -305,6 +305,27 @@ class SupabaseDbAdapter implements DatabaseAdapter {
     const { data, error } = await this.client.from("tours").select("*").eq("id", id).maybeSingle();
     if (error) throw error;
     return data;
+  }
+
+  // Meetings
+  async getMeetings(): Promise<Meeting[]> {
+    const { data, error } = await this.client.from("meetings").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+  async saveMeeting(m: Omit<Meeting, "id" | "created_at" | "status"> & { id?: string; status?: Meeting["status"] }): Promise<Meeting> {
+    const { data, error } = await this.client.from("meetings").insert({ ...m, status: m.status ?? "Requested" }).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async updateMeetingStatus(id: string, status: Meeting["status"]): Promise<void> {
+    const { error } = await this.client.from("meetings").update({ status }).eq("id", id);
+    if (error) throw error;
+  }
+  async deleteMeeting(id: string): Promise<boolean> {
+    const { error } = await this.client.from("meetings").delete().eq("id", id);
+    if (error) throw error;
+    return true;
   }
 
   // Inquiries

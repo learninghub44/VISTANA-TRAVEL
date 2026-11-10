@@ -28,6 +28,9 @@ process.env.SESSION_SECRET = "test-session-secret-at-least-32-chars-long";
 
 import { db } from "@/services/db";
 import {
+  updateMeetingStatusAction,
+  deleteMeetingAction,
+  requestMeetingAction,
   updateInquiryStatusAction,
   deleteInquiryAction,
   updateBookingStatusAction,
@@ -146,5 +149,23 @@ describe("new admin/customer-gated actions reject unauthenticated callers", () =
   it("createBookingAction", async () => {
     const r = await createBookingAction({ tourId: "x", startDate: "2030-01-01", endDate: "2030-01-05", adults: 1, children: 0 });
     expect(r.success).toBe(false);
+  });
+});
+
+describe("meeting actions", () => {
+  it("admin-only meeting actions reject unauthenticated callers", async () => {
+    expect((await updateMeetingStatusAction("x", "Confirmed")).success).toBe(false);
+    expect((await deleteMeetingAction("x")).success).toBe(false);
+  });
+  it("requestMeetingAction rejects invalid slots and details", async () => {
+    const base = { name: "Amina W", email: "amina@example.com", topic: "Honeymoon safari", channel: "Video call" as const, preferred_time: "10:00" };
+    expect((await requestMeetingAction({ ...base, preferred_date: "2020-01-01" })).success).toBe(false);
+    expect((await requestMeetingAction({ ...base, email: "nope", preferred_date: "2099-01-01" })).success).toBe(false);
+  });
+  it("requestMeetingAction silently drops honeypot submissions without storing anything", async () => {
+    const before = (await db.getMeetings()).length;
+    const r = await requestMeetingAction({ name: "Bot", email: "bot@example.com", topic: "spam spam", channel: "Video call", preferred_date: "2099-01-01", preferred_time: "10:00", website: "http://spam" });
+    expect(r.success).toBeDefined();
+    expect((await db.getMeetings()).length).toBe(before);
   });
 });

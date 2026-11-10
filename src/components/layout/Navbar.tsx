@@ -77,6 +77,7 @@ export default function Navbar() {
     { name: "Holiday Packages", href: "/holiday-packages" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
+    { name: "AI Planner", href: "/assistant" },
   ];
 
   const solid = isScrolled || !isHome;

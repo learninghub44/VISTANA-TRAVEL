@@ -14,7 +14,7 @@ const schema = z.object({
       })
     )
     .min(1)
-    .max(20),
+    .max(30),
 });
 
 export async function POST(req: NextRequest) {
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     if (csrfError) return csrfError;
 
     const ip = getClientIp(req);
-    const { ok } = await rateLimitShared(`assistant:${ip}`, 20, 10 * 60 * 1000);
+    const { ok } = await rateLimitShared(`assistant:${ip}`, 30, 10 * 60 * 1000);
     if (!ok) {
       return NextResponse.json(
         { error: "Too many messages. Please wait a moment or reach us on WhatsApp." },
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 200 });
     }
 
-    return NextResponse.json({ reply: result.reply });
+    return NextResponse.json({ reply: result.reply, proposals: result.proposals });
   } catch (e) {
     console.error("AI assistant API error:", e);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
